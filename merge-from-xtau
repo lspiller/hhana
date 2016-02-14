@@ -72,7 +72,7 @@ if args.output is not None:
     outname = args.output
 else:
     # this has to be updated
-    outname = '/tmpfs/ntuples_hh_run2/v7/hhskim/hhskim.root'
+    outname = '/tmpfs/ntuples_hh_run2/v8/hhskim/hhskim.root'
 
 if os.path.exists(outname):
     if args.reset:
