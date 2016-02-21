@@ -1,96 +1,98 @@
 #!/usr/bin/env python
 
-import os, sys
-from hhdb.datasets import Database
-
-import re
-import os
+import os, sys, re, itertools, operator
 from glob import glob
+from collections import namedtuple, defaultdict
 from rootpy.io import root_open
 from rootpy.tree import Tree, TreeChain
 import ROOT
 import logging
 from rootpy import asrootpy
 
+
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--output', default='output.root')
-parser.add_argument('--db', default='datasets_hh_c')
+parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v8/hhskim/hhskim.root')
+parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/hhsm_25.v8')
+parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
 parser.add_argument('--reset', action='store_true', default=False)
-parser.add_argument('--cutflow', default='h_mc_derivation')
+parser.add_argument('-db', '--deactivate-branches', default=['*_CP_*', 'tau*'])
 args = parser.parse_args()
 log = logging.getLogger(os.path.basename(__file__))
 
 
-TREENAME = 'NOMINAL'
-CUTFLOW_NAME = 'cutflow_HSM_hadhad_NOMINAL'
-DAOD_CUTFLOW = 'h_mc_derivation'
-
-
-def update_merged_file(
-        dataset, outfilename,
-        treename='NOMINAL',
-        daod_cutflow_name='h_mc_derivation',
-        rm_branches=[]):
-
-    log.info('{0} ...'.format(dataset.name))
-    intree = ROOT.TChain(treename)
-
-    for br in rm_branches:
-        intree.SetBranchStatus(br, 0)
-
-    log.info(intree)
-    outdaod = root_open(dataset.files[0])[daod_cutflow_name].Clone()
-    outdaod.Reset()
-    outdaod.name = dataset.name + '_daod'
-
-    log.info('merging in %s' % outname)
-    with root_open(outname, 'UPDATE') as outfile:
-        for f in dataset.files:
-            with root_open(f, 'READ') as infile:
-                if daod_cutflow_name in infile:
-                    outdaod += infile[daod_cutflow_name]
-                else:
-                    log.warning('{0} has no {1} histogram'.format(f, daod_cutflow_name))
-                intree.Add(f)
-
-        outtree = intree.CloneTree(-1, "fast SortBasketsByEntry")
-        if not outtree:
-            log.warning("Tree has no entries: {0}".format(dataset.name))
-            dummy_tree = root_open(dataset.files[0])[treename]
-            for br in rm_branches:
-                dummy_tree.SetBranchStatus(br, 0)
-            outtree = dummy_tree.CloneTree()
-        outtree.OptimizeBaskets()
-        outtree.SetName(dataset.name.replace('-', '_'))
-        outfile.cd()
-        outtree.Write(outtree.GetName(), ROOT.TObject.kOverwrite)
-        outdaod.Write(outdaod.GetName(), ROOT.TObject.kOverwrite)
-
-DB = Database(args.db)
-if args.output is not None:
-    outname = args.output
-else:
-    # this has to be updated
-    outname = '/tmpfs/ntuples_hh_run2/v8/hhskim/hhskim.root'
-
-if os.path.exists(outname):
+if os.path.exists(args.out):
     if args.reset:
-        log.warning('Deleting %s' % outname)
-        os.remove(outname)
+        log.warning('Deleting %s' % args.out)
+        os.remove(args.out)
     else:
-        log.warning('Output file already exists!. Set --reset to overwrite')
+        log.warning('Output file already exists!. Set --reset to overwrite. \n{0}'.format(args.out))
         sys.exit()
 
-for d in DB.keys():
-    dataset = DB[d]
-    if len(dataset.files) == 0:
-        log.warning(dataset)
-        continue
-    log.info(dataset)
-    update_merged_file(
-        dataset,
-        outname,
-        treename='NOMINAL',
-        rm_branches=['*_CP_*', 'tau*'])
+Sample = namedtuple("sample",
+            [
+                'fullpath',
+                'files',
+                'group',
+                'chan',
+                'subchan',
+                'MCorData',
+                'tag',
+                'process',
+                'derivation',
+                'recotag',
+                'hist',
+            ]
+        )
 
+ls = lambda folder: glob( os.path.join(args.infolder, folder, '*.root*'))
+
+folders = os.listdir(args.infolder)
+samples = [ Sample( f, ls(f), *f.split('.') ) for f in folders ]
+print samples
+
+isvalid = lambda sample: \
+    sample.group=='group' and \
+    sample.chan=='phys-higgs' and \
+    sample.subchan=='hhsm_25' and \
+    sample.derivation=='D3' and \
+    sample.hist=='v8_hist' and \
+    sample.files != None
+
+samples = filter( isvalid, samples )
+
+process_dict = defaultdict(list)
+for s in samples:
+    procname = s.process if 'mc' in s.MCorData else s.MCorData + s.process
+    procname = procname.replace('-', '_')
+    process_dict[procname] += s.files
+
+with root_open(args.out, 'UPDATE') as outfile:
+    for procname, infiles in process_dict.items():
+        log.info('{0} ...'.format(procname))
+        files = map( root_open, infiles )
+
+        hists = [ f.Get(args.cutflow) for f in files ]
+        cutflow = reduce( operator.add, hists )
+        cutflow.name = procname + '_daod'
+
+        treenames = set([ t.GetName() for f in files for t in f.objects(cls=(ROOT.TTree,)) ])
+        outfile.cd()
+
+        outtrees = []
+        for treename in treenames:
+            intree = TreeChain(treename, infiles)
+            for br in args.deactivate_branches:
+                intree.SetBranchStatus(br, 0)
+
+            outtree = intree.CloneTree(-1, "fast SortBasketsByEntry")
+            outtree.OptimizeBaskets()
+            outname = procname if treename == 'NOMINAL' else '{0}_{1}'.format(procname,treename.replace('up', '_up').replace('down', '_down').replace('__','_'))
+            outtree.SetName( outname )
+
+            outtrees.append( outtree )
+
+        outfile.cd()
+        cutflow.Write(cutflow.GetName(), ROOT.TObject.kOverwrite)
+        for outtree in outtrees:
+            outtree.Write(outtree.GetName(), ROOT.TObject.kOverwrite)

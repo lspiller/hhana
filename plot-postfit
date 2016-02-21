@@ -74,7 +74,7 @@ def fit_workspace(file_name, ws_name,
             workers.append(ModelCalculator(file0, workspace, cat, fit_res,
                                            output_root, output_pickle))
         run_pool(workers, n_jobs=n_jobs)
-        
+
 
 def plot_from_frame(
     file, name, fit_var, category, year,
@@ -84,7 +84,7 @@ def plot_from_frame(
     hbkg = file.Get('h_sum_bkg_{0}'.format(frame.GetName()))
     curve_uncert_bkg = frame.getCurve('FitError_AfterFit_sum_bkg_{0}'.format(frame.GetName()))
     graph_bkg_ws = get_uncertainty_graph(hbkg, curve_uncert_bkg)
-    graph_bkg = get_rebinned_graph(graph_bkg_ws, binning) 
+    graph_bkg = get_rebinned_graph(graph_bkg_ws, binning)
     graph_bkg.fillstyle = '/'
     graph_bkg.linewidth = 0
     graph_bkg.linecolor = 'white'
@@ -93,7 +93,7 @@ def plot_from_frame(
     graph_bkg.title = 'Uncert.'
     graph_bkg.legendstyle = 'F'
     graph_bkg.drawstyle = 'E2'
-    
+
     hist_signal_ws = file.Get('h_sum_sig_{0}'.format(frame.GetName()))
     curve_uncert_signal = frame.getCurve('FitError_AfterFit_sum_sig_{0}'.format(frame.GetName()))
     graph_signal_ws = get_uncertainty_graph(hist_signal_ws, curve_uncert_signal)
@@ -125,10 +125,10 @@ def plot_from_frame(
     hist_fake.name = 'Fakes'
     hist_fake.title = ana.qcd.label
     hist_fake.legendstyle = 'F'
-    
+
     curve_uncert_fakes = frame.getCurve('FitError_AfterFit_Fakes_{0}'.format(frame.GetName()))
     graph_fakes_ws = get_uncertainty_graph(hist_fake_ws, curve_uncert_fakes)
-    graph_fakes = get_rebinned_graph(graph_fakes_ws, binning) 
+    graph_fakes = get_rebinned_graph(graph_fakes_ws, binning)
     graph_fakes.name = 'Fakes'
 
     hist_others_ws = file.Get('h_Others_{0}'.format(frame.GetName()))
@@ -140,7 +140,7 @@ def plot_from_frame(
     hist_others.legendstyle = 'F'
     curve_uncert_others = frame.getCurve('FitError_AfterFit_Others_{0}'.format(frame.GetName()))
     graph_others_ws = get_uncertainty_graph(hist_others_ws, curve_uncert_others)
-    graph_others = get_rebinned_graph(graph_others_ws, binning) 
+    graph_others = get_rebinned_graph(graph_others_ws, binning)
     graph_others.name = 'Others'
 
     hist_ztautau_ws = file.Get('h_Ztautau_{0}'.format(frame.GetName()))
@@ -152,9 +152,9 @@ def plot_from_frame(
     hist_ztautau.legendstyle = 'F'
     curve_uncert_ztautau = frame.getCurve('FitError_AfterFit_Ztautau_{0}'.format(frame.GetName()))
     graph_ztautau_ws = get_uncertainty_graph(hist_ztautau_ws, curve_uncert_ztautau)
-    graph_ztautau = get_rebinned_graph(graph_ztautau_ws, binning) 
+    graph_ztautau = get_rebinned_graph(graph_ztautau_ws, binning)
     graph_ztautau.name = 'Ztautau'
-    
+
     background = [hist_fake, hist_others, hist_ztautau]
     hists = background[:]
     if unblind is True:
@@ -170,14 +170,14 @@ def plot_from_frame(
     # TODO: make plot identical to standard variable plots
     if fit_var == 'bdt':
         if category.name == 'rest':
-            xtitle = get_label('dEta_tau1_tau2') 
+            xtitle = get_label('dEta_tau1_tau2')
         else:
             xtitle = 'BDT Score'
         categories = CATEGORIES['mva_all']
     else:
         xtitle = get_label(MMC_MASS)
         categories = CATEGORIES['cuts'] + CATEGORIES['cuts_2011']
-    
+
     if year == 2011:
         sqrts = 7
     else:
@@ -190,7 +190,7 @@ def plot_from_frame(
     ]
     ratio = Graph.divide(data, graph_bkg, 'pois')
     ratio.drawstyle = 'EP'
-    
+
     graph_bkg_zero_error = graph_bkg.Clone()
     for idx in xrange(len(graph_bkg_zero_error)):
         graph_bkg_zero_error.SetPointError(idx, 0, 0, 0, 0)
@@ -228,15 +228,15 @@ def plot_from_frame(
         x.range_user = model[0].bounds()
         canvas.update_lines()
         canvas.cd('main')
-                
+
         leg = Legend(
             [data] + model.hists[::-1] + [graph_bkg],
             **legend_params(position='right', textsize=22))
         leg.Draw()
-        
+
         label_plot(canvas.pad('main'), model[0],
                    xaxis=canvas.axes('ratio')[0],
-                   yaxis=canvas.axes('main')[1], 
+                   yaxis=canvas.axes('main')[1],
                    ylabel='Events/GeV' if density_hist else 'Events',
                    category_label=category.label,
                    data_info=ana.data.info,
@@ -247,7 +247,7 @@ def plot_from_frame(
                 canvas.SaveAs('{0}.{1}'.format(plot_name, fmt))
             else:
                 canvas.SaveAs(os.path.join(path, '{0}.{1}'.format(plot_name, fmt)))
-    
+
     # print yields table
     bin_edges = [(hist_fake.xedgesl(bin.idx), hist_fake.xedgesh(bin.idx)) for bin in hist_fake.bins()]
     postfit_table_header = ['Sample'] + [
@@ -266,7 +266,7 @@ def plot_from_frame(
     print r"\begin{table}"
     print r"\centering"
     print table
-    print r"\caption{Postfit yield in %s}." % category.latex 
+    print r"\caption{Postfit yield in %s}." % category.latex
     print r"\end{table}"
     print
 
@@ -282,6 +282,7 @@ if __name__ == '__main__':
     parser.add_argument('--unblind', action='store_true', default=False)
     parser.add_argument('--density', action='store_true', default=False)
     parser.add_argument('--jobs', default=-1)
+    parser.add_argument('--suffix', type=str, default='')
     args = parser.parse_args()
 
     if args.fit_var == 'bdt':
@@ -295,7 +296,7 @@ if __name__ == '__main__':
 
     if not os.path.exists(output + '.root') or args.force_fit:
         fit_workspace(args.file, args.name, output, n_jobs=args.jobs)
-    
+
     if not os.path.exists(plots):
         mkdir_p(plots)
 
@@ -315,7 +316,7 @@ if __name__ == '__main__':
                 continue
             if category_name == 'rest':
                 continue
-            binning = get_binning(category, year, fit_var=args.fit_var, clf_bins=args.clf_bins)
+            binning = get_binning(category, year, fit_var=args.fit_var, clf_bins=args.clf_bins, suffix=args.suffix)
             if category_name != 'rest' and not args.unblind:
                 unblind = get_blinding(category, year, fit_var=args.fit_var)
                 log.info('Blinding region: {0}'.format(unblind))

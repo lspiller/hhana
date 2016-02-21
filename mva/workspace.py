@@ -151,10 +151,11 @@ def mva_workspace(analysis, categories, masses,
                   clf_swap=False,
                   unblind=False,
                   systematics=False,
-                  cuts=None):
+                  cuts=None,
+                  suffix=''):
     hist_template = Hist(5, 0, 1.5, type='D')
     controls = analysis.make_var_channels(
-        hist_template, 'dEta_tau1_tau2',
+        hist_template, 'ditau_deta',#'dEta_tau1_tau2',
         CATEGORIES['mva_workspace_controls'],
         analysis.target_region,
         include_signal=True, masses=masses,
@@ -169,7 +170,7 @@ def mva_workspace(analysis, categories, masses,
             if isinstance(clf_bins, basestring):
                 if clf_bins == 'optimal':
                     # get the binning (see the optimize-binning script)
-                    bins = clf.binning(analysis.year, overflow=1E5)
+                    bins = clf.binning(analysis.year, overflow=1E5, suffix=suffix)
                     log.info("binning: {0}".format(str(bins)))
                 else:
                     bins = int(clf_bins)

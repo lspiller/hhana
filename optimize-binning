@@ -137,7 +137,7 @@ def get_valid_range(bkg_scores, sig_scores,
     if not np.any(sum_unweighted_right_valid):
         # not possible to create any new bins
         return None, None, None
-    
+
     sum_unweighted_left_valid = sum_unweighted_left >= min_bkg_unweighted
     if not np.any(sum_unweighted_left_valid):
         # not possible to create any new bins
@@ -147,7 +147,7 @@ def get_valid_range(bkg_scores, sig_scores,
     if not np.any(sum_weighted_right_valid):
         # not possible to create any new bins
         return None, None, None
-    
+
     sum_weighted_left_valid = sum_weighted_left >= min_bkg_weighted
     if not np.any(sum_weighted_left_valid):
         # not possible to create any new bins
@@ -158,7 +158,7 @@ def get_valid_range(bkg_scores, sig_scores,
     last_bin_min_bkg_weighted = np.where(sum_weighted_right_valid)[-1][-1]
     last_bin_min_bkg = min(last_bin_min_bkg_unweighted,
                            last_bin_min_bkg_weighted)
-    
+
     # bump last bin edge down until background requirements are satisfied
     last_bin_min_bkg -= all_positive_right[:last_bin_min_bkg + 1][::-1].argmax()
     # sanity check
@@ -169,7 +169,7 @@ def get_valid_range(bkg_scores, sig_scores,
     first_bin_min_bkg_weighted = np.where(sum_weighted_left_valid)[-1][0]
     first_bin_min_bkg = max(first_bin_min_bkg_unweighted,
                             first_bin_min_bkg_weighted)
-    
+
     # bump first bin edge up until background requirements are satisfied
     first_bin_min_bkg += all_positive_left[first_bin_min_bkg:].argmax()
 
@@ -196,15 +196,15 @@ def get_best_edge(scores, edges, pos=0,
         left, right = edges[pos:]
     else:
         left, right = edges[pos:pos + 2]
-    
+
     # get the valid range that respects the background requirements
     left_idx, right_idx, template = get_valid_range(
         scores.bkg_scores, scores.all_sig_scores[mass],
         left, right, steps,
         min_bkg_unweighted, min_bkg_weighted, sig_shrinkage)
-    
+
     if left_idx is None or right_idx is None:
-        # not possible to add an edge 
+        # not possible to add an edge
         return None, None, None, None, -1
 
     if left_idx >= right_idx - 1:
@@ -243,7 +243,7 @@ def get_best_edge(scores, edges, pos=0,
     bkg_unweighted_right = tot_unweighted[2].value
     bkg_weighted_left = tot_weighted[1].value
     bkg_weighted_right = tot_weighted[2].value
-   
+
     # Sanity check:
     assert(bkg_unweighted_right >= min_bkg_unweighted)
     assert(bkg_weighted_right >= min_bkg_weighted)
@@ -254,13 +254,13 @@ def get_best_edge(scores, edges, pos=0,
 
 
 if __name__ == '__main__':
- 
+
     # pip install --user tabulate
     from tabulate import tabulate
     from rootpy.extern.argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('--year', type=int, choices=[2011, 2012], default=2012)
+    parser.add_argument('--year', type=int, choices=[2011, 2012, 2015], default=2015)
     parser.add_argument('--categories', nargs='*')
     parser.add_argument('--min-bkg-unweighted', type=int, default=5)
     parser.add_argument('--min-bkg-weighted', type=float, default=1.)
@@ -269,6 +269,7 @@ if __name__ == '__main__':
     parser.add_argument('--systematics', action='store_true', default=False)
     parser.add_argument('--mass', type=int, default=125, choices=range(100, 155, 5))
     parser.add_argument('--procs', type=int, default=-1)
+    parser.add_argument('--suffix', type=str, default='')
     args = parser.parse_args()
     year = args.year
     mass = args.mass
@@ -277,7 +278,8 @@ if __name__ == '__main__':
                         systematics=args.systematics,
                         qcd_workspace_norm=False,
                         ztt_workspace_norm=False,
-                        qcd_shape_systematic=False)
+                        qcd_shape_systematic=False,
+                        suffix=args.suffix)
 
     for category in (Category_Boosted, Category_VBF):
         if args.categories and category.name not in args.categories:
@@ -299,7 +301,7 @@ if __name__ == '__main__':
         max_score = max(np.max(s), np.max(b)) + 1E-8
         s = (s, sw)
         b = (b, bw)
-        
+
         # setup the mpl figure and axes
         fig, (ax1, ax_rebin) = plt.subplots(nrows=1, ncols=2, figsize=(15, 6))
         ax1.set_ylabel('Significance')
@@ -328,13 +330,13 @@ if __name__ == '__main__':
         fixed_sigs = map_pool(
             FuncWorker,
             [(get_sig, scores, np.linspace(min_score, max_score, bins + 1))
-                for bins in nfixed_bins], 
+                for bins in nfixed_bins],
             mass=mass,
             systematics=args.systematics,
             n_jobs=args.procs)
         max_fixed_sig = np.max(fixed_sigs)
         max_fixed_nbins = nfixed_bins[np.argmax(fixed_sigs)]
-        
+
         # show significance vs number of equal width bins
         ax2.plot(nfixed_bins, fixed_sigs, label='Fixed-width Bins', color='green', linestyle='-')
 
@@ -342,7 +344,7 @@ if __name__ == '__main__':
         from itertools import cycle
         lines = ["-", "--", "-.", ":"]
         linecycler = cycle(lines)
-        
+
         # initial single bin from min to max score
         binning = [float(min_score), float(max_score)]
         prev_best_sig = 0
@@ -367,7 +369,7 @@ if __name__ == '__main__':
         ax1.plot((best_edge, best_edge), (0, abs(best_sig)),
                     color='black', linestyle='-', linewidth=2)
         binning.insert(1, float(best_edge))
-        
+
         # continue splitting right
         # Sometimes there is a local maximum above the first inserted bin edge
         # from above. Adding a bin edge here will usually improve the significance.
@@ -391,7 +393,7 @@ if __name__ == '__main__':
                      color='red', linestyle='-', linewidth=2)
             binning.insert(-1, float(best_edge))
             prev_best_sig = best_sig
-        
+
         # continue splitting left
         while True:
             edges, sigs, nbkg, best_edge, best_sig = get_best_edge(
@@ -413,10 +415,10 @@ if __name__ == '__main__':
                      color='black', linestyle='-', linewidth=2)
             binning.insert(1, float(best_edge))
             prev_best_sig = best_sig
-        
+
         # save the binning
-        with open(os.path.join(CACHE_DIR, 'binning/binning_{0}_{1}_{2}.pickle'.format(
-                               category.name, mass, year % 1000)), 'w') as f:
+        with open(os.path.join(CACHE_DIR, 'binning/binning_{0}_{1}_{2}_{3}.pickle'.format(
+                               category.name, mass, year % 1000, args.suffix)), 'w') as f:
             pickle.dump(binning, f)
 
         # draw the rebinned scores
@@ -445,7 +447,7 @@ if __name__ == '__main__':
         headers = [str(i) for i in xrange(1, len(binning) + 1)]
         headers.insert(0, 'Bin')
         totals = []
-        
+
         sample_types = ['Total Signal', 'Total Background']
         totals = []
         for sample_type, samples in zip(sample_types,
@@ -467,7 +469,7 @@ if __name__ == '__main__':
                             for bin in hist_unweighted.bins()]
                 unweighted.insert(0, 'unweighted')
                 table.extend([[sample.name] + ['',] * len(binning), weighted, unweighted])
-                
+
                 weighted_latex = [u'${0:.1f} \pm {1:.1f}$'.format(bin.value, bin.error)
                                   for bin in hist_weighted.bins()]
                 weighted_latex.insert(0, 'weighted')
@@ -479,7 +481,7 @@ if __name__ == '__main__':
 
                 total_weighted += hist_weighted
                 total_unweighted += hist_unweighted
-            
+
             weighted = [u'{0:.1f} +/- {1:.1f}'.format(bin.value, bin.error)
                         for bin in total_weighted.bins()]
             weighted.insert(0, 'weighted')
@@ -503,11 +505,11 @@ if __name__ == '__main__':
         row = [u'{0:.1f} +/- {1:.1f}'.format(bin.value, bin.error)
                for bin in sob.bins()]
         row.insert(0, 'S / B')
-        table.append(row) 
+        table.append(row)
         row_latex = [u'${0:.1f} \pm {1:.1f}$'.format(bin.value, bin.error)
                      for bin in sob.bins()]
         row_latex.insert(0, '$S / B$')
-        table_latex.append(row_latex) 
+        table_latex.append(row_latex)
 
         print tabulate(table, headers)
         print

@@ -460,18 +460,18 @@ HH_VARIABLES = {
        'units': 'GeV',
        'cats': ['2J', 'VBF']
    },
-#    'HCM2': {
-#        'title': r'HCM2',
-#        'root': '#font[52]HCM2',
-#        'filename': 'HCM2',
-#        'binning': {
-#            'BOOSTED': (0.01, 0.0, 1.0),
-#            'VBF': (0.01, 0.0, 1.0),
-#            'REST': (0.01, 0.0, 1.0),
-#            None: (0.01, 0.0, 1.0)},
-#        'scale': 0.01,
-#        'units': 'GeV',
-#    },
+    'HCM5': {
+        'title': r'HCM5',
+        'root': '#font[52]HCM5',
+        'filename': 'HCM5',
+        'binning': {
+            'BOOSTED': (15, 0.0, 1.0),
+            'VBF': (15, 0.0, 1.0),
+            'REST': (15, 0.0, 1.0),
+            None: (15, 0.0, 1.0)},
+        'scale': 0.01,
+        'units': 'GeV',
+    },
     'HCM1': {
         'title': r'HCM1',
         'root': '#font[52]{HCM1}',

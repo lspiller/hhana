@@ -18,6 +18,7 @@ parser.add_argument('--clf-swap', default=False, action='store_true')
 parser.add_argument('--sideband', default=False, action='store_true')
 parser.add_argument('--field', default=MMC_MASS)
 parser.add_argument('--binning', default='15,50,200')
+#parser.add_argument('--suffix', default=None)
 args = parser.parse_args()
 
 if args.masses == 'all':
@@ -39,6 +40,7 @@ if args.type == 'mva':
     params['clf_bins'] = args.clf_bins
     params['clf_swap'] = args.clf_swap
     params['unblind'] = args.unblind
+    params['suffix'] = args.suffix
 elif args.type == 'cuts':
     workspace_func = cuts_workspace
     params['sideband'] = args.sideband
@@ -83,4 +85,5 @@ if args.sideband:
 if args.output_suffix:
     suffix += '_' + args.output_suffix
 path = 'workspaces/hh{0}'.format(suffix.lower())
+
 write_workspaces(path, 'hh', signal_regions, controls=control_regions)

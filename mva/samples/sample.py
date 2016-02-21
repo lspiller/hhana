@@ -40,8 +40,6 @@ from ..cachedtable import CachedTable
 from ..variables import get_binning, get_scale
 from mva.categories import get_trigger
 
-from moments import HCM
-
 BCH_UNCERT = pickle.load(open(os.path.join(CACHE_DIR, 'bch_cleaning.cache')))
 
 
@@ -192,6 +190,7 @@ class Sample(object):
                 else:
                     min, max = bins
                 log.debug("Arguments passed to Hist. bins {0}, min {1}, max {2}, title {3}, hist_decor {4}".format(bins, min, max, self.label, self.hist_decor))
+                log.debug("Making histogram with: Bins {0}, min {1}, max {2}, title {3}".format(bins,min,max,self.label))
                 hist = Hist(bins, min, max,
                     title=self.label,
                     type='D',
@@ -248,7 +247,7 @@ class Sample(object):
                              min_score=min_score,
                              max_score=max_score,
                              inplace=True)
-            return field_hist
+            return field_hist, 1, 1
         rec, weights = self.draw_array(
             field_hist, category, region,
             cuts=cuts,
@@ -598,9 +597,10 @@ class Sample(object):
             elif f is not None:
                 all_fields.extend(list(f))
         # hack
-        if isinstance(self, Signal) and len(self.modes) == 1 and self.modes[0] == 'gg':
-            # for ggH3in systematic
-            all_fields.append('true_dphi_jj_higgs_no_overlap')
+# No ggH3in systematics in run 2... yet
+#        if isinstance(self, Signal) and len(self.modes) == 1 and self.modes[0] == 'gg':
+#            # for ggH3in systematic
+#            all_fields.append('true_dphi_jj_higgs_no_overlap')
         if len(classifiers) > 1:
             raise RuntimeError(
                 "more than one classifier in fields is not supported")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# python imports		
+# python imports
 from multiprocessing import Process
 import pickle
 import os
@@ -9,7 +9,8 @@ from rootpy.io import root_open
 from rootpy import asrootpy
 from rootpy.stats import ArgSet
 # higgstautau imports
-from pbs import qsub
+#from pbs import qsub
+from sh import qsub
 import cluster
 # local imports
 from statstools.utils import get_bestfit_nll_workspace
@@ -51,8 +52,8 @@ if __name__ == '__main__':
             name = cmd.replace(" ", "_")
             cmd = "cd %s && %s && %s" % (os.getcwd(), setup, cmd)
             qsub(cmd,
-                 name=name, 
-                 ppn=args.jobs, 
+                 name=name,
+                 ppn=args.jobs,
                  stdout_path=log_path,
                  stderr_path=log_path,
                  dry_run=not args.submit)
@@ -63,7 +64,7 @@ if __name__ == '__main__':
         npscans_dict = {}
         with root_open(args.file) as file:
             ws = file[args.name]
-            npscans_dict['NOMINAL'] = get_bestfit_nll_workspace(ws) 
+            npscans_dict['NOMINAL'] = get_bestfit_nll_workspace(ws)
         for par in nuispar_list:
             pickle_name = os.path.splitext(args.file)[0] + '_{0}_scan.pickle'.format(par)
             if os.path.exists(pickle_name):

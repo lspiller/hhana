@@ -371,10 +371,10 @@ class Classifier(object):
         # each trained on the opposite partition
         self.clfs = None
 
-    def binning(self, year, overflow=None):
+    def binning(self, year, overflow=None, suffix=''):
         # get the binning (see the optimize-binning script)
-        with open(os.path.join(CACHE_DIR, 'binning/binning_{0}_{1}_{2}.pickle'.format(
-                               self.category.name, self.mass, year % 1000))) as f:
+        with open(os.path.join(CACHE_DIR, 'binning/binning_{0}_{1}_{2}_{3}.pickle'.format(
+                               self.category.name, self.mass, year % 1000, suffix))) as f:
             binning = pickle.load(f)
         if overflow is not None:
             binning[0] -= overflow

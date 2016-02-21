@@ -350,52 +350,53 @@ class Higgs(MC, Signal):
 
         # QCDscale_ggH3in HistoSys ONLY FOR MVA
         # also see ggH3in script
-        if mva and mode == 'gg' and category.name == 'vbf':
-            Rel_Error_2j = 0.215
-            Error_exc = 0.08613046469238815 # Abs error on the exclusive xsec
-            xsec_exc = 0.114866523583739 # Exclusive Xsec
-            Error_3j = sqrt(Error_exc**2 - (Rel_Error_2j*xsec_exc)**2)
-            rel_error = Error_3j / xsec_exc
-
-            dphi = rec['true_dphi_jj_higgs_no_overlap']
-            scores = rec['classifier']
-
-            idx_2j = ((pi - dphi) < 0.2) & (dphi >= 0)
-            idx_3j = ((pi - dphi) >= 0.2) & (dphi >= 0)
-
-            # get normalization factor
-            dphi_2j = weights[idx_2j].sum()
-            dphi_3j = weights[idx_3j].sum()
-
-            weight_up = np.ones(len(weights))
-            weight_dn = np.ones(len(weights))
-
-            weight_up[idx_2j] -= (dphi_3j / dphi_2j) * rel_error
-            weight_dn[idx_2j] += (dphi_3j / dphi_2j) * rel_error
-
-            weight_up[idx_3j] += rel_error
-            weight_dn[idx_3j] -= rel_error
-
-            weight_up *= weights
-            weight_dn *= weights
-
-            up_hist = nominal.clone(shallow=True, name=sample_nom.name + '_QCDscale_ggH3in_UP')
-            up_hist.Reset()
-            dn_hist = nominal.clone(shallow=True, name=sample_nom.name + '_QCDscale_ggH3in_DOWN')
-            dn_hist.Reset()
-
-            fill_hist(up_hist, scores, weight_up)
-            fill_hist(dn_hist, scores, weight_dn)
-
-            if uniform:
-                up_hist = uniform_hist(up_hist)
-                dn_hist = uniform_hist(dn_hist)
-
-            shape = histfactory.HistoSys('QCDscale_ggH3in',
-                low=dn_hist,
-                high=up_hist)
-            norm, shape = histfactory.split_norm_shape(shape, sample_nom)
-            sample.AddHistoSys(shape)
+# No ggH3in in Run II... yet
+#        if mva and mode == 'gg' and category.name == 'vbf':
+#            Rel_Error_2j = 0.215
+#            Error_exc = 0.08613046469238815 # Abs error on the exclusive xsec
+#            xsec_exc = 0.114866523583739 # Exclusive Xsec
+#            Error_3j = sqrt(Error_exc**2 - (Rel_Error_2j*xsec_exc)**2)
+#            rel_error = Error_3j / xsec_exc
+#
+#            dphi = rec['true_dphi_jj_higgs_no_overlap']
+#            scores = rec['classifier']
+#
+#            idx_2j = ((pi - dphi) < 0.2) & (dphi >= 0)
+#            idx_3j = ((pi - dphi) >= 0.2) & (dphi >= 0)
+#
+#            # get normalization factor
+#            dphi_2j = weights[idx_2j].sum()
+#            dphi_3j = weights[idx_3j].sum()
+#
+#            weight_up = np.ones(len(weights))
+#            weight_dn = np.ones(len(weights))
+#
+#            weight_up[idx_2j] -= (dphi_3j / dphi_2j) * rel_error
+#            weight_dn[idx_2j] += (dphi_3j / dphi_2j) * rel_error
+#
+#            weight_up[idx_3j] += rel_error
+#            weight_dn[idx_3j] -= rel_error
+#
+#            weight_up *= weights
+#            weight_dn *= weights
+#
+#            up_hist = nominal.clone(shallow=True, name=sample_nom.name + '_QCDscale_ggH3in_UP')
+#            up_hist.Reset()
+#            dn_hist = nominal.clone(shallow=True, name=sample_nom.name + '_QCDscale_ggH3in_DOWN')
+#            dn_hist.Reset()
+#
+#            fill_hist(up_hist, scores, weight_up)
+#            fill_hist(dn_hist, scores, weight_dn)
+#
+#            if uniform:
+#                up_hist = uniform_hist(up_hist)
+#                dn_hist = uniform_hist(dn_hist)
+#
+#            shape = histfactory.HistoSys('QCDscale_ggH3in',
+#                low=dn_hist,
+#                high=up_hist)
+#            norm, shape = histfactory.split_norm_shape(shape, sample_nom)
+#            sample.AddHistoSys(shape)
 
     def xsec_kfact_effic(self, isample):
         # use yellowhiggs for cross sections
