@@ -85,6 +85,10 @@ with root_open(args.out, 'UPDATE') as outfile:
             for br in args.deactivate_branches:
                 intree.SetBranchStatus(br, 0)
 
+#            intree.SetBranchStatus('*', 0)
+#            for br in open('mva/branchlist', 'r'):
+#                intree.SetBranchStatus(br, 1)
+
             outtree = intree.CloneTree(-1, "fast SortBasketsByEntry")
             outtree.OptimizeBaskets()
             outname = procname if treename == 'NOMINAL' else '{0}_{1}'.format(procname,treename.replace('up', '_up').replace('down', '_down').replace('__','_'))

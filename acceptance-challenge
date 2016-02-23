@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+# python imports
+from rootpy.tree import Cut
+from hhdb import datasets
+import tables
+import os
+from mva.samples.db import get_file
+from collections import OrderedDict
+import yellowhiggs
+from mva.samples import Higgs
+
+from mva.cmd import get_parser
+
+
+from mva.analysis import get_analysis
+from mva.categories.hadhad import Category_Preselection
+
+
+higgs = Higgs(
+#                sample_pattern='*PoPy8_ggH125_tautauhh*',
+                year=2015,
+                modes=['gg'],
+                mass=125,
+                linecolor='red',
+                linewidth=2,
+                linestyle='dashed',
+                ggf_weight=None)
+
+cutlist = OrderedDict([
+            ('Eta'        , Cut()),
+            ('Charge'     , Cut('(ditau_tau0_q == 1) || (ditau_tau0_q == -1)') & \
+                            Cut('(ditau_tau1_q == 1) || (ditau_tau1_q == -1)')),
+            ('nTracks'    , Cut('(ditau_tau0_n_tracks == 1) || (ditau_tau0_n_tracks == 3)') & \
+                            Cut('(ditau_tau1_n_tracks == 1) || (ditau_tau1_n_tracks == 3)')),
+            ('tauID'      , Cut('ditau_tau0_jet_bdt_medium == 1') & \
+                            Cut('ditau_tau1_jet_bdt_medium == 1')),
+            ('Leading'    , Cut('ditau_tau0_pt > 40')),
+            ('Subleading' , Cut('ditau_tau1_pt > 30')),
+            ('OS'         , Cut('selection_opposite_sign == 1')),
+            ('MET'        , Cut('selection_met == 1')),
+            ('Deta'       , Cut('selection_delta_eta == 1')),
+            ('Dr'         , Cut('selection_delta_r == 1')),
+        ])
+
+rfile = get_file(hdf=True)
+table = rfile.get_node('/PoPy8_ggH125_tautauhh')
+
+#xsec, _ = yellowhiggs.xs( 13, 125, 'ggf')
+#kfact, effic = 1.
+#weight = 1E3 * LUMI * xsec * kfact / (effic * events)
+
+selection = None
+print '{0: <9}\t {1: <0}\t {2}'.format('Cut', 'Unweighted', 'Weighted')
+for name, cut in cutlist.iteritems():
+    selection = selection & cut if selection else cut
+    if selection:
+        rec = table.read_where(selection.where())
+    else:
+        rec = table.read()
+
+    weighted_events = higgs.events(cuts=selection)[1].value
+    print '{0: <9}\t {1: <9}\t {2}'.format(name, len(rec), weighted_events)
+
