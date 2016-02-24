@@ -20,7 +20,7 @@ from ..utils import uniform_hist
 from .sample import MC, Signal
 
 
-TAUTAUHADHADBR = 0.4197744 # = (1. - 0.3521) ** 2
+TAUTAUHADHADBR = 0.4194 # = (1. - 0.3521) ** 2
 
 
 class Higgs(MC, Signal):

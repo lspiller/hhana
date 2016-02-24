@@ -1062,6 +1062,7 @@ class SystematicsSample(Sample):
 
             if hasattr(self, 'xsec_kfact_effic'):
                 xs, kfact, effic = self.xsec_kfact_effic(i)
+                log.debug("Using class process xsec_kfact_eff")
             else:
                 xs, kfact, effic = ds.xsec_kfact_effic
             log.debug(

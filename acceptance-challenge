@@ -42,8 +42,8 @@ cutlist = OrderedDict([
             ('Dr'         , Cut('selection_delta_r == 1')),
         ])
 
-rfile = get_file(hdf=True)
-table = rfile.get_node('/PoPy8_ggH125_tautauhh')
+#rfile = get_file(hdf=True)
+#table = rfile.get_node('/PoPy8_ggH125_tautauhh')
 
 #xsec, _ = yellowhiggs.xs( 13, 125, 'ggf')
 #kfact, effic = 1.
@@ -53,11 +53,13 @@ selection = None
 print '{0: <9}\t {1: <0}\t {2}'.format('Cut', 'Unweighted', 'Weighted')
 for name, cut in cutlist.iteritems():
     selection = selection & cut if selection else cut
-    if selection:
-        rec = table.read_where(selection.where())
-    else:
-        rec = table.read()
+#    if selection:
+#        rec = table.read_where(selection.where())
+#    else:
+#        rec = table.read()
 
     weighted_events = higgs.events(cuts=selection)[1].value
-    print '{0: <9}\t {1: <9}\t {2}'.format(name, len(rec), weighted_events)
+    unweighted_events = higgs.events(cuts=selection, weighted=False)[1].value
+
+    print '{0: <9}\t {1: <9}\t {2}'.format(name, unweighted_events, weighted_events)
 
