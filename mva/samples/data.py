@@ -67,7 +67,7 @@ class Data(Sample):
             stream_name = 'JetTauEtMiss'
         dataname = 'data{0:1d}_{1}'.format(
             int(year % 1E3), stream_name)
-        dataname = 'data15_13TeVphysics_Main'
+        dataname = 'data15_13TeV'
 
         self.h5data = CachedTable.hook(getattr(h5file.root, dataname))
         self.info = DataInfo(LUMI[self.year] / 1e3, self.energy)

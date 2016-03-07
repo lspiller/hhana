@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+# python imports
+from rootpy.tree import Cut
+from mva.cmd import get_parser
+from mva.analysis import get_analysis
+from mva.categories.hadhad import (Category_Preselection, Category_VBF)
+from collections import OrderedDict
+
+args = get_parser(actions=False).parse_args()
+analysis = get_analysis(args)
+
+analysis = get_analysis(args)
+Ztautau = analysis.ztautau
+Others = analysis.others
+QCD = analysis.qcd
+Signal = analysis.higgs_125
+Data = analysis.data
+
+Presel  = OrderedDict([
+            ('Eta'        , Cut()),
+            ('MET'        , Cut('selection_met == 1')),
+            ('Deta'       , Cut('selection_delta_eta == 1')),
+            ('Dr'         , Cut('selection_delta_r == 1')),
+        ])
+
+selection = Cut('(ditau_tau0_n_tracks == 1) || (ditau_tau0_n_tracks == 3)') & \
+            Cut('(ditau_tau1_n_tracks == 1) || (ditau_tau1_n_tracks == 3)') & \
+            Cut('(ditau_tau0_q == 1) || (ditau_tau0_q == -1)') & \
+            Cut('(ditau_tau1_q == 1) || (ditau_tau1_q == -1)') & \
+            Cut('ditau_tau0_jet_bdt_medium == 1') & \
+            Cut('ditau_tau1_jet_bdt_medium == 1') & \
+            Cut('ditau_tau0_pt > 40') & \
+            Cut('ditau_tau1_pt > 30')
+
+base_events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
+table = []
+table.append( ('{:<12}'*6).format('Cut', 'Signal', 'Ztautau', 'QCD', 'Others', 'Data') )
+for name, cut in Presel.iteritems():
+    selection = selection & cut if selection else cut
+    events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
+    efficiency = [ n/d for (n,d) in zip(events, base_events) ]
+
+    table.append( ('{:<12}'+'{:<12.2%}'*5).format(name, *efficiency) )
+
+for line in table:
+    print line
+
+
+LEAD_TAU_40 = Cut('ditau_tau0_pt > 40')
+SUBLEAD_TAU_30 = Cut('ditau_tau1_pt > 30')
+
+LEAD_JET_50 = Cut('jet_0_pt > 50')
+SUBLEAD_JET_30 = Cut('jet_1_pt > 30')
+AT_LEAST_1JET = Cut('jet_0_pt > 30')
+
+DETA_TAUS = Cut('ditau_deta < 1.5')
+CUTS_2J = LEAD_JET_50 & SUBLEAD_JET_30
+CUTS_1J = LEAD_JET_50 & (- SUBLEAD_JET_30)
+
+RESONANCE_PT = Cut('ditau_vect_sum_pt > 100')
+
+VBF     = OrderedDict([
+            ('None'        , Cut()),
+            ('LeadJet'     , LEAD_JET_50),
+            ('SubleadJet'  , SUBLEAD_JET_30),
+            ('deltaetajet' , DETA_TAUS),
+            ('check'       , Cut('selection_signal_vbf')),
+        ])
+selection = Category_Preselection.cuts
+base_events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
+table = []
+table.append( ('{:<12}'*6).format('Cut', 'Signal', 'Ztautau', 'QCD', 'Others', 'Data') )
+for name, cut in VBF.iteritems():
+    selection = selection & cut if selection else cut
+    events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
+    efficiency = [ n/d for (n,d) in zip(events, base_events) ]
+
+    table.append( ('{:<12}'+'{:<12.2%}'*5).format(name, *efficiency) )
+
+for line in table:
+    print line
+
+LEAD_JET_30 = Cut('jet_0_pt > 30')
+Boosted = OrderedDict([
+            ('None'        , (-Category_VBF.cuts)),
+            ('NotVBF'     , LEAD_JET_30),
+            ('deltaetajet' , DETA_TAUS),
+        ])
+selection = Category_Preselection.cuts
+base_events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
+table = []
+table.append( ('{:<12}'*6).format('Cut', 'Signal', 'Ztautau', 'QCD', 'Others', 'Data') )
+for name, cut in Boosted.iteritems():
+    selection = selection & cut if selection else cut
+    events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
+    efficiency = [ n/d for (n,d) in zip(events, base_events) ]
+
+    table.append( ('{:<12}'+'{:<12.2%}'*5).format(name, *efficiency) )
+
+for line in table:
+    print line
+

@@ -7,16 +7,19 @@ from mva.categories.hadhad import (
     Category_Preselection,
     Category_VBF_NO_DETAJJ_CUT,
     Category_Boosted_NO_PTH_CUT,
-    Category_Preselection_NO_MET_CENTRALITY)
+    Category_Preselection_NO_MET,
+    Category_Preselection_1_JET)
 from mva.analysis import get_analysis
 from mva.plotting import draw_channel_array
-from mva.variables import VARIABLES
+from mva.variables import (VARIABLES, HH_VARIABLES)
 from rootpy.tree import Cut
 from rootpy.plotting import Hist
 from math import pi
 
+if args.channel == 'hadhad':
+    VARIABLES.update(HH_VARIABLES)
 
-for year in (2011, 2012):
+for year in (2015,):#(2011, 2012):
     analysis = get_analysis(
         args, year=year,
         systematics=False)
@@ -38,11 +41,11 @@ for year in (2011, 2012):
         output_suffix='_{0}'.format(year % 1000),
         output_formats=['png', 'eps'],
         arrow_values=[2.])
-    
-    templates = {'resonance_pt': Hist(30, 0, 300)}
+
+    templates = {'ditau_vect_sum_pt': Hist(30, 0, 300)}
     # show justification of the ptH cut in boosted
     draw_channel_array(
-        analysis, {'resonance_pt': VARIABLES['resonance_pt']},
+        analysis, {'ditau_vect_sum_pt': VARIABLES['ditau_vect_sum_pt']},
         templates=templates,
         mass=125, mode=['gg', 'VBF'], signal_scale=100,
         stack_signal=False,
@@ -58,13 +61,31 @@ for year in (2011, 2012):
         arrow_values=[100],
         log_ypadding=(0.3, 0))
 
-    # show justification of the MET centrality cut at preselection
+    # show justification of the MET cut at preselection
     draw_channel_array(
-        analysis, {'MET_bisecting': VARIABLES['MET_bisecting']},
-        mass=125, mode='combined', signal_scale=50,
-        stack_signal=True,
+        analysis, {'met_et': VARIABLES['met_et']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=50,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
         separate_legends=True,
-        category=Category_Preselection_NO_MET_CENTRALITY,
+        category=Category_Preselection_NO_MET,
+        region=analysis.target_region,
+        show_ratio=False,
+        output_dir='plots/categories',
+        output_suffix='_{0}'.format(year % 1000),
+        output_formats=['png', 'eps'],
+        ypadding=(0.55, 0))
+
+    # show justification of jet pt cuts for vbf
+    draw_channel_array(
+        analysis, {'jet_0_pt': VARIABLES['jet_0_pt']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=50,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
+        separate_legends=True,
+        category=Category_Preselection,
         region=analysis.target_region,
         show_ratio=False,
         output_dir='plots/categories',
@@ -73,15 +94,32 @@ for year in (2011, 2012):
         ypadding=(0.55, 0))
 
     draw_channel_array(
-        analysis, {'dPhi_min_tau_MET': VARIABLES['dPhi_min_tau_MET']},
-        mass=125, mode='combined', signal_scale=50,
-        stack_signal=True,
+        analysis, {'jet_1_pt': VARIABLES['jet_1_pt']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=50,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
         separate_legends=True,
-        category=Category_Preselection_NO_MET_CENTRALITY,
+        category=Category_Preselection_1_JET,
         region=analysis.target_region,
         show_ratio=False,
         output_dir='plots/categories',
         output_suffix='_{0}'.format(year % 1000),
         output_formats=['png', 'eps'],
-        cuts=Cut('!MET_bisecting'),
-        arrow_values=[pi / 4])
+        ypadding=(0.55, 0))
+
+    # show justification of deta taus cut for vbf
+    draw_channel_array(
+        analysis, {'dEta_jets': VARIABLES['dEta_jets']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=50,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
+        separate_legends=True,
+        category=Category_Preselection_1_JET,
+        region=analysis.target_region,
+        show_ratio=False,
+        output_dir='plots/categories',
+        output_suffix='_{0}'.format(year % 1000),
+        output_formats=['png', 'eps'],
+        ypadding=(0.55, 0))

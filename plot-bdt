@@ -52,6 +52,7 @@ analysis = get_analysis(args)
 target_region = analysis.target_region
 region = target_region
 output_suffix = analysis.get_suffix()
+log.debug("Output suffix is {}".format(output_suffix))
 
 cat_defs = [args.categories]
 if args.categories != 'presel':
@@ -63,6 +64,9 @@ UNBLIND = {
         'boosted': 1},
     2011: {
         'vbf': 2,
+        'boosted': 2},
+    2015: {
+        'vbf': 2,
         'boosted': 2}
 }
 
@@ -71,9 +75,9 @@ def plot_bdt(category, workspace_binning=True):
     # create BDT validation plots
     clf = analysis.get_clf(category, load=True, mass=125, transform=True)
     suffix = clf.output_suffix
-    
+
     if workspace_binning:
-        bins = clf.binning(analysis.year)
+        bins = clf.binning(analysis.year, suffix=analysis.suffix)
         suffix += '_workspace_binning'
         unblind_bins = UNBLIND[year][category.name]
     else:

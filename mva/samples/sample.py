@@ -1418,12 +1418,30 @@ class MC(SystematicsSample):
                                 'tau2_trigger_sf_stat_scale_PeriodEM_EndCap_low'],
                             'NOMINAL': []}})
             else:
-                log.warning('No trigger scale factor for 2015 yet')
+                log.warning('No trigger scale factor for 2015 yet - No longer true, recently added')
                 systematics.update({
                         'TRIGGER': {
-                            'UP': [],
-                            'DOWN': [],
-                            'NOMINAL': []},
+                            'STATDATA_UP': [
+                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            'STATDATA_DOWN': [
+                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            'STATMC_UP': [
+                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            'STATMC_DOWN': [
+                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            'UP': [
+                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            'DOWN': [
+                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            'NOMINAL': [
+                                'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                                'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
                         })
         return systematics
 

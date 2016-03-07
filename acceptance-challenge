@@ -49,8 +49,9 @@ cutlist = OrderedDict([
 #kfact, effic = 1.
 #weight = 1E3 * LUMI * xsec * kfact / (effic * events)
 
+table = []
 selection = None
-print '{0: <9}\t {1: <0}\t {2}'.format('Cut', 'Unweighted', 'Weighted')
+table.append( '{0: <9}\t {1: <0}\t {2}'.format('Cut', 'Unweighted', 'Weighted') )
 for name, cut in cutlist.iteritems():
     selection = selection & cut if selection else cut
 #    if selection:
@@ -60,6 +61,8 @@ for name, cut in cutlist.iteritems():
 
     weighted_events = higgs.events(cuts=selection)[1].value
     unweighted_events = higgs.events(cuts=selection, weighted=False)[1].value
+    table.append( '{0: <9.2f}\t {1: <9.2f}\t {2.2f}'.format(name, unweighted_events, weighted_events) )
 
-    print '{0: <9}\t {1: <9}\t {2}'.format(name, unweighted_events, weighted_events)
+for line in table:
+    print line
 

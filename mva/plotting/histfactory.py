@@ -48,15 +48,13 @@ def draw_channel(channel, fit=None, no_data=False,
     if 'systematics' in kwargs:
         del kwargs['systematics']
     figs = []
-    for logy in (False, True):
-        figs.append(draw(
-            data=data_hist,
-            model=model_hists or None,
-            signal=signal_hists or None,
-            systematics=systematics_terms,
-            logy=logy,
-            ypadding=(log_ypadding or ypadding) if logy else ypadding,
-            **kwargs))
+    figs.append(draw(
+        data=data_hist,
+        model=model_hists or None,
+        signal=signal_hists or None,
+        systematics=systematics_terms,
+        ypadding=(log_ypadding or ypadding) if kwargs.get('logy', False) else ypadding,
+        **kwargs))
     return figs
 
 

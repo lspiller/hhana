@@ -271,7 +271,7 @@ class Analysis(object):
         if self.use_embedding:
             output_suffix += '_ebz'
         else:
-            output_suffix += '_mcz'
+            output_suffix += '_ebz'#Changed from mcz to ebz! TEMPORARY HACK
         if self.suffix:
             output_suffix += '_%s' % self.suffix
         if self.year % 1E3 == 11 and clf:

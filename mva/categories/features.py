@@ -12,7 +12,7 @@ features_vbf = [
     'ditau_dr',#'dR_tau1_tau2', Changed name in Run II
     #'tau1_BDTJetScore',
     #'tau2_BDTJetScore',
-    'ditau_met_centrality',
+#    'ditau_met_centrality',
     'ditau_vect_sum_pt',
     #'sum_pt_full',
     #'resonance_pt',
@@ -33,7 +33,7 @@ features_boosted = [
     #'tau2_BDTJetScore',
     #'tau1_collinear_momentum_fraction',
     #'tau2_collinear_momentum_fraction',
-    'ditau_met_centrality',
+#    'ditau_met_centrality',
     #'resonance_pt',
     #'jet1_pt',
     'ditau_scal_sum_pt',

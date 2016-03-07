@@ -4,7 +4,7 @@ import os, sys, re, itertools, operator
 from glob import glob
 from collections import namedtuple, defaultdict
 from rootpy.io import root_open
-from rootpy.tree import Tree, TreeChain
+from rootpy.tree import Tree
 import ROOT
 import logging
 from rootpy import asrootpy
@@ -49,7 +49,6 @@ ls = lambda folder: glob( os.path.join(args.infolder, folder, '*.root*'))
 
 folders = os.listdir(args.infolder)
 samples = [ Sample( f, ls(f), *f.split('.') ) for f in folders ]
-print samples
 
 isvalid = lambda sample: \
     sample.group=='group' and \
@@ -58,14 +57,31 @@ isvalid = lambda sample: \
     sample.derivation=='D3' and \
     sample.hist=='v8_hist' and \
     sample.files != None
+#    'mc15' in sample.MCorData and \
 
 samples = filter( isvalid, samples )
 
+isdata = lambda sample: \
+    sample.group=='group' and \
+    sample.chan=='phys-higgs' and \
+    sample.subchan=='hhsm_25' and \
+    sample.derivation=='D3' and \
+    'data' in sample.MCorData and \
+    sample.hist=='v8_hist' and \
+    sample.files != None
+
+#samples = filter( isdata, samples )
+
 process_dict = defaultdict(list)
 for s in samples:
-    procname = s.process if 'mc' in s.MCorData else s.MCorData + s.process
+    procname = s.process if 'mc15' in s.MCorData else s.MCorData
     procname = procname.replace('-', '_')
     process_dict[procname] += s.files
+
+
+import pprint
+pp = pprint.PrettyPrinter(depth=6)
+pp.pprint(dict( process_dict ) )
 
 with root_open(args.out, 'UPDATE') as outfile:
     for procname, infiles in process_dict.items():
@@ -81,15 +97,21 @@ with root_open(args.out, 'UPDATE') as outfile:
 
         outtrees = []
         for treename in treenames:
-            intree = TreeChain(treename, infiles)
+            intree = ROOT.TChain(treename)
+            map( intree.Add, infiles )
+
             for br in args.deactivate_branches:
                 intree.SetBranchStatus(br, 0)
 
-#            intree.SetBranchStatus('*', 0)
-#            for br in open('mva/branchlist', 'r'):
-#                intree.SetBranchStatus(br, 1)
-
             outtree = intree.CloneTree(-1, "fast SortBasketsByEntry")
+            # Stupid hack because Cloning empty tchain returns a null pointer.
+            if not outtree:
+                log.warning("Tree has no entries: {0}".format(treename))
+                dummy_tree = root_open(infiles[0])[treename]
+                for br in args.deactivate_branches:
+                    dummy_tree.SetBranchStatus(br, 0)
+                    outtree = dummy_tree.CloneTree()
+
             outtree.OptimizeBaskets()
             outname = procname if treename == 'NOMINAL' else '{0}_{1}'.format(procname,treename.replace('up', '_up').replace('down', '_down').replace('__','_'))
             outtree.SetName( outname )

@@ -407,9 +407,9 @@ HH_VARIABLES = {
        'filename': 'dEta_jets',
        'binning': {
            'BOOSTED': (10, 0, 1.5),
-           'VBF': (10, 0, 1.5),
-           'REST': (10, 0, 1.5),
-           None: (8, 0, 2.0)},
+           'VBF': (7, 0, 7),
+           'REST': (7, 0, 7),
+           None: (7, 0, 7)},
        'ypadding': (0.5, 0),
    },
    'ditau_tau0_q': {
@@ -449,7 +449,7 @@ HH_VARIABLES = {
        'binning': (10, 15, 80),
        'scale': 1,
        'units': 'GeV',
-       'cats': ['2J', 'VBF', '1J', '1J_NONBOOSTED']
+       'cats': ['2J', 'VBF', '1J', '1J_NONBOOSTED', 'PRESELECTION']
    },
    'jet_0_pt': {
        'title': r'jet$_{0}$ $p_{T}$',
@@ -458,17 +458,17 @@ HH_VARIABLES = {
        'binning': (10, 15, 80),
        'scale': 1,
        'units': 'GeV',
-       'cats': ['2J', 'VBF']
+       'cats': ['2J', 'VBF', 'PRESELECTION']
    },
     'HCM5': {
         'title': r'HCM5',
         'root': '#font[52]HCM5',
         'filename': 'HCM5',
         'binning': {
-            'BOOSTED': (15, 0.0, 1.0),
-            'VBF': (15, 0.0, 1.0),
-            'REST': (15, 0.0, 1.0),
-            None: (15, 0.0, 1.0)},
+            'BOOSTED': (8, 0.0, 0.01),
+            'VBF': (8, 0.0, 0.01),
+            'REST': (8, 0.0, 0.01),
+            None: (10, 0.0, 0.01)},
         'scale': 0.01,
         'units': 'GeV',
     },
@@ -501,10 +501,10 @@ HH_VARIABLES = {
         'root': '#font[52]{HCM3}',
         'filename': 'HCM3',
         'binning': {
-            'BOOSTED': (15, 0.0, 1.0),
-            'VBF': (15, 0.0, 1.0),
-            'REST': (15, 0.0, 1.0),
-            None: (20, 0.0, 1.0)},
+            'BOOSTED': (8, 0.0, 0.8),
+            'VBF': (8, 0.0, 0.8),
+            'REST': (8, 0.0, 0.8),
+            None: (10, 0.0, 0.8)},
         'scale': 1,
         'units': 'No Units',
     },

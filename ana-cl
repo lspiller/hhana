@@ -49,48 +49,27 @@ target_region = args.target_region
 
 analysis = get_analysis(args)
 output_suffix = analysis.get_suffix()
-
-cat_defs = [args.categories]
-if args.categories != 'presel':
-    cat_defs.append(args.controls)
-
-for category in analysis.iter_categories(*cat_defs, names=args.category_names):
-
-    is_control = category.analysis_control
-
-    cuts = Cut(args.plot_cut)
-
-    clf = None
-    if not is_control:
-        # 2015/08/19 DTemple: redefined "clf" as otherwise gets hung up on incorrect BDT training info
-        # clf = analysis.get_clf(category, load=True, transform=True)
-        clf = None
-
-    figs = draw_channel_array(
-        analysis,
-        vars=VARS,
-        mass=125,
-        mode='combined',
-        signal_scale=(
-            50 if is_control or 'preselection' in category.name else 20),
-        plot_label=(
-            'Signal Region' if not is_control and
-            not ('preselection' in category.name) else None),
-        category=category,
-        region=target_region,
+def draw( **kwargs ):
+    default_args = {
+        'analysis':analysis,
+        'vars':[],
+        'mass':125,
+        'mode':'combined',
+        'signal_scale':50,
+        'category':args.categories[0],
+        'region':target_region,
         #systematics_components=args.systematics_components,
-        output_formats=args.output_formats,
-        weighted=not args.no_weight,
-        plots=args.plots,
-        output_suffix=output_suffix,
-        unblind=args.unblind,  # or is_control,
-        cuts=cuts,
-        show_ratio=args.show_ratio,
-        # 2015/08/19 DTemple: added "include_signal"
-        include_signal=True,#False,
-        clf=clf,
-        #min_score=0.5924344731341187,
-        no_data=args.no_data,
-        top_label="Fakes Model: {0}".format(analysis.fakes_region),
-        logy=False
-        )
+        'output_formats':args.output_formats,
+        'weighted':(not args.no_weight),
+        'plots':args.plots,
+        'output_suffix':output_suffix,
+        'unblind':args.unblind,  # or is_control,
+        'show_ratio':args.show_ratio,
+        'include_signal':True,
+        'no_data':args.no_data,
+        'top_label':"Fakes Model: {0}".format(analysis.fakes_region),
+        'logy':False
+    }
+    default_args.update(**kwargs)
+    draw_channel_array( **default_args )
+import code; code.InteractiveConsole(locals=globals()).interact()

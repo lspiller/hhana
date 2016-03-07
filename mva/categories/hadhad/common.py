@@ -5,6 +5,14 @@ from ..base import Category
 from ... import MMC_MASS
 # All basic cut definitions are here
 
+TAUID = (Cut('ditau_tau0_jet_bdt_medium == 1') & \
+         Cut('ditau_tau1_jet_bdt_tight == 1')) | \
+        (Cut('ditau_tau0_jet_bdt_tight == 1') & \
+         Cut('ditau_tau1_jet_bdt_medium == 1'))
+MET = Cut('selection_met == 1')
+DETA = Cut('selection_delta_eta == 1')
+DELTAR = Cut('selection_delta_r == 1')
+
 TAU_SAME_VERTEX = Cut('tau_same_vertex')
 
 LEAD_TAU_40 = Cut('ditau_tau0_pt > 40')
@@ -17,7 +25,7 @@ AT_LEAST_1JET = Cut('jet_0_pt > 30')
 CUTS_2J = LEAD_JET_50 & SUBLEAD_JET_30
 CUTS_1J = LEAD_JET_50 & (- SUBLEAD_JET_30)
 CUTS_0J = (- LEAD_JET_50)
-
+JVT = (Cut('jet_0_jvt > 0.59')|Cut('jet_0_jvt < -0.59')) & (Cut('jet_1_jvt > 0.59')|Cut('jet_1_jvt < -0.59'))
 MET = Cut('met_et > 20')
 DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
 DETA_TAUS = Cut('ditau_deta < 1.5')
@@ -31,16 +39,17 @@ MET_CENTRALITY = 'ditau_met_bisect==1 || (ditau_met_min_dphi < {0})'
 PRESELECTION = (
     LEAD_TAU_40
     & SUBLEAD_TAU_30
-    # & ID_MEDIUM # implemented in regions
     & MET
     & Cut('%s > 0' % MMC_MASS)
     & DR_TAUS
     # & TAU_SAME_VERTEX
+    & TAUID
     )
 
 # VBF category cuts
 CUTS_VBF = (
     CUTS_2J
+#    & JVT
     & DETA_TAUS
     )
 
@@ -61,11 +70,32 @@ CUTS_BOOSTED_CR = (
     )
 
 
-class Category_Preselection_NO_MET_CENTRALITY(Category):
+class Category_Preselection_NO_MET(Category):
     name = 'preselection'
     label = '#tau_{had}#tau_{had} Preselection'
-    common_cuts = PRESELECTION
+    common_cuts = (
+    LEAD_TAU_40
+    & SUBLEAD_TAU_30
+    # & ID_MEDIUM # implemented in regions
+    # & MET
+    & Cut('%s > 0' % MMC_MASS)
+    & DR_TAUS
+    # & TAU_SAME_VERTEX
+    )
 
+class Category_Preselection_1_JET(Category):
+    name = 'preselection'
+    label = '#tau_{had}#tau_{had} Preselection'
+    common_cuts = (
+    LEAD_TAU_40
+    & SUBLEAD_TAU_30
+    & LEAD_JET_50
+    # & ID_MEDIUM # implemented in regions
+    & MET
+    & Cut('%s > 0' % MMC_MASS)
+    & DR_TAUS
+    # & TAU_SAME_VERTEX
+    )
 
 class Category_Preselection(Category):
     name = 'preselection'
