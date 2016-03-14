@@ -27,10 +27,12 @@ selection = Cut('(ditau_tau0_n_tracks == 1) || (ditau_tau0_n_tracks == 3)') & \
             Cut('(ditau_tau1_n_tracks == 1) || (ditau_tau1_n_tracks == 3)') & \
             Cut('(ditau_tau0_q == 1) || (ditau_tau0_q == -1)') & \
             Cut('(ditau_tau1_q == 1) || (ditau_tau1_q == -1)') & \
-            Cut('ditau_tau0_jet_bdt_medium == 1') & \
-            Cut('ditau_tau1_jet_bdt_medium == 1') & \
             Cut('ditau_tau0_pt > 40') & \
-            Cut('ditau_tau1_pt > 30')
+            Cut('ditau_tau1_pt > 30') & \
+            (Cut('ditau_tau0_jet_bdt_medium == 1') & \
+             Cut('ditau_tau1_jet_bdt_tight == 1')) | \
+            (Cut('ditau_tau0_jet_bdt_tight == 1') & \
+             Cut('ditau_tau1_jet_bdt_medium == 1'))
 
 base_events = [ s.events(cuts=selection)[1].value for s in [Signal, Ztautau, Others, QCD, Data] ]
 table = []

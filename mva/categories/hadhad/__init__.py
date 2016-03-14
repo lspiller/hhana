@@ -2,6 +2,7 @@ from .common import *
 from .mva import *
 from .cb import *
 from .mva_cb_overlap import *
+from .cba_train import *
 
 CATEGORIES = {
     # Preselection

@@ -1,0 +1,316 @@
+#!/usr/bin/env python
+
+import tempfile
+import os
+
+from rootpy.tree import Cut
+import operator
+import numpy as np
+from array import array
+from mva.classify import make_partitioned_dataset, get_partition, prepare_dataset
+import matplotlib.pyplot as plt
+import math
+import rootpy.stl as stl
+from rootpy.extern.argparse import ArgumentParser
+import ROOT
+
+parser = ArgumentParser()
+parser.add_argument('--max-trees', type=int, default=200)
+parser.add_argument('--min-trees', type=int, default=1)
+parser.add_argument('--learning-rate', type=float, default=0.1)
+parser.add_argument('--max-fraction', type=float, default=0.3)
+parser.add_argument('--min-fraction', type=float, default=0.001)
+parser.add_argument('--min-fraction-steps', type=int, default=100)
+parser.add_argument('--nfold', type=int, default=10,
+    help='the number of folds in the cross-validation')
+parser.add_argument('--masses', nargs='+', default=['125',])
+parser.add_argument('--suffix', default=None)
+parser.add_argument('--procs', type=int, default=-1)
+parser.add_argument('--dry-run', default=False, action='store_true')
+parser.add_argument('category', choices=('vbf', 'boosted'))
+args = parser.parse_args()
+
+tmpdir = tempfile.mkdtemp()
+
+from rootpy.tree import Cut
+
+from mva.analysis import Analysis
+from mva.defaults import TRAIN_FAKES_REGION
+from mva.categories.hadhad import Category_Preselection, Category_Pre_VBF, Category_Pre_Boosted
+# local imports
+from mva.variables import (VARIABLES, HH_VARIABLES,
+                           LH_VARIABLES, YEAR_VARIABLES,
+                           get_label)
+from mva.analysis import get_analysis
+from mva import log;
+
+from ROOT import TMVA, TFile, TCut
+from root_numpy.tmva import add_classification_events, evaluate_method
+
+from mva.categories.hadhad import Category_Pre_VBF, Category_Pre_Boosted
+from mva.analysis import Analysis
+from mva.samples import Higgs
+VARIABLES.update(HH_VARIABLES)
+
+
+output = TFile(os.path.join(tmpdir,'tmva_output.root'), 'recreate')
+output.cd()
+
+cut_vars = ['jet_0_pt', 'ditau_dr', 'ditau_vect_sum_pt', 'dEta_jets']
+
+#(Need to make ditau_tau_sum_pt = p_T^tautau
+if args.category == 'vbf':
+    category = Category_Pre_VBF
+    cut_vars.append( 'jet_1_pt')
+    fischer_vars = ['mass_jet1_jet2', 'dEta_jets']
+else:
+    category = Category_Pre_Boosted
+log.info("Computing optimal cuts for: {}".format(category.name))
+
+analysis = Analysis(
+    year=2015,
+    systematics=False,
+#    fakes_region=TRAIN_FAKES_REGION,
+    suffix=args.suffix)
+
+
+backgrounds_train = analysis.backgrounds
+
+signals_train = [
+    Higgs(year=2015,
+          masses=[125],
+          modes=category.train_signal_modes),
+    ]
+
+clf = analysis.get_clf(category, load=False, mass='125', year=2015)
+signal_arrs, signal_weight_arrs, \
+background_arrs, background_weight_arrs = make_partitioned_dataset(
+    signals_train, backgrounds_train,
+    category=category,
+    region=clf.region,
+    fields=cut_vars,
+    cuts=None,
+    partition_key=clf.partition_key)
+
+signal_train, signal_weight_train, \
+background_train, background_weight_train = get_partition(
+    signal_arrs, signal_weight_arrs,
+    background_arrs, background_weight_arrs,
+    0)
+
+X_train, y_train, w_train = prepare_dataset(
+    signal_train, signal_weight_train,
+    background_train, background_weight_train,
+    max_sig=None,
+    max_bkg=None,
+    norm_sig_to_bkg=False,
+    same_size_sig_bkg=False,
+    remove_negative_weights=False)
+
+signal_test, signal_weight_test, \
+background_test, background_weight_test = get_partition(
+    signal_arrs, signal_weight_arrs,
+    background_arrs, background_weight_arrs,
+    0)
+
+X_test, y_test, w_test = prepare_dataset(
+    signal_test, signal_weight_test,
+    background_test, background_weight_test,
+    max_sig=None,
+    max_bkg=None,
+    norm_sig_to_bkg=False,
+    same_size_sig_bkg=False,
+    remove_negative_weights=False)
+n_vars = X_train.shape[1]
+output.cd()
+factory = TMVA.Factory('MyCuts', output,
+                       'AnalysisType=Classification:V')
+
+config = TMVA.gConfig()
+config.GetIONames().fWeightFileDir = tmpdir
+#for n in range(n_vars):
+#    factory.AddVariable('X_{0}'.format(n), 'F')
+for c in cut_vars:
+    factory.AddVariable(c, 'F')
+
+# Get index of first signal event (stupid tmva things)
+first_signal = np.nonzero(y_test == 1)[0][0]
+# Swap this with first event
+X_test[0], X_test[first_signal] = X_test[first_signal].copy(), X_test[0].copy()
+y_test[0], y_test[first_signal] = y_test[first_signal], y_test[0]
+w_test[0], w_test[first_signal] = w_test[first_signal], w_test[0]
+
+first_signal = np.nonzero(y_train == 1)[0][0]
+X_train[0], X_train[first_signal] = X_train[first_signal].copy(), X_train[0].copy()
+y_train[0], y_train[first_signal] = y_train[first_signal], y_train[0]
+w_train[0], w_train[first_signal] = w_train[first_signal], w_train[0]
+
+# Call root_numpy's utility functions to add events from the arrays
+add_classification_events(factory, X_train, y_train, weights=w_train, signal_label=1)
+add_classification_events(factory, X_test, y_test, weights=w_test, test=True, signal_label=1)
+# The following line is necessary if events have been added individually:
+factory.PrepareTrainingAndTestTree(TCut('1'), 'NormMode=EqualNumEvents')
+
+
+# Train a classifier
+arguments = {
+        'FitMethod':'GA',
+        'EffSel':True,
+#        'SampleSize':100,
+        'VarProp':'FSmart'
+        }
+options = []
+for param, value in arguments.items():
+    if value is True:
+        options.append(param)
+    elif value is False:
+        options.append('!{0}'.format(param))
+    else:
+        options.append('{0}={1}'.format(param, value))
+options = ':'.join(options)
+factory.BookMethod(TMVA.Types.kCuts, 'MyCuts', options)
+factory.TrainAllMethods()
+
+# Analyse cuts
+methodcut = factory.GetMethod('MyCuts')
+def significance( s, b ):
+    print s,b
+    if (2 * (s+b) * math.log( 1+ s/b ) - 2 * s) < 0:
+        log.warning("Significiance <0 for s={}, b={}".format(s,b))
+        return 0
+    if b < 0:
+        log.warning("b < 0 for s={}, b={}".format(s,b))
+        return 0
+    if s < 0:
+        log.warning("s < 0 for s={}, b={}".format(s,b))
+        return 0
+    return math.sqrt( 2 * (s+b) * math.log( 1+ s/b ) - 2 * s )
+
+d_vector = ROOT.std.vector('Double_t')
+best_eff, best_merit = 0., 0.
+
+efficiencies = np.arange(0.05, 0.95, 0.05)
+for eff in efficiencies:
+    test_output = evaluate_method( methodcut, X_test, eff )
+    n0_mask = (test_output == 1)
+    print n0_mask
+    bkg_mask = (test_output == 1) & (y_test == 0)
+    print bkg_mask
+    sig_mask = (test_output == 1) & (y_test ==1)
+    print sig_mask
+    n0 = np.sum(w_test[ n0_mask ])
+    nbkg = np.sum(w_test[ bkg_mask ])
+    nsig = np.sum(w_test[ sig_mask ])
+    merit = significance( s=nsig, b=nbkg )
+
+    log.info("@ sig_eff = {}:\n\tn0 = {}\n\tsig = {},\n\tbkg = {}\n\t\tf.o.m = {}".format( eff, n0, nsig, nbkg, merit ))
+    if best_merit < merit:
+        best_eff, best_merit = eff, merit
+
+log.info("Optimal cut location:\n\teff = {}\n\tf.o.m = {}".format( best_eff, best_merit ) )
+cutmin = d_vector()
+cutmax = d_vector()
+methodcut.GetCuts( best_eff, cutmin, cutmax )
+print cut_vars
+print cutmin
+print cutmax
+
+def format_cut( lo, hi ):
+    if   lo > -1E30 and hi < 1E30: return '{0:f} < {1} <= {2:f}'
+    elif hi <  1E30:             return '{1} <= {2:f}'
+    elif lo > -1E30:             return '{0:f} < {1}'
+    else: return "ERROR{1000}{}"
+
+cuts = [
+        format_cut(lo,hi).format(lo, c, hi)
+        for c, lo, hi in zip( cut_vars, cutmin, cutmax )
+    ]
+total_cuts = None
+log.info("Cuts at optimal position:\n\t{}".format(',\n\t'.join(cuts)))
+for c in cuts: print c
+for c in cuts: total_cuts = (total_cuts & Cut(c)) if total_cuts else Cut(c)
+print total_cuts
+# Should probably implement as pruned decision tree
+
+signal_arrs, signal_weight_arrs, \
+background_arrs, background_weight_arrs = make_partitioned_dataset(
+    signals_train, backgrounds_train,
+    category=category,
+    region=clf.region,
+    fields=fischer_vars,
+    cuts=total_cuts,
+    partition_key=clf.partition_key)
+
+signal_train, signal_weight_train, \
+background_train, background_weight_train = get_partition(
+    signal_arrs, signal_weight_arrs,
+    background_arrs, background_weight_arrs,
+    0)
+
+X_train, y_train, w_train = prepare_dataset(
+    signal_train, signal_weight_train,
+    background_train, background_weight_train,
+    max_sig=None,
+    max_bkg=None,
+    norm_sig_to_bkg=False,
+    same_size_sig_bkg=False,
+    remove_negative_weights=False)
+
+signal_test, signal_weight_test, \
+background_test, background_weight_test = get_partition(
+    signal_arrs, signal_weight_arrs,
+    background_arrs, background_weight_arrs,
+    0)
+
+X_test, y_test, w_test = prepare_dataset(
+    signal_test, signal_weight_test,
+    background_test, background_weight_test,
+    max_sig=None,
+    max_bkg=None,
+    norm_sig_to_bkg=False,
+    same_size_sig_bkg=False,
+    remove_negative_weights=False)
+
+if args.category == 'vbf':
+#    from sklearn import svm
+#    clf = svm.SVC(kernel='linear')
+#    clf.fit(X_train, y_train, sample_weight=w_train)
+#    coeff = clf.coef_
+#    print coeff
+#    import code; code.InteractiveConsole(locals=globals()).interact()
+
+    factory = TMVA.Factory('MyLinear', output,
+                           'AnalysisType=Classification:V')
+
+    config = TMVA.gConfig()
+    config.GetIONames().fWeightFileDir = tmpdir
+
+    for f in fischer_vars:
+        factory.AddVariable(f, 'F')
+
+# Get index of first signal event (stupid tmva things)
+    first_signal = np.nonzero(y_test == 1)[0][0]
+# Swap this with first event
+    X_test[0], X_test[first_signal] = X_test[first_signal].copy(), X_test[0].copy()
+    y_test[0], y_test[first_signal] = y_test[first_signal], y_test[0]
+    w_test[0], w_test[first_signal] = w_test[first_signal], w_test[0]
+
+    first_signal = np.nonzero(y_train == 1)[0][0]
+    X_train[0], X_train[first_signal] = X_train[first_signal].copy(), X_train[0].copy()
+    y_train[0], y_train[first_signal] = y_train[first_signal], y_train[0]
+    w_train[0], w_train[first_signal] = w_train[first_signal], w_train[0]
+
+# Call root_numpy's utility functions to add events from the arrays
+    add_classification_events(factory, X_train, y_train, weights=w_train, signal_label=1)
+    add_classification_events(factory, X_test, y_test, weights=w_test, test=True, signal_label=1)
+# The following line is necessary if events have been added individually:
+    factory.PrepareTrainingAndTestTree(TCut('1'), 'NormMode=EqualNumEvents')
+
+#    import code; code.InteractiveConsole(locals=globals()).interact()
+
+    factory.BookMethod(TMVA.Types.kLD, 'MyLinear', '')
+    factory.TrainAllMethods()
+
+    fischercut = factory.GetMethod('MyLinear')
+    coeff = fischercut.GetRegressionValues()
+    for c in coeff: print c
