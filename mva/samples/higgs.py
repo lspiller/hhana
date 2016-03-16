@@ -182,7 +182,7 @@ class Higgs(MC, Signal):
             if suffix is None:
                 suffix = '.mc12a'
             generator_index = 2
-        elif year == 2015:#CHANGED by lspiller
+        elif year == 2015:
             if suffix is None:
                 suffix = ''
             generator_index = 3

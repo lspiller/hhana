@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+from mva.cmd import get_parser
+
+args = get_parser(actions=False).parse_args()
+
+from mva.categories.hadhad import (
+    Category_Preselection,
+    Category_VBF_NO_DETAJJ_CUT,
+    Category_Boosted_NO_PTH_CUT,
+    Category_Preselection_NO_MET,
+    Category_Preselection_1_JET,
+    LEAD_JET_50,
+    SUBLEAD_JET_30,
+    DETA_TAUS)
+from mva.analysis import get_analysis
+from mva.plotting import draw_channel_array
+from mva.variables import (VARIABLES, HH_VARIABLES)
+from rootpy.tree import Cut
+from rootpy.plotting import Hist
+from math import pi
+
+if args.channel == 'hadhad':
+    VARIABLES.update(HH_VARIABLES)
+
+for year in (2015,):#(2011, 2012):
+    analysis = get_analysis(
+        args, year=year,
+        systematics=False)
+    # fakes_region='nOS_ISOL' for met centrality cut
+    analysis.normalize(Category_Preselection)
+
+    # show justification of the dEta cut location in VBF
+    draw_channel_array(
+        analysis, {'n_jets': VARIABLES['n_jets']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=20,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
+        category=Category_Preselection,
+        cuts=None,
+        show_ratio=False,
+        region=analysis.target_region,
+        #legend_leftmargin=0.28,
+        output_dir='plots/njets',
+        output_suffix='_{0}_{1}'.format(year % 1000, 'Presel'),
+        output_formats=['png'],
+        ypadding=(0.15, 0))
+
+    draw_channel_array(
+        analysis, {'n_jets': VARIABLES['n_jets']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=20,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
+        category=Category_Preselection,
+        cuts=LEAD_JET_50,
+        show_ratio=False,
+        region=analysis.target_region,
+        #legend_leftmargin=0.28,
+        output_dir='plots/njets',
+        output_suffix='_{0}_{1}'.format(year % 1000, 'Presel+LeadJet'),
+        output_formats=['png'],
+        ypadding=(0.15, 0))
+
+    draw_channel_array(
+        analysis, {'n_jets': VARIABLES['n_jets']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=20,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
+        category=Category_Preselection,
+        cuts=(LEAD_JET_50&SUBLEAD_JET_30),
+        show_ratio=False,
+        region=analysis.target_region,
+        #legend_leftmargin=0.28,
+        output_dir='plots/njets',
+        output_suffix='_{0}_{1}'.format(year % 1000, 'Presel+2Jet'),
+        output_formats=['png'],
+        ypadding=(0.15, 0))
+
+    draw_channel_array(
+        analysis, {'n_jets': VARIABLES['n_jets']},
+        mass=125, mode=['gg', 'VBF'], signal_scale=20,
+        stack_signal=False,
+        signal_colors=['blue', 'red'],
+        signal_linestyles=['dashed', 'solid'],
+        category=Category_Preselection,
+        cuts=(LEAD_JET_50&SUBLEAD_JET_30&DETA_TAUS),
+        show_ratio=False,
+        region=analysis.target_region,
+        #legend_leftmargin=0.28,
+        output_dir='plots/njets',
+        output_suffix='_{0}_{1}'.format(year % 1000, 'Presel+dEtaTaus'),
+        output_formats=['png'],
+        ypadding=(0.15, 0))

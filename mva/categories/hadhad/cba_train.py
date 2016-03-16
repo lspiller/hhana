@@ -7,7 +7,8 @@ from .common import (
     CUTS_BOOSTED_CR,
     DETA_TAUS)
 from .truth import CUTS_TRUE_VBF, CUTS_TRUE_BOOSTED
-from ..features import features_vbf, features_boosted
+from ..features import (cuts_vbf, cuts_boosted,
+                        fischer_vbf, fischer_boosted)
 
 
 LEAD_JET_30 = Cut('jet_0_pt > 30')
@@ -42,7 +43,8 @@ class Category_Pre_VBF(Category_Preselection):
         # & Cut('dEta_jets > 2.0')
         )
     cuts_truth = CUTS_TRUE_VBF
-    features = features_vbf
+    cut_features = cuts_vbf
+    fischer_features = fischer_vbf
     # train with only VBF mode
     signal_train_modes = ['VBF']
     norm_category = Category_Preselection
@@ -63,7 +65,8 @@ class Category_Pre_Boosted(Category_Preselection):
         #& Cut(MET_CENTRALITY.format(pi / 6))
         )
     cuts_truth = CUTS_TRUE_BOOSTED
-    features = features_boosted
+    cut_features = cuts_boosted
+    fischer_features = fischer_boosted
     # train with all modes (inherited from Category in base.py)
     #signal_train_modes =
     norm_category = Category_Preselection

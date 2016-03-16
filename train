@@ -35,13 +35,13 @@ if args.category == 'vbf':
     category = Category_VBF
 else:
     category = Category_Boosted
-print Category_VBF
+
 analysis = Analysis(
     year=2015,
     systematics=False,
     fakes_region=TRAIN_FAKES_REGION,
     suffix=args.suffix)
-#analysis.normalize(category)
+analysis.normalize(category)
 
 # combine embedded and MC Ztt for training
 # TODO: account for the fact that N(MC) != N(EMB)

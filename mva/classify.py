@@ -25,9 +25,32 @@ from root_numpy import rec2array, fill_hist
 from . import log; log = log[__name__]
 from . import MMC_MASS, MMC_PT
 from .plotting import plot_grid_scores
-from . import variables, CACHE_DIR, BDT_DIR
+from . import variables, CACHE_DIR, BDT_DIR, CBA_DIR
 from .systematics import systematic_name
 from .grid_search import BoostGridSearchCV
+
+import tempfile
+import ROOT
+from ROOT import TFile, TMVA, TCut
+import math
+from rootpy.tree import Cut
+from root_numpy.tmva import (add_classification_events,
+                             evaluate_method)
+
+
+def significance( s, b ):
+    log.info("Significance for n_sig, n_bkg = {}, {}".format(s,b))
+    # Double because training sample is half luminosity
+    if (2 * (s+b) * math.log( 1+ s/b ) - 2 * s) < 0:
+        log.warning("Significiance <0 for s={}, b={}".format(s,b))
+        return 0
+    if b < 0:
+        log.warning("b < 0 for s={}, b={}".format(s,b))
+        return 0
+    if s < 0:
+        log.warning("s < 0 for s={}, b={}".format(s,b))
+        return 0
+    return math.sqrt( 2 * (s+b) * math.log( 1+ s/b ) - 2 * s )
 
 
 def print_feature_ranking(clf, fields):
@@ -679,3 +702,368 @@ class Classifier(object):
                             self.clfs[0].learning_rate * scores / 1.5))
 
         return scores, weight
+
+class CBA(object):
+
+    def __init__(self,
+                 mass,
+                 cut_fields,
+                 fischer_fields,
+                 category,
+                 region,
+                 cuts=None,
+                 spectators=None,
+                 output_suffix="",
+                 clf_output_suffix="",
+                 partition_key='ditau_tau0_eta*100',#'EventNumber',
+                 transform=True,
+                 mmc=True):
+
+
+        cut_fields = cut_fields[:]
+        fischer_fields = fischer_fields[:]
+
+        self.mass = mass
+        self.cut_fields = cut_fields
+        self.fischer_fields = fischer_fields
+        self.category = category
+        self.region = region
+        self.spectators = spectators
+        self.output_suffix = output_suffix
+        self.clf_output_suffix = clf_output_suffix
+        self.partition_key = partition_key
+        self.transform = transform
+        self.mmc = mmc
+        self.background_label = 0
+        self.signal_label = 1
+
+        self.fischer_expression = ''
+        self.opti_cuts = []
+        self.cut_arrows = {}
+
+        category_name = self.category.get_parent().name
+        self.cut_filename = os.path.join(CBA_DIR,
+            'cba_{0}_{1}_{2}.pickle'.format(
+            category_name, self.mass,
+            self.clf_output_suffix))
+        self.fischer_filename = os.path.join(CBA_DIR,
+            'fischer_{0}_{1}_{2}.pickle'.format(
+            category_name, self.mass,
+            self.clf_output_suffix))
+
+        if spectators is None:
+            spectators = []
+
+        # merge in minimal list of spectators
+        for spec in Classifier.SPECTATORS:
+            if spec not in spectators and (spec not in cut_fields or spec not in fischer_fields):
+                spectators.append(spec)
+
+        self.all_fields = fischer_fields + cut_fields + spectators
+
+        assert 'weight' not in cut_fields
+        assert 'weight' not in fischer_fields
+        self.cba = [Cut('1'), Cut('1')]
+
+    def load(self):
+        """
+        If swap is True then use the internal classifiers on the "wrong"
+        partitions. This is used when demonstrating stability in data. The
+        shape of the data distribution should be the same for both classifiers.
+        """
+        # attempt to load existing classifiers
+        log.info("attempting to open %s ..." % self.cut_filename)
+        if os.path.isfile(self.cut_filename):
+            # use a previously trained classifier
+            log.info("found existing classifier in %s" % self.cut_filename)
+            with open(self.cut_filename, 'r') as f:
+                cut = pickle.load(f)
+            out = StringIO()
+            print >> out
+            print >> out
+            print >> out, cut
+            log.info(out.getvalue())
+        else:
+            log.warning("could not open %s" % self.cut_filename)
+            cut = Cut('1')
+        self.cba[0] = cut
+
+        if os.path.isfile(self.fischer_filename):
+            # use a previously trained classifier
+            log.info("found existing classifier in %s" % self.cut_filename)
+            with open(self.fischer_filename, 'r') as f:
+                fischer = pickle.load(f)
+            out = StringIO()
+            print >> out
+            print >> out
+            print >> out, fischer
+            log.info(out.getvalue())
+        else:
+            log.warning("could not open %s" % self.fischer_filename)
+        self.cba[1] = fischer
+
+    def format_cut( self, lo, hi ):
+        if   lo > -1E30 and hi < 1E30: return '{0:f} < {1} <= {2:f}'
+        elif hi <  1E30:             return '{1} <= {2:f}'
+        elif lo > -1E30:             return '{0:f} < {1}'
+        else: '1'
+
+
+    def format_fischer( self, coeff, varnames ):
+        for c, v in zip( coeff, varnames+[1] ):
+            terms = '{} * {}'.format( c, v ) if v != 1 else '{}'.format( c )
+        expression =  ('+'.join(terms) + ' >= 0')
+        return expression
+
+    def train_fischer(self,
+              signals,
+              backgrounds,
+              cuts=None,
+              norm_sig_to_bkg=False,
+              same_size_sig_bkg=False,
+              max_sig=None,
+              max_bkg=None,
+              remove_negative_weights=False):
+        """
+        Train with partition_idx = 0
+        Find optimal working point on partition_idx = 1
+        """
+        signal_arrs, signal_weight_arrs, \
+        background_arrs, background_weight_arrs = make_partitioned_dataset(
+            signals, backgrounds,
+            category=self.category,
+            region=self.region,
+            fields=self.fischer_fields,
+            cuts=cuts,
+            partition_key=self.partition_key)
+
+
+        log.info("Optimising cuts for cba analysis")
+
+        tmpdir = tempfile.mkdtemp()
+        output = TFile(
+                os.path.join(tmpdir, 'tmva_output.root'), 'recreate')
+
+
+        log.info("Computing optimal cuts for: {}".format(self.category.name))
+
+        factory = TMVA.Factory('MyFischer', output,
+                               'AnalysisType=Classification:V')
+        config = TMVA.gConfig()
+        config.GetIONames().fWeightFileDir = tmpdir
+        # Change self.fields to cuts and fischer variables separately
+        for var in self.fischer_fields:
+            factory.AddVariable(var, 'F')
+
+
+        for partition_idx in range(2):
+
+            signal_train, signal_weight_train, \
+            background_train, background_weight_train = get_partition(
+                signal_arrs, signal_weight_arrs,
+                background_arrs, background_weight_arrs,
+                partition_idx)
+
+            sample_train, labels_train, sample_weight_train = prepare_dataset(
+                signal_train, signal_weight_train,
+                background_train, background_weight_train,
+                max_sig=max_sig,
+                max_bkg=max_bkg,
+                norm_sig_to_bkg=norm_sig_to_bkg,
+                same_size_sig_bkg=same_size_sig_bkg,
+                remove_negative_weights=remove_negative_weights)
+
+            # Time for some stupid TMVA things...
+            # Get index of first signal event
+            first_signal = np.nonzero(labels_train == 1)[0][0]
+            # Swap this with first event
+            sample_train[0], sample_train[first_signal] = \
+                    sample_train[first_signal].copy(), sample_train[0].copy()
+            labels_train[0], labels_train[first_signal] = \
+                    labels_train[first_signal], labels_train[0]
+            sample_weight_train[0], sample_weight_train[first_signal] = \
+                    sample_weight_train[first_signal], sample_weight_train[0]
+
+            # Call root_numpy's utility functions to add events from the arrays
+            add_classification_events(factory,
+                    sample_train, labels_train,
+                    weights=sample_weight_train,
+                    signal_label=1, test=partition_idx)
+
+        factory.PrepareTrainingAndTestTree(TCut('1'), 'NormMode=EqualNumEvents')
+
+        # Train a classifier
+        factory.BookMethod(TMVA.Types.kLD, 'MyFischer', '')
+        factory.TrainAllMethods()
+
+        # Analyse cuts to find optimal working point
+        fischercut = factory.GetMethod('MyFischer')
+
+        coeff = fischercut.GetRegressionValues()
+        fischer_cutstring = self.format_fischer( coeff, self.fischer_fields )
+        log.info( 'fischer constraint: {}'.format(fischer_cutstring) )
+
+        self.fischer_equation = coeff
+        self.fischer_expression = fischer_cutstring
+        self.cba[1] = Cut(fischer_cutstring)
+
+        with open('{0}.pickle'.format(self.fischer_filename), 'w') as f:
+            pickle.dump(Cut(fischer_cutstring), f)
+
+
+    def train_cuts(self,
+              signals,
+              backgrounds,
+              cuts=None,
+              norm_sig_to_bkg=False,
+              same_size_sig_bkg=False,
+              max_sig=None,
+              max_bkg=None,
+              remove_negative_weights=False):
+        """
+        Train with partition_idx = 0
+        Find optimal working point on partition_idx = 1
+        """
+        signal_arrs, signal_weight_arrs, \
+        background_arrs, background_weight_arrs = make_partitioned_dataset(
+            signals, backgrounds,
+            category=self.category,
+            region=self.region,
+            fields=self.cut_fields,
+            cuts=cuts,
+            partition_key=self.partition_key)
+
+
+        log.info("Optimising cuts for cba analysis")
+
+        tmpdir = tempfile.mkdtemp()
+        output = TFile(
+                os.path.join(tmpdir, 'tmva_output.root'), 'recreate')
+
+
+        log.info("Computing optimal cuts for: {}".format(self.category.name))
+
+        factory = TMVA.Factory('MyCuts', output,
+                               'AnalysisType=Classification:V')
+        config = TMVA.gConfig()
+        config.GetIONames().fWeightFileDir = tmpdir
+
+        for var in self.cut_fields:
+            factory.AddVariable(var, 'F')
+
+
+        for partition_idx in range(2):
+
+            signal_train, signal_weight_train, \
+            background_train, background_weight_train = get_partition(
+                signal_arrs, signal_weight_arrs,
+                background_arrs, background_weight_arrs,
+                partition_idx)
+
+            sample_train, labels_train, sample_weight_train = prepare_dataset(
+                signal_train, signal_weight_train,
+                background_train, background_weight_train,
+                max_sig=max_sig,
+                max_bkg=max_bkg,
+                norm_sig_to_bkg=norm_sig_to_bkg,
+                same_size_sig_bkg=same_size_sig_bkg,
+                remove_negative_weights=remove_negative_weights)
+
+            # Time for some stupid TMVA things...
+            # Get index of first signal event
+            first_signal = np.nonzero(labels_train == 1)[0][0]
+            # Swap this with first event
+            sample_train[0], sample_train[first_signal] = \
+                    sample_train[first_signal].copy(), sample_train[0].copy()
+            labels_train[0], labels_train[first_signal] = \
+                    labels_train[first_signal], labels_train[0]
+            sample_weight_train[0], sample_weight_train[first_signal] = \
+                    sample_weight_train[first_signal], sample_weight_train[0]
+
+            # Call root_numpy's utility functions to add events from the arrays
+            add_classification_events(factory,
+                    sample_train, labels_train,
+                    weights=sample_weight_train,
+                    signal_label=1, test=partition_idx)
+
+        factory.PrepareTrainingAndTestTree(TCut('1'), 'NormMode=EqualNumEvents')
+
+        # Train a classifier
+        arguments = {
+                'FitMethod':'GA',
+                'EffSel':True,
+        # 'SampleSize':100,
+                'VarProp':'FSmart'
+                }
+        options = []
+        for param, value in arguments.items():
+            if value is True:
+                options.append(param)
+            elif value is False:
+                options.append('!{0}'.format(param))
+            else:
+                options.append('{0}={1}'.format(param, value))
+        options = ':'.join(options)
+        factory.BookMethod(TMVA.Types.kCuts, 'MyCuts', options)
+        factory.TrainAllMethods()
+
+        # Analyse cuts to find optimal working point
+        methodcut = factory.GetMethod('MyCuts')
+
+        d_vector = ROOT.std.vector('Double_t')
+        best_eff, best_merit = 0., 0.
+
+        efficiencies = np.arange(0.05, 0.95, 0.05)
+        for eff in efficiencies:
+            # Using trick here!
+            # the sample_train,... would be the set denoted for training
+            test_output = evaluate_method( methodcut, sample_train, eff )
+            n0_mask = (test_output == 1)
+            print n0_mask
+            bkg_mask = (test_output == 1) & (labels_train == 0)
+            print bkg_mask
+            sig_mask = (test_output == 1) & (labels_train ==1)
+            print sig_mask
+            n0 = np.sum(sample_weight_train[ n0_mask ])
+            nbkg = np.sum(sample_weight_train[ bkg_mask ])
+            nsig = np.sum(sample_weight_train[ sig_mask ])
+            # training set = 1/2 sample. need to double expected events
+            merit = significance( s=2*nsig, b=2*nbkg )
+
+            log.info(('@ sig_eff = {}:\n'
+                      '\tn0 = {},\n'
+                      '\tsig = {},\n'
+                      '\tbkg = {},\n'
+                      '\tf.o.m = {}').format( eff, n0, nsig, nbkg, merit ))
+            if best_merit < merit:
+                best_eff, best_merit = eff, merit
+
+        log.info(('\nOptimal cut location:\n'
+                  '\teff = {}\n'
+                  '\tf.o.m = {}').format( best_eff, best_merit ) )
+        cutmin = d_vector()
+        cutmax = d_vector()
+        methodcut.GetCuts( best_eff, cutmin, cutmax )
+
+        cuts = [
+                self.format_cut(lo,hi).format(lo, c, hi)
+                for c, lo, hi in zip( self.cut_fields, cutmin, cutmax )
+            ]
+        total_cuts = None
+        log.info("Cuts at optimal position:\n\t{}".format(',\n\t'.join(cuts)))
+        for c in cuts: total_cuts = (total_cuts & Cut(c)) if total_cuts else Cut(c)
+
+        for c,lo,hi in zip(self.cut_fields, cutmin, cutmax):
+            if lo > -1E29 and hi < 1E29:
+                self.cut_arrows[c] = (lo,hi)
+            elif lo > -1E29:
+                self.cut_arrows[c] = (lo,)
+            elif hi < 1E29:
+                self.cut_arrows[c] = (hi,)
+
+        self.opti_cut = cuts
+        self.cba[0] = total_cuts
+
+        with open('{0}.pickle'.format(self.cut_filename), 'w') as f:
+            pickle.dump(total_cuts, f)
+

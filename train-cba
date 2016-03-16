@@ -4,25 +4,29 @@ import tempfile
 import os
 
 from rootpy.tree import Cut
-import operator
 import numpy as np
-from array import array
 from mva.classify import make_partitioned_dataset, get_partition, prepare_dataset
 import matplotlib.pyplot as plt
 import math
-import rootpy.stl as stl
 from rootpy.extern.argparse import ArgumentParser
 import ROOT
+from mva.analysis import Analysis
+from mva.defaults import TRAIN_FAKES_REGION
+from mva.categories.hadhad import Category_Preselection, Category_Pre_VBF, Category_Pre_Boosted
+from mva.variables import (VARIABLES, HH_VARIABLES,
+                           YEAR_VARIABLES,
+                           get_label)
+from mva import log;
+
+from ROOT import TMVA, TFile, TCut
+from root_numpy.tmva import add_classification_events, evaluate_method
+from mva.plotting import draw_channel_array
+
+from mva.samples import Higgs
+VARIABLES.update(HH_VARIABLES)
+
 
 parser = ArgumentParser()
-parser.add_argument('--max-trees', type=int, default=200)
-parser.add_argument('--min-trees', type=int, default=1)
-parser.add_argument('--learning-rate', type=float, default=0.1)
-parser.add_argument('--max-fraction', type=float, default=0.3)
-parser.add_argument('--min-fraction', type=float, default=0.001)
-parser.add_argument('--min-fraction-steps', type=int, default=100)
-parser.add_argument('--nfold', type=int, default=10,
-    help='the number of folds in the cross-validation')
 parser.add_argument('--masses', nargs='+', default=['125',])
 parser.add_argument('--suffix', default=None)
 parser.add_argument('--procs', type=int, default=-1)
@@ -30,35 +34,86 @@ parser.add_argument('--dry-run', default=False, action='store_true')
 parser.add_argument('category', choices=('vbf', 'boosted'))
 args = parser.parse_args()
 
+if args.masses == ['all',]:
+    args.masses = Higgs.MASSES[:]
+    masses_label = 'all'
+else:
+    args.masses = map(int, args.masses)
+    args.masses.sort()
+    masses_label = '_'.join(map(str, args.masses))
+
+if args.category == 'vbf':
+    category = Category_Pre_VBF
+else:
+    category = Category_Pre_Boosted
+
+analysis = Analysis(
+    year=2015,
+    systematics=False,
+#    fakes_region=TRAIN_FAKES_REGION,
+    suffix=args.suffix)
+analysis.normalize(category)
+
+# combine embedded and MC Ztt for training
+# TODO: account for the fact that N(MC) != N(EMB)
+#analysis_eb = get_analysis(args, embedding=True)
+#analysis_mc = get_analysis(args, embedding=False)
+#analysis_eb.normalize(category)
+#analysis_mc.normalize(category)
+#analysis_eb.ztautau.scale *= 0.5
+#analysis_mc.ztautau.scale *= 0.5
+#backgrounds_train = [
+#    analysis_eb.ztautau,
+#    analysis_mc.ztautau,
+#    analysis.others,
+#    analysis.qcd,
+#]
+
+backgrounds_train = analysis.backgrounds
+
+signals_train = [
+    Higgs(year=2015,
+          masses=args.masses,
+          modes=category.train_signal_modes),
+    ]
+
+cba = analysis.get_cba(category, load=False, mass=masses_label, year=2015)
+
+cba.train_cuts(signals=signals_train,
+               backgrounds=backgrounds_train,
+               remove_negative_weights=True)
+
+# Make plots of the chosen cuts
+for cutname, arrows in cba.cut_arrows.iteritems():
+    draw_channel_array(
+            analysis, {cutname: VARIABLES[cutname]},
+            mass=125, mode=['gg', 'VBF'], signal_scale=20,
+            stack_signal=False,
+            signal_colors=['blue', 'red'],
+            signal_linestyles=['dashed', 'solid'],
+            category=category,
+            region=analysis.target_region,
+            show_ratio=False,
+            #legend_leftmargin=0.28,
+            output_dir='plots/cba',
+            output_suffix='_{0}'.format(analysis.year % 1000),
+            output_formats=['png'],
+            arrow_values=arrows)
+
+cba.train_fischer(signals=signals_train,
+                  backgrounds=backgrounds_train,
+                  remove_negative_weights=True)
+
+import sys
+sys.exit(0)
 tmpdir = tempfile.mkdtemp()
-
-from rootpy.tree import Cut
-
-from mva.analysis import Analysis
-from mva.defaults import TRAIN_FAKES_REGION
-from mva.categories.hadhad import Category_Preselection, Category_Pre_VBF, Category_Pre_Boosted
-# local imports
-from mva.variables import (VARIABLES, HH_VARIABLES,
-                           LH_VARIABLES, YEAR_VARIABLES,
-                           get_label)
-from mva.analysis import get_analysis
-from mva import log;
-
-from ROOT import TMVA, TFile, TCut
-from root_numpy.tmva import add_classification_events, evaluate_method
-
-from mva.categories.hadhad import Category_Pre_VBF, Category_Pre_Boosted
-from mva.analysis import Analysis
-from mva.samples import Higgs
-VARIABLES.update(HH_VARIABLES)
-
 
 output = TFile(os.path.join(tmpdir,'tmva_output.root'), 'recreate')
 output.cd()
 
 cut_vars = ['jet_0_pt', 'ditau_dr', 'ditau_vect_sum_pt', 'dEta_jets']
 
-#(Need to make ditau_tau_sum_pt = p_T^tautau
+# Need to make ditau_tau_sum_pt = p_T^tautau
 if args.category == 'vbf':
     category = Category_Pre_VBF
     cut_vars.append( 'jet_1_pt')
@@ -174,7 +229,10 @@ factory.TrainAllMethods()
 # Analyse cuts
 methodcut = factory.GetMethod('MyCuts')
 def significance( s, b ):
-    print s,b
+    s = s * 2
+    b = b * 2
+    log.info("Significance for n_sig, n_bkg = {}, {}".format(s,b))
+    # Double because training sample is half luminosity
     if (2 * (s+b) * math.log( 1+ s/b ) - 2 * s) < 0:
         log.warning("Significiance <0 for s={}, b={}".format(s,b))
         return 0

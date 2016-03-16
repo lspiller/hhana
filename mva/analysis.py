@@ -18,7 +18,7 @@ from . import norm_cache, CONST_PARAMS
 from . import samples
 from .samples import Higgs
 from .categories.hadhad import CATEGORIES
-from .classify import histogram_scores, Classifier
+from .classify import histogram_scores, Classifier, CBA
 from .defaults import (
     TRAIN_FAKES_REGION, FAKES_REGION, TARGET_REGION, NORM_FIELD)
 from statstools.utils import efficiency_cut
@@ -663,6 +663,29 @@ class Analysis(object):
             kwargs['partition_key'] = 'ditau_tau0_phi*100'#'EventNumber'
         clf = Classifier(
             fields=category.features,
+            category=category,
+            region=self.target_region,
+            clf_output_suffix=clf_output_suffix,
+            output_suffix=output_suffix,
+            mass=mass,
+            transform=transform,
+            **kwargs)
+        if load and not clf.load(swap=swap):
+            raise RuntimeError("train BDTs before requesting scores")
+        return clf
+
+    def get_cba(self, category,
+                load=False, swap=False,
+                mass=125, transform=True, year=None, **kwargs):
+        output_suffix = self.get_suffix()
+        clf_output_suffix = self.get_suffix(clf=True)
+        if year == 2015:
+            kwargs['partition_key'] = 'ditau_tau0_phi*100'#'event_number'
+        else:
+            kwargs['partition_key'] = 'ditau_tau0_phi*100'#'EventNumber'
+        clf = CBA(
+            cut_fields=category.cut_features,
+            fischer_fields=category.fischer_features,
             category=category,
             region=self.target_region,
             clf_output_suffix=clf_output_suffix,

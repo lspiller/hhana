@@ -52,11 +52,11 @@ for table in fileh.root:
 #        names='HCM5',
 #        arrs=rec5_moments,
 #        dtypes=np.dtype('f8'))
-    rec2jj_moments = HCM( 2, kin_arr[:,[2,3],:])#, kin_arr[:,:,:] )
-    rec = rec_append_fields(rec,
-        names='HCM2jj',
-        arrs=rec2jj_moments,
-        dtypes=np.dtype('f8'))
+#    rec2jj_moments = HCM( 2, kin_arr[:,[2,3],:])#, kin_arr[:,:,:] )
+#    rec = rec_append_fields(rec,
+#        names='HCM2jj',
+#        arrs=rec2jj_moments,
+#        dtypes=np.dtype('f8'))
     rec2_moments = HCM( 2, kin_arr[:,:,:])#, kin_arr[:,:,:] )
     rec = rec_append_fields(rec,
         names='HCM2',

@@ -1,5 +1,23 @@
 from .. import MMC_MASS
 
+cuts_vbf = [
+    'jet_0_pt',
+    'jet_1_pt',
+    'ditau_dr',
+    'ditau_vect_sum_pt',
+    'dEta_jets',
+]
+fischer_vbf = [
+    'dEta_jets',
+    'mass_jet1_jet2',
+]
+cuts_boosted = [
+    'jet_0_pt',
+    'ditau_dr',
+    'ditau_vect_sum_pt',
+]
+fischer_boosted = ['dEta_jets', 'mass_jet1_jet2']
+
 features_vbf = [
 #    MMC_MASS,
     'dEta_jets',
