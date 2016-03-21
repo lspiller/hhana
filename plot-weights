@@ -5,11 +5,12 @@ from ROOT import TLatex
 from rootpy.plotting import Hist, Hist2D, Canvas, Pad, Legend
 from rootpy.plotting.utils import draw
 from root_numpy import fill_hist
-from mva.samples import Embedded_Ztautau, Data
+from mva.samples import Embedded_Ztautau, Data, Ztautau
 from mva.variables import get_binning, get_label, get_scale
 from mva import save_canvas, MMC_MASS
 from mva.categories.hadhad import Category_Preselection, Category_Boosted
-from mva.plotting import set_colors
+#from mva.plotting import set_colors
+from mva.plotting.utils import set_colors
 import numpy as np
 from itertools import product
 
@@ -51,13 +52,15 @@ FIELDS = [
     'resonance_pt']
 
 
-for year, category in product((2011, 2012), (Category_Preselection, Category_Boosted)):
+#for year, category in product((2011, 2012), (Category_Preselection, Category_Boosted)):
+
+for year, category in product((2015), (Category_Preselection, Category_Boosted)):
     data = Data(year=year)
     label = TLatex()
     label.SetNDC()
     label.SetTextFont(43)
     label.SetTextSize(22)
-    ztt = Embedded_Ztautau(year=year)
+    ztt = Ztautau(year=year)
     weights = ztt.weights()
     rec = ztt.merged_records(category=category, fields=weights)
     # draw product
@@ -78,7 +81,7 @@ for year, category in product((2011, 2012), (Category_Preselection, Category_Boo
         # draw each field after removing each weight
         hists = []
         for weight in WEIGHTS:
-            ztt = Embedded_Ztautau(year=year)
+            ztt = Ztautau(year=year)
             if weight is not None:
                 setattr(ztt, weight, False)
             hist = Hist(*binning,

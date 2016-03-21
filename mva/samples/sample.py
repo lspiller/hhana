@@ -538,12 +538,6 @@ class Sample(object):
                     weight_fields += variations[variation]
                 else:
                     weight_fields += variations['NOMINAL']
-        # HACK
-        if not self.trigger and self.channel == 'hadhad':
-            log.info("No trigger: replacing trigger_sf with trigger_eff")
-            weight_fields.remove('tau1_trigger_sf')
-            weight_fields.remove('tau2_trigger_sf')
-            weight_fields.extend(['tau1_trigger_eff', 'tau2_trigger_eff'])
 
         return weight_fields
 
@@ -865,95 +859,98 @@ class SystematicsSample(Sample):
             'TAU_ID',
             'TRIGGER',
         ]
-        if self.channel == 'lephad':
-            log.warning('Incomplete list of SF !')
-            return ['LEP_ID']
-
+        # No FAKERATE for embedding since fakes are data
+        # so don't include FAKERATE here
+        if self.year == 2011:
+            return common + [
+                'TES_TRUE_FINAL',
+                'TES_FAKE_FINAL',
+                ]
+        elif self.year == 2012:
+            return common + [
+                'TAU_ID_STAT',
+                'TES_TRUE_INSITUINTERPOL',
+                'TES_TRUE_SINGLEPARTICLEINTERPOL',
+                'TES_TRUE_MODELING',
+                'TES_FAKE_TOTAL',
+                'TRIGGER_STAT_PERIODA',
+                'TRIGGER_STAT_PERIODBD_BARREL',
+                'TRIGGER_STAT_PERIODBD_ENDCAP',
+                'TRIGGER_STAT_PERIODEM_BARREL',
+                'TRIGGER_STAT_PERIODEM_ENDCAP',
+                ]
+        elif self.year == 2015:
+            return [
+                'MET_SoftTrk_ResoPara', # Not varied up or down
+                'MET_sofTrk_ResoPerp', # Not varied up or down
+                'MET_SoftTrk_ScaleDown', # different convention from above: Down/Up instead of _DOWN/_UP
+                'MET_SoftTrk_ScaleUp',
+                'TAUS_TRUEHADTAU_TES_TOTAL_1_up', # followed by_up/_down
+                'TAUS_TRUEHADTAU_TES_TOTAL_1_down', # followed by_up/_down
+                ]
         else:
-            # No FAKERATE for embedding since fakes are data
-            # so don't include FAKERATE here
-            if self.year == 2011:
-                return common + [
-                    'TES_TRUE_FINAL',
-                    'TES_FAKE_FINAL',
-                    ]
-            elif self.year == 2012:
-                return common + [
-                    'TAU_ID_STAT',
-                    'TES_TRUE_INSITUINTERPOL',
-                    'TES_TRUE_SINGLEPARTICLEINTERPOL',
-                    'TES_TRUE_MODELING',
-                    'TES_FAKE_TOTAL',
-                    'TRIGGER_STAT_PERIODA',
-                    'TRIGGER_STAT_PERIODBD_BARREL',
-                    'TRIGGER_STAT_PERIODBD_ENDCAP',
-                    'TRIGGER_STAT_PERIODEM_BARREL',
-                    'TRIGGER_STAT_PERIODEM_ENDCAP',
-                    ]
-            else:
-                log.warning('Incomplete list of SF !')
-                return ['TAU_ID']
+            log.warning('Incomplete list of SF !')
+            return ['TAU_ID']
 
 
     def weight_systematics(self):
         systematics = {}
         if self.tau_id_sf:
-            if self.channel == 'hadhad':
-                if self.year == 2011:
-                    tauid = {
-                        'TAU_ID': {
-                            'UP': [
-                                'tau1_id_sf_high',
-                                'tau2_id_sf_high'],
-                            'DOWN': [
-                                'tau1_id_sf_low',
-                                'tau2_id_sf_low'],
-                            'NOMINAL': [
-                                'tau1_id_sf',
-                                'tau2_id_sf']}
-                        }
-                elif self.year == 2012:
-                    tauid = {
-                        'TAU_ID': {
-                            'STAT_UP': [
-                                'tau1_id_sf_stat_high',
-                                'tau2_id_sf_stat_high'],
-                            'STAT_DOWN': [
-                                'tau1_id_sf_stat_low',
-                                'tau2_id_sf_stat_low'],
-                            'UP': [
-                                'tau1_id_sf_sys_high',
-                                'tau2_id_sf_sys_high'],
-                            'DOWN': [
-                                'tau1_id_sf_sys_low',
-                                'tau2_id_sf_sys_low'],
-                            'NOMINAL': [
-                                'tau1_id_sf',
-                                'tau2_id_sf']},
-                        }
-                else:
-                    tauid = {
-                        'TAU_ID': {
-                            'STAT_UP': [],
-                            'STAT_DOWN': [],
-                            'UP': [],
-                            'DOWN': [],
-                            'NOMINAL': []},
-                               # 'ditau_tau0_ele_bdt_medium_eff_sf',
-                               # 'ditau_tau1_ele_bdt_medium_eff_sf']},
-                        }
-            elif self.channel == 'lephad':
-                if self.year == 2011:
-                    log.error('lephad is not implemented for 2011')
-                    raise RuntimeError
-                elif self.year == 2012:
-                    log.error('lephad is not implemented for 2012')
-                    raise RuntimeError
-                else:
-                    tauid = {
-                        'TAU_ID': {
-                            'NOMINAL': ['tau_0_jet_id_medium_sf'],},
-                        }
+            if self.year == 2011:
+                tauid = {
+                    'TAU_ID': {
+                        'UP': [
+                            'tau1_id_sf_high',
+                            'tau2_id_sf_high'],
+                        'DOWN': [
+                            'tau1_id_sf_low',
+                            'tau2_id_sf_low'],
+                        'NOMINAL': [
+                            'tau1_id_sf',
+                            'tau2_id_sf']}
+                    }
+            elif self.year == 2012:
+                tauid = {
+                    'TAU_ID': {
+                        'STAT_UP': [
+                            'tau1_id_sf_stat_high',
+                            'tau2_id_sf_stat_high'],
+                        'STAT_DOWN': [
+                            'tau1_id_sf_stat_low',
+                            'tau2_id_sf_stat_low'],
+                        'UP': [
+                            'tau1_id_sf_sys_high',
+                            'tau2_id_sf_sys_high'],
+                        'DOWN': [
+                            'tau1_id_sf_sys_low',
+                            'tau2_id_sf_sys_low'],
+                        'NOMINAL': [
+                            'tau1_id_sf',
+                            'tau2_id_sf']},
+                    }
+            elif self.year == 2015:
+                tauid = {
+                    'TAU_ID': {
+                        'UP': [
+                            'ditau_tau0_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1up_TAU_EFF_JETIDBDTTIGHT',
+                            'ditau_tau1_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1up_TAU_EFF_JETIDBDTMEDIUM'],
+                        'DOWN': [
+                            'ditau_tau0_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1down_TAU_EFF_JETIDBDTTIGHT',
+                            'ditau_tau1_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1down_TAU_EFF_JETIDBDTMEDIUM'],
+                        'NOMINAL': [
+                            'ditau_tau0_sf_NOMINAL_TAU_EFF_JETIDBDTTIGHT',
+                            'ditau_tau1_sf_NOMINAL_TAU_EFF_JETIDBDTMEDIUM',]},
+                    }
+            else:
+                tauid = {
+                    'TAU_ID': {
+                        'STAT_UP': [],
+                        'STAT_DOWN': [],
+                        'UP': [],
+                        'DOWN': [],
+                        'NOMINAL': []},
+                    }
+                log.warning('No scale factors defined for this category: {}'.format(self.year))
             systematics.update(tauid)
 
         return systematics
@@ -1340,7 +1337,7 @@ class MC(SystematicsSample):
 
     def weight_systematics(self):
         systematics = super(MC, self).weight_systematics()
-        if self.channel == 'hadhad' and self.year != 2015:
+        if self.year != 2015:
             systematics.update({
                     'FAKERATE': {
                         'UP': [
@@ -1360,89 +1357,88 @@ class MC(SystematicsSample):
                     'DOWN': ['pileup_weight_low'],
                     'NOMINAL': ['weight_pileup']},
                 })
-        if self.channel == 'hadhad':
-            if self.year == 2011:
-                systematics.update({
-                        'TRIGGER': {
-                            'UP': [
-                                'tau1_trigger_sf_high',
-                                'tau2_trigger_sf_high'],
-                            'DOWN': [
-                                'tau1_trigger_sf_low',
-                                'tau2_trigger_sf_low'],
-                            'NOMINAL': [
-                                'tau1_trigger_sf',
-                                'tau2_trigger_sf']}})
-            elif self.year == 2012:
-                systematics.update({
-                        'TRIGGER': {
-                            'UP': [
-                                'tau1_trigger_sf_sys_high',
-                                'tau2_trigger_sf_sys_high'],
-                            'DOWN': [
-                                'tau1_trigger_sf_sys_low',
-                                'tau2_trigger_sf_sys_low'],
-                            'NOMINAL': [
-                                'tau1_trigger_sf',
-                                'tau2_trigger_sf']},
-                        'TRIGGER_STAT': {
-                            'PERIODA_UP': [
-                                'tau1_trigger_sf_stat_scale_PeriodA_high',
-                                'tau2_trigger_sf_stat_scale_PeriodA_high'],
-                            'PERIODA_DOWN': [
-                                'tau1_trigger_sf_stat_scale_PeriodA_low',
-                                'tau2_trigger_sf_stat_scale_PeriodA_low'],
-                            'PERIODBD_BARREL_UP': [
-                                'tau1_trigger_sf_stat_scale_PeriodBD_Barrel_high',
-                                'tau2_trigger_sf_stat_scale_PeriodBD_Barrel_high'],
-                            'PERIODBD_BARREL_DOWN': [
-                                'tau1_trigger_sf_stat_scale_PeriodBD_Barrel_low',
-                                'tau2_trigger_sf_stat_scale_PeriodBD_Barrel_low'],
-                            'PERIODBD_ENDCAP_UP': [
-                                'tau1_trigger_sf_stat_scale_PeriodBD_EndCap_high',
-                                'tau2_trigger_sf_stat_scale_PeriodBD_EndCap_high'],
-                            'PERIODBD_ENDCAP_DOWN': [
-                                'tau1_trigger_sf_stat_scale_PeriodBD_EndCap_low',
-                                'tau2_trigger_sf_stat_scale_PeriodBD_EndCap_low'],
-                            'PERIODEM_BARREL_UP': [
-                                'tau1_trigger_sf_stat_scale_PeriodEM_Barrel_high',
-                                'tau2_trigger_sf_stat_scale_PeriodEM_Barrel_high'],
-                            'PERIODEM_BARREL_DOWN': [
-                                'tau1_trigger_sf_stat_scale_PeriodEM_Barrel_low',
-                                'tau2_trigger_sf_stat_scale_PeriodEM_Barrel_low'],
-                            'PERIODEM_ENDCAP_UP': [
-                                'tau1_trigger_sf_stat_scale_PeriodEM_EndCap_high',
-                                'tau2_trigger_sf_stat_scale_PeriodEM_EndCap_high'],
-                            'PERIODEM_ENDCAP_DOWN': [
-                                'tau1_trigger_sf_stat_scale_PeriodEM_EndCap_low',
-                                'tau2_trigger_sf_stat_scale_PeriodEM_EndCap_low'],
-                            'NOMINAL': []}})
-            else:
-                log.warning('No trigger scale factor for 2015 yet - No longer true, recently added')
-                systematics.update({
-                        'TRIGGER': {
-                            'STATDATA_UP': [
-                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                            'STATDATA_DOWN': [
-                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                            'STATMC_UP': [
-                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                            'STATMC_DOWN': [
-                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                            'UP': [
-                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                            'DOWN': [
-                                'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                            'NOMINAL': [
-                                'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                                'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
-                        })
+        if self.year == 2011:
+            systematics.update({
+                    'TRIGGER': {
+                        'UP': [
+                            'tau1_trigger_sf_high',
+                            'tau2_trigger_sf_high'],
+                        'DOWN': [
+                            'tau1_trigger_sf_low',
+                            'tau2_trigger_sf_low'],
+                        'NOMINAL': [
+                            'tau1_trigger_sf',
+                            'tau2_trigger_sf']}})
+        elif self.year == 2012:
+            systematics.update({
+                    'TRIGGER': {
+                        'UP': [
+                            'tau1_trigger_sf_sys_high',
+                            'tau2_trigger_sf_sys_high'],
+                        'DOWN': [
+                            'tau1_trigger_sf_sys_low',
+                            'tau2_trigger_sf_sys_low'],
+                        'NOMINAL': [
+                            'tau1_trigger_sf',
+                            'tau2_trigger_sf']},
+                    'TRIGGER_STAT': {
+                        'PERIODA_UP': [
+                            'tau1_trigger_sf_stat_scale_PeriodA_high',
+                            'tau2_trigger_sf_stat_scale_PeriodA_high'],
+                        'PERIODA_DOWN': [
+                            'tau1_trigger_sf_stat_scale_PeriodA_low',
+                            'tau2_trigger_sf_stat_scale_PeriodA_low'],
+                        'PERIODBD_BARREL_UP': [
+                            'tau1_trigger_sf_stat_scale_PeriodBD_Barrel_high',
+                            'tau2_trigger_sf_stat_scale_PeriodBD_Barrel_high'],
+                        'PERIODBD_BARREL_DOWN': [
+                            'tau1_trigger_sf_stat_scale_PeriodBD_Barrel_low',
+                            'tau2_trigger_sf_stat_scale_PeriodBD_Barrel_low'],
+                        'PERIODBD_ENDCAP_UP': [
+                            'tau1_trigger_sf_stat_scale_PeriodBD_EndCap_high',
+                            'tau2_trigger_sf_stat_scale_PeriodBD_EndCap_high'],
+                        'PERIODBD_ENDCAP_DOWN': [
+                            'tau1_trigger_sf_stat_scale_PeriodBD_EndCap_low',
+                            'tau2_trigger_sf_stat_scale_PeriodBD_EndCap_low'],
+                        'PERIODEM_BARREL_UP': [
+                            'tau1_trigger_sf_stat_scale_PeriodEM_Barrel_high',
+                            'tau2_trigger_sf_stat_scale_PeriodEM_Barrel_high'],
+                        'PERIODEM_BARREL_DOWN': [
+                            'tau1_trigger_sf_stat_scale_PeriodEM_Barrel_low',
+                            'tau2_trigger_sf_stat_scale_PeriodEM_Barrel_low'],
+                        'PERIODEM_ENDCAP_UP': [
+                            'tau1_trigger_sf_stat_scale_PeriodEM_EndCap_high',
+                            'tau2_trigger_sf_stat_scale_PeriodEM_EndCap_high'],
+                        'PERIODEM_ENDCAP_DOWN': [
+                            'tau1_trigger_sf_stat_scale_PeriodEM_EndCap_low',
+                            'tau2_trigger_sf_stat_scale_PeriodEM_EndCap_low'],
+                        'NOMINAL': []}})
+        elif self.year == 2015:
+            log.warning('No trigger scale factor for 2015 yet - No longer true, recently added')
+            systematics.update({
+                    'TRIGGER': {
+                        'STATDATA_UP': [
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATDATA_DOWN': [
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATMC_UP': [
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATMC_DOWN': [
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'UP': [
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'DOWN': [
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'NOMINAL': [
+                            'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
+                            'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
+                    })
         return systematics
 
 

@@ -65,9 +65,9 @@ def analysis_parser(parser=None):
             help='set mu (signal strength) to a random number')
     parser.add_argument('--mu', default=1., type=float,
             help='set mu (signal strength)')
-    parser.add_argument('--no-embedding', action='store_false', default=True,
+    parser.add_argument('--embedding', action='store_true', default=False,
             dest='embedding',
-            help='use ALPGEN Z->tau+tau instead of embedding')
+            help='use embedding instead of Z->tautau')
     parser.add_argument('--fakes-region', choices=REGIONS.keys(),
             default=FAKES_REGION,
             help='fakes shape region')

@@ -1019,11 +1019,8 @@ class CBA(object):
             # the sample_train,... would be the set denoted for training
             test_output = evaluate_method( methodcut, sample_train, eff )
             n0_mask = (test_output == 1)
-            print n0_mask
             bkg_mask = (test_output == 1) & (labels_train == 0)
-            print bkg_mask
             sig_mask = (test_output == 1) & (labels_train ==1)
-            print sig_mask
             n0 = np.sum(sample_weight_train[ n0_mask ])
             nbkg = np.sum(sample_weight_train[ bkg_mask ])
             nsig = np.sum(sample_weight_train[ sig_mask ])

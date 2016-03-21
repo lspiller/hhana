@@ -39,7 +39,7 @@ for year in (2015,):#(2011, 2012):
         #legend_leftmargin=0.28,
         output_dir='plots/categories',
         output_suffix='_{0}'.format(year % 1000),
-        output_formats=['png', 'eps'],
+        output_formats=['png', 'eps', 'C'],
         arrow_values=[2.])
 
     templates = {'ditau_vect_sum_pt': Hist(30, 0, 300)}
