@@ -270,6 +270,9 @@ class Higgs(MC, Signal):
             energy = 7
         elif self.year == 2012:
             energy = 8
+        elif self.year == 2015:
+            energy = 8
+            log.warning("Using 8 TeV for 2015 data until new theory systematics are created.")
         else:
             raise ValueError(
                 "collision energy is unknown for year {0:d}".format(self.year))

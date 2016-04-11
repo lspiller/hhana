@@ -58,31 +58,31 @@ def get_workspace_np_name(sample, syst, year):
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HiggsPropertiesNuisanceParameterNames
     npname = 'ATLAS_{0}_{1:d}'.format(syst, year)
     # special cases
-    npname = npname.replace('JES_Detector_{0}'.format(year),
-                            'JES_{0}_Detector1'.format(year))
-    npname = npname.replace('JES_EtaMethod_{0}'.format(year),
-                            'JES_{0}_Eta_StatMethod'.format(year))
-    npname = npname.replace('JES_EtaModelling_{0}'.format(year),
-                            'JES_Eta_Modelling')
-    npname = npname.replace('JES_FlavComp_TAU_G_{0}'.format(year),
-                            'JES_FlavComp_TAU_G')
-    npname = npname.replace('JES_FlavComp_TAU_Q_{0}'.format(year),
-                            'JES_FlavComp_TAU_Q')
-    npname = npname.replace('JES_FlavResp_{0}'.format(year),
-                            'JES_FlavResp')
-    npname = npname.replace('JES_Modelling_{0}'.format(year),
-                            'JES_{0}_Modelling1'.format(year))
-    npname = npname.replace('JES_PURho_TAU_GG_{0}'.format(year),
-                            'JES_{0}_PileRho_TAU_GG'.format(year))
-    npname = npname.replace('JES_PURho_TAU_QG_{0}'.format(year),
-                            'JES_{0}_PileRho_TAU_QG'.format(year))
-    npname = npname.replace('JES_PURho_TAU_QQ_{0}'.format(year),
-                            'JES_{0}_PileRho_TAU_QQ'.format(year))
-    npname = npname.replace('FAKERATE', 'TAU_JFAKE')
-    npname = npname.replace('MET_RESOSOFTTERMS',
-                            'MET_RESOSOFT')
-    npname = npname.replace('MET_SCALESOFTTERMS',
-                            'MET_SCALESOFT')
+#    npname = npname.replace('JES_Detector_{0}'.format(year),
+#                            'JES_{0}_Detector1'.format(year))
+#    npname = npname.replace('JES_EtaMethod_{0}'.format(year),
+#                            'JES_{0}_Eta_StatMethod'.format(year))
+#    npname = npname.replace('JES_EtaModelling_{0}'.format(year),
+#                            'JES_Eta_Modelling')
+#    npname = npname.replace('JES_FlavComp_TAU_G_{0}'.format(year),
+#                            'JES_FlavComp_TAU_G')
+#    npname = npname.replace('JES_FlavComp_TAU_Q_{0}'.format(year),
+#                            'JES_FlavComp_TAU_Q')
+#    npname = npname.replace('JES_FlavResp_{0}'.format(year),
+#                            'JES_FlavResp')
+#    npname = npname.replace('JES_Modelling_{0}'.format(year),
+#                            'JES_{0}_Modelling1'.format(year))
+#    npname = npname.replace('JES_PURho_TAU_GG_{0}'.format(year),
+#                            'JES_{0}_PileRho_TAU_GG'.format(year))
+#    npname = npname.replace('JES_PURho_TAU_QG_{0}'.format(year),
+#                            'JES_{0}_PileRho_TAU_QG'.format(year))
+#    npname = npname.replace('JES_PURho_TAU_QQ_{0}'.format(year),
+#                            'JES_{0}_PileRho_TAU_QQ'.format(year))
+#    npname = npname.replace('FAKERATE', 'TAU_JFAKE')
+#    npname = npname.replace('MET_RESOSOFTTERMS',
+#                            'MET_RESOSOFT')
+#    npname = npname.replace('MET_SCALESOFTTERMS',
+#                            'MET_SCALESOFT')
     from .ztautau import Embedded_Ztautau
     if isinstance(sample, Embedded_Ztautau):
         npname = npname.replace('TRIGGER', 'TRIGGER_EMB_HH')
@@ -854,8 +854,8 @@ class SystematicsSample(Sample):
 
     def systematics_components(self):
         common = [
-            'MET_RESOSOFTTERMS',
-            'MET_SCALESOFTTERMS',
+#            'MET_RESOSOFTTERMS',
+#            'MET_SCALESOFTTERMS',
             'TAU_ID',
             'TRIGGER',
         ]
@@ -880,13 +880,16 @@ class SystematicsSample(Sample):
                 'TRIGGER_STAT_PERIODEM_ENDCAP',
                 ]
         elif self.year == 2015:
-            return [
-                'MET_SoftTrk_ResoPara', # Not varied up or down
-                'MET_sofTrk_ResoPerp', # Not varied up or down
-                'MET_SoftTrk_ScaleDown', # different convention from above: Down/Up instead of _DOWN/_UP
-                'MET_SoftTrk_ScaleUp',
-                'TAUS_TRUEHADTAU_TES_TOTAL_1_up', # followed by_up/_down
-                'TAUS_TRUEHADTAU_TES_TOTAL_1_down', # followed by_up/_down
+            return common + [
+#                'MET_SoftTrk_ResoPara', # Not varied up or down
+#                'MET_sofTrk_ResoPerp', # Not varied up or down
+#                'MET_SoftTrk_ScaleDown', # different convention from above: Down/Up instead of _DOWN/_UP
+#                'MET_SoftTrk_ScaleUp',
+                'TAUS_TRUEHADTAU_SME_TES_DETECTOR',
+                'TAUS_TRUEHADTAU_SME_TES_MODEL',
+                'TAUS_TRUEHADTAU_SME_TES_INSITU',
+                'TRIGGER_STATDATA',
+                'TRIGGER_STATMC',
                 ]
         else:
             log.warning('Incomplete list of SF !')
@@ -932,11 +935,11 @@ class SystematicsSample(Sample):
                 tauid = {
                     'TAU_ID': {
                         'UP': [
-                            'ditau_tau0_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1up_TAU_EFF_JETIDBDTTIGHT',
-                            'ditau_tau1_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1up_TAU_EFF_JETIDBDTMEDIUM'],
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TAU_EFF_JETIDBDTTIGHT',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TAU_EFF_JETIDBDTMEDIUM'],
                         'DOWN': [
-                            'ditau_tau0_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1down_TAU_EFF_JETIDBDTTIGHT',
-                            'ditau_tau1_sf_TRUEHADHADTAU_EFF_JETID_TOTAL_1down_TAU_EFF_JETIDBDTMEDIUM'],
+                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TAU_EFF_JETIDBDTTIGHT',
+                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TAU_EFF_JETIDBDTMEDIUM'],
                         'NOMINAL': [
                             'ditau_tau0_sf_NOMINAL_TAU_EFF_JETIDBDTTIGHT',
                             'ditau_tau1_sf_NOMINAL_TAU_EFF_JETIDBDTMEDIUM',]},
@@ -996,6 +999,7 @@ class SystematicsSample(Sample):
         for i, name in enumerate(self.samples):
 
             log.debug(name)
+            log.debug(self.db)
             ds = self.db[name]
             treename = name.replace('.', '_')
             treename = treename.replace('-', '_')
@@ -1008,7 +1012,7 @@ class SystematicsSample(Sample):
             else:
                 # use mc_weighted second bin
                 if year == 2015:
-                    events_bin = 4
+                    events_bin = 8#4
                 else:
                     events_bin = 2
 
@@ -1271,10 +1275,6 @@ class SystematicsSample(Sample):
                 correction_weights = self.corrections(rec)
                 if correction_weights:
                     weights *= reduce(np.multiply, correction_weights)
-                if self.channel == 'lephad' and self.lep_id_sf:
-                    weights_el = reduce(np.multiply, [rec['lep_isele'], rec['lep_0_id_eff_sf_tight']])
-                    weights_mu = reduce(np.multiply, [rec['lep_ismu'], rec['lep_0_id_eff_sf_loose']])
-                    weights *= reduce(np.add, [weights_el, weights_mu])
 
                 # drop other weight fields
                 #rec = recfunctions.rec_drop_fields(rec, weight_branches)
@@ -1285,6 +1285,62 @@ class SystematicsSample(Sample):
                     dtypes=np.dtype('f8'))
                 if rec['weight'].shape[0] > 1 and rec['weight'].sum() == 0:
                     log.warning("{0}: weights sum to zero!".format(table.name))
+
+            taupt_br = rec[['ditau_tau0_pt', 'ditau_tau1_pt']]
+            taupt_br = rec2array( taupt_br ).reshape((taupt_br.shape[0],2))
+            taupt_ratio = taupt_br[:,0]/taupt_br[:,1]
+            rec = rec_append_fields(rec,
+                    names='ditau_pt_ratio',
+                    arrs=taupt_ratio,
+                    dtypes=np.dtype('f8'))
+
+
+            mom_branches = [
+                'ditau_tau0_pt', 'ditau_tau0_eta', 'ditau_tau0_phi', 'ditau_tau0_m',
+                'ditau_tau1_pt', 'ditau_tau1_eta', 'ditau_tau1_phi', 'ditau_tau1_m',
+                'jet_0_pt', 'jet_0_eta', 'jet_0_phi', 'jet_0_m',
+                'jet_1_pt', 'jet_1_eta', 'jet_1_phi', 'jet_1_m',
+            ]
+
+            mom_arr = rec[mom_branches]
+            mom_arr = rec2array( mom_arr ).reshape((mom_arr.shape[0], 4, 4))
+            # convert array of pT, eta, phi, m
+            # to array of p, px, py, pz, pT, eta, phi, m
+            kin_arr = np.empty(shape=(mom_arr.shape[0], 4, 8))
+            # |p| = pT cosh eta
+            kin_arr[:,:,0] = mom_arr[:,:,0] * np.cosh(mom_arr[:,:,1])
+            # px, py, pz
+            kin_arr[:,:,1] = mom_arr[:,:,0] * np.cos(mom_arr[:,:,2])
+            kin_arr[:,:,2] = mom_arr[:,:,0] * np.sin(mom_arr[:,:,2])
+            kin_arr[:,:,3] = mom_arr[:,:,0] * np.sinh(mom_arr[:,:,1])
+            # pT, eta, phi, m
+            kin_arr[:,:,4] = mom_arr[:,:,0]
+            kin_arr[:,:,5] = mom_arr[:,:,1]
+            kin_arr[:,:,6] = mom_arr[:,:,2]
+            kin_arr[:,:,7] = mom_arr[:,:,3]
+
+            rec = rec_append_fields(rec,
+                names='eta_product_jets',
+                arrs=(kin_arr[:,2,5]*kin_arr[:,3,5]),
+                dtypes=np.dtype('f8'))
+            # centrality: exp( -4/(eta1-eta2)^2 (eta- eta1+eta2.2)^2)
+            tau1_centrality = np.exp( \
+                    -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
+                    * (kin_arr[:,0,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
+                    )
+            tau2_centrality = np.exp( \
+                    -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
+                    * (kin_arr[:,1,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
+                    )
+
+            rec = rec_append_fields(rec,
+                names='tau1_centrality',
+                arrs=tau1_centrality,
+                dtypes=np.dtype('f8'))
+            rec = rec_append_fields(rec,
+                names='tau2_centrality',
+                arrs=tau2_centrality,
+                dtypes=np.dtype('f8'))
 
             if fields is not None:
                 try:
@@ -1310,16 +1366,16 @@ class MC(SystematicsSample):
     def systematics_components(self):
         components = super(MC, self).systematics_components()
         components = components + [
-            'JES_Modelling',
-            'JES_Detector',
-            'JES_EtaModelling',
-            'JES_EtaMethod',
-            'JES_PURho',
-            'JES_FlavComp',
-            'JES_FlavResp',
-            'JER',
-            'FAKERATE',
-            'PU_RESCALE',
+#            'JES_Modelling',
+#            'JES_Detector',
+#            'JES_EtaModelling',
+#            'JES_EtaMethod',
+#            'JES_PURho',
+#            'JES_FlavComp',
+#            'JES_FlavResp',
+#            'JER',
+#            'FAKERATE',
+#            'PU_RESCALE',
         ]
         if self.year == 2012:
             components += [
@@ -1329,7 +1385,7 @@ class MC(SystematicsSample):
 
     def weight_fields(self):
         return super(MC, self).weight_fields() + [
-            'weight_mc',
+            'weight_total', #Needs to be investigated
             # uncertainty on these are small and are ignored:
             # 'tau1_fakerate_sf_reco',
             # 'tau2_fakerate_sf_reco',
@@ -1350,13 +1406,13 @@ class MC(SystematicsSample):
                             'tau1_fakerate_sf',
                             'tau2_fakerate_sf']},
                     })
-        if self.pileup_weight:
-            systematics.update({
-                'PU_RESCALE': {
-                    'UP': ['pileup_weight_high'],
-                    'DOWN': ['pileup_weight_low'],
-                    'NOMINAL': ['weight_pileup']},
-                })
+#        if self.pileup_weight:
+#            systematics.update({
+#                'PU_RESCALE': {
+#                    'UP': ['weight_pileup'],
+#                    'DOWN': ['weight_pileup'],
+#                    'NOMINAL': ['weight_pileup']},
+#                })
         if self.year == 2011:
             systematics.update({
                     'TRIGGER': {

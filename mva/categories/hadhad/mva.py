@@ -25,7 +25,7 @@ class Category_VBF_DEta_Control(Category_Preselection):
     common_cuts = Category_Preselection.common_cuts
     #norm_category = Category_Preselection_DEta_Control
     norm_category = Category_Preselection
-    cuts = CUTS_VBF_CR & Cut('dEta_jets > 2.0')
+    cuts = CUTS_VBF_CR & Cut('dijet_deta > 2.0')
 
 
 class Category_VBF(Category_Preselection):

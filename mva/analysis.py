@@ -156,7 +156,7 @@ class Analysis(object):
         ]
 
         self.ggf_weight = ggf_weight
-        # self.signals = self.get_signals(125)
+        self.signals = self.get_signals(125)
 
     def get_signals(self, mass=125, mode=None, scale_125=False):
         signals = []
@@ -271,7 +271,7 @@ class Analysis(object):
         if self.use_embedding:
             output_suffix += '_ebz'
         else:
-            output_suffix += '_ebz'#Changed from mcz to ebz! TEMPORARY HACK
+            output_suffix += '_mcz'
         if self.suffix:
             output_suffix += '_%s' % self.suffix
         if self.year % 1E3 == 11 and clf:

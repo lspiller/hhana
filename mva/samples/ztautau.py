@@ -143,7 +143,7 @@ class Embedded_Ztautau(Ztautau, SystematicsSample):
                     'NOMINAL': [
                         'tau1_trigger_eff',
                         'tau2_trigger_eff']}})
-        elif self.tau_trigger_eff:
+        elif self.tau_trigger_eff and self.year == 2012:
             systematics.update({
                 'TRIGGER': {
                     'UP': [

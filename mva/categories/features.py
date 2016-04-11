@@ -5,24 +5,24 @@ cuts_vbf = [
     'jet_1_pt',
     'ditau_dr',
     'ditau_vect_sum_pt',
-    'dEta_jets',
+    'dijet_deta',
 ]
 fischer_vbf = [
-    'dEta_jets',
-    'mass_jet1_jet2',
+    'dijet_deta',
+    'dijet_vis_mass',
 ]
 cuts_boosted = [
     'jet_0_pt',
     'ditau_dr',
     'ditau_vect_sum_pt',
 ]
-fischer_boosted = ['dEta_jets', 'mass_jet1_jet2']
+fischer_boosted = ['dijet_deta', 'dijet_vis_mass']
 
 features_vbf = [
 #    MMC_MASS,
-    'dEta_jets',
+    'dijet_deta',
     'eta_product_jets',
-    'mass_jet1_jet2',
+    'dijet_vis_mass',
     #'sphericity',
     #'aplanarity',
 #    'tau1_centrality',
@@ -38,7 +38,7 @@ features_vbf = [
 #    'HCM2jj',
 #    'HCM2',
 #    'HCM1',
-    'HCM3'
+    'moment_hcm3'
 ]
 
 features_boosted = [
@@ -58,5 +58,5 @@ features_boosted = [
     'ditau_pt_ratio',
 #    'HCM2',
 #    'HCM1',
-    'HCM5',
+    'moment_hcm5',
 ]

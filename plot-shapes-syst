@@ -20,7 +20,7 @@ from mva.variables import VARIABLES
 from mva.analysis import Analysis, get_analysis
 from mva.systematics import iter_systematics, get_systematics
 from mva.samples import CompositeSample
-from mva.templates import RatioPlot
+from mva.plotting.templates import RatioPlot
 from mva import save_canvas
 from mva import log; log=log[__name__]
 from mva.plotting import draw_ratio
@@ -33,9 +33,12 @@ analysis.normalize(Category_Preselection)
 output_suffix = analysis.get_suffix()
 
 # list of fields to plot
+from mva.variables import MMC_MASS
 fields=[
-    'mmc1_mass',
-    'dR_tau1_tau2',
+    MMC_MASS,
+#    'mmc1_mass',
+#    'dR_tau1_tau2',
+    'ditau_dr',
     'dEta_jets',
     ]
 

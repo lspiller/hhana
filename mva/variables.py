@@ -401,7 +401,7 @@ HH_VARIABLES = {
        'binning': (6, 0., 2.4),
        'legend': 'left',
    },
-   'dEta_jets': {
+   'dijet_deta': {
        'title': r'$\Delta \eta(\tau,\tau)$',
        'root': '#font[152]{#Delta#eta}(#font[152]{#tau},#font[152]{#tau})',
        'filename': 'dEta_jets',
@@ -460,7 +460,7 @@ HH_VARIABLES = {
        'units': 'GeV',
        'cats': ['2J', 'VBF', 'PRESELECTION']
    },
-    'HCM5': {
+    'moment_hcm5': {
         'title': r'HCM5',
         'root': '#font[52]HCM5',
         'filename': 'HCM5',
@@ -472,7 +472,7 @@ HH_VARIABLES = {
         'scale': 0.01,
         'units': 'GeV',
     },
-    'HCM1': {
+    'moment_hcm1': {
         'title': r'HCM1',
         'root': '#font[52]{HCM1}',
         'filename': 'HCM1',
@@ -484,7 +484,7 @@ HH_VARIABLES = {
         'scale': 1,
         'units': 'No Units',
     },
-    'HCM2': {
+    'moment_hcm2': {
         'title': r'HCM2',
         'root': '#font[52]{HCM2}',
         'filename': 'HCM2',
@@ -496,7 +496,7 @@ HH_VARIABLES = {
         'scale': 1,
         'units': 'No Units'
     },
-    'HCM3': {
+    'moment_hcm3': {
         'title': r'HCM3',
         'root': '#font[52]{HCM3}',
         'filename': 'HCM3',
@@ -508,20 +508,20 @@ HH_VARIABLES = {
         'scale': 1,
         'units': 'No Units',
     },
-    'HCM2jj': {
-        'title': r'HCM2jj',
-        'root': '#font[52]{HCM2jj}',
-        'filename': 'HCM2jj',
-        'binning': {
-            'BOOSTED': (15, 0.0, 1.0),
-            'VBF': (15, 0.0, 1.0),
-            'REST': (15, 0.0, 1.0),
-            None: (20, 0.0, 1.0)},
-        'scale': 1,
-        'units': 'No Units',
-    },
+#    'HCM2jj': {
+#        'title': r'HCM2jj',
+#        'root': '#font[52]{HCM2jj}',
+#        'filename': 'HCM2jj',
+#        'binning': {
+#            'BOOSTED': (15, 0.0, 1.0),
+#            'VBF': (15, 0.0, 1.0),
+#            'REST': (15, 0.0, 1.0),
+#            None: (20, 0.0, 1.0)},
+#        'scale': 1,
+#        'units': 'No Units',
+#    },
 
-    'mass_jet1_jet2': {
+    'dijet_vis_mass': {
         'title': r'$m^{vis}_{jj}$',
         'root': '#font[52]{m}_{#font[52]{j}#font[52]{j}}',
         'filename': 'mass_jet1_jet2',

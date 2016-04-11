@@ -46,7 +46,7 @@ cache.set_scales(
     z_scale=ztt_scale,
     z_scale_error=ztt_scale_error)
 
- # draw post-fit plots
+# draw post-fit plots
 analysis.normalize(category)
 
 channels = analysis.make_var_channels(

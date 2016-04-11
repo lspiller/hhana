@@ -396,6 +396,8 @@ class Classifier(object):
 
     def binning(self, year, overflow=None, suffix=''):
         # get the binning (see the optimize-binning script)
+        if suffix == None:
+            suffix = ''
         with open(os.path.join(CACHE_DIR, 'binning/binning_{0}_{1}_{2}_{3}.pickle'.format(
                                self.category.name, self.mass, year % 1000, suffix))) as f:
             binning = pickle.load(f)

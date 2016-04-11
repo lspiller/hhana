@@ -19,7 +19,7 @@ DAT_DIR = os.path.join(BASE_DIR, 'dat')
 BDT_DIR = os.path.join(BASE_DIR, 'bdts')
 CBA_DIR = os.path.join(BASE_DIR, 'cbas')
 
-NTUPLE_PATH = os.path.join(os.getenv('HIGGSTAUTAU_NTUPLE_DIR'), 'v8')
+NTUPLE_PATH = os.path.join(os.getenv('HIGGSTAUTAU_NTUPLE_DIR'), 'v10')
 # NTUPLE_PATH = '/afs/cern.ch/user/q/qbuat/work/public/xtau_output/hadhad/v1'
 DEFAULT_STUDENT = 'hhskim'
 

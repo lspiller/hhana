@@ -8,8 +8,8 @@ from .truth import CUTS_TRUE_VBF_CUTBASED, CUTS_TRUE_BOOSTED
 # https://cds.cern.ch/record/1629891/files/ATL-COM-PHYS-2013-1558.pdf
 
 #DETA_JETS = Cut('dEta_jets > 2.6')
-DETA_JETS = Cut('(jet_0_eta - jet_1_eta) > -2.6') & Cut('(jet_0_eta - jet_1_eta) < 2.6')
-MASS_JETS = Cut('mass_jet1_jet2 > 250000')
+DETA_JETS = Cut('dijet_deta > 2.6')# & Cut('(jet_0_eta - jet_1_eta) < 2.6')
+MASS_JETS = Cut('dijet_vis_mass > 250000')
 
 TAU1_CENTR = Cut('tau1_centrality > %f' % (1. / math.e))
 TAU2_CENTR = Cut('tau2_centrality > %f' % (1. / math.e))
@@ -79,7 +79,7 @@ class Category_Cuts_VBF_HighDR_Tight(Category_Preselection):
     cuts = (
         CUTS_VBF_CUTBASED
         & (Cut('dR_tau1_tau2 > 1.5') | Cut('resonance_pt < 140000'))
-        & Cut('mass_jet1_jet2 > (-250000 * dEta_jets + 1550000)'))
+        & Cut('dijet_vis_mass > (-250000 * dijet_deta + 1550000)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
         & Cut('true_resonance_pt<140000')
@@ -102,7 +102,7 @@ class Category_Cuts_VBF_HighDR_Loose(Category_Preselection):
     cuts = (
         CUTS_VBF_CUTBASED
         & (Cut('dR_tau1_tau2 > 1.5') | Cut('resonance_pt < 140000'))
-        & Cut('mass_jet1_jet2 < (-250000 * dEta_jets + 1550000)'))
+        & Cut('dijet_vis_mass < (-250000 * dijet_deta + 1550000)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
         & Cut('true_resonance_pt<140000')
