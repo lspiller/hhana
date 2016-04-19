@@ -84,11 +84,11 @@
           OS_ISOL:
             qcd_data_scale: 1.0
             qcd_others_scale: 1.0
-            qcd_scale: 0.5080838542208435
-            qcd_scale_error: 0.35245466158467315
+            qcd_scale: 3.6198329602815704
+            qcd_scale_error: 0.39690464869365244
             qcd_z_scale: 1.0
-            z_scale: 3.2367772046470638
-            z_scale_error: 0.6858500761651389
+            z_scale: 1.1986226348951867
+            z_scale_error: 0.16475203342891437
   TAU_SELECTION:
     false:
       DITAU_DETA:

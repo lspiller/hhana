@@ -96,28 +96,28 @@ SYSTEMATICS_BY_WEIGHT = [
     ('TRIGGER_STATDATA_DOWN',),
     ('TRIGGER_STATMC_UP',),
     ('TRIGGER_STATMC_DOWN',),
-    ('FAKERATE_UP',),
-    ('FAKERATE_DOWN',),
+#    ('FAKERATE_UP',),
+#    ('FAKERATE_DOWN',),
     ('TAU_ID_UP',),
     ('TAU_ID_DOWN',),
-    ('TAU_ID_STAT_UP',),
-    ('TAU_ID_STAT_DOWN',),
-    ('PU_RESCALE_UP',),
-    ('PU_RESCALE_DOWN',),
-    ('TRIGGER_STAT_PERIODA_UP',),
-    ('TRIGGER_STAT_PERIODA_DOWN',),
-    ('TRIGGER_STAT_PERIODBD_BARREL_UP',),
-    ('TRIGGER_STAT_PERIODBD_BARREL_DOWN',),
-    ('TRIGGER_STAT_PERIODBD_ENDCAP_UP',),
-    ('TRIGGER_STAT_PERIODBD_ENDCAP_DOWN',),
-    ('TRIGGER_STAT_PERIODEM_BARREL_UP',),
-    ('TRIGGER_STAT_PERIODEM_BARREL_DOWN',),
-    ('TRIGGER_STAT_PERIODEM_ENDCAP_UP',),
-    ('TRIGGER_STAT_PERIODEM_ENDCAP_DOWN',),
+#    ('TAU_ID_STAT_UP',),
+#    ('TAU_ID_STAT_DOWN',),
+#    ('PU_RESCALE_UP',),
+#    ('PU_RESCALE_DOWN',),
+#    ('TRIGGER_STAT_PERIODA_UP',),
+#    ('TRIGGER_STAT_PERIODA_DOWN',),
+#    ('TRIGGER_STAT_PERIODBD_BARREL_UP',),
+#    ('TRIGGER_STAT_PERIODBD_BARREL_DOWN',),
+#    ('TRIGGER_STAT_PERIODBD_ENDCAP_UP',),
+#    ('TRIGGER_STAT_PERIODBD_ENDCAP_DOWN',),
+#    ('TRIGGER_STAT_PERIODEM_BARREL_UP',),
+#    ('TRIGGER_STAT_PERIODEM_BARREL_DOWN',),
+#    ('TRIGGER_STAT_PERIODEM_ENDCAP_UP',),
+#    ('TRIGGER_STAT_PERIODEM_ENDCAP_DOWN',),
 ]
 
 
-def iter_systematics(include_nominal=False, year=2012, components=None):
+def iter_systematics(include_nominal=False, year=2015, components=None):
     syst = get_systematics(year)
     if include_nominal:
         yield 'NOMINAL'
@@ -131,7 +131,7 @@ def iter_systematics(include_nominal=False, year=2012, components=None):
             yield var
 
 
-def get_systematics(year=2012):
+def get_systematics(year=2015):
     if year == 2012:
         return SYSTEMATICS_2012
     elif year == 2011:

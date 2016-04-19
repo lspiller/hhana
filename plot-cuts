@@ -11,13 +11,10 @@ from mva.categories.hadhad import (
     Category_Preselection_1_JET)
 from mva.analysis import get_analysis
 from mva.plotting import draw_channel_array
-from mva.variables import (VARIABLES, HH_VARIABLES)
+from mva.variables import VARIABLES
 from rootpy.tree import Cut
 from rootpy.plotting import Hist
 from math import pi
-
-if args.channel == 'hadhad':
-    VARIABLES.update(HH_VARIABLES)
 
 for year in (2015,):#(2011, 2012):
     analysis = get_analysis(
@@ -28,7 +25,7 @@ for year in (2015,):#(2011, 2012):
 
     # show justification of the dEta cut location in VBF
     draw_channel_array(
-        analysis, {'dEta_jets': VARIABLES['dEta_jets']},
+        analysis, {'dijet_deta': VARIABLES['dijet_deta']},
         mass=125, mode=['gg', 'VBF'], signal_scale=100,
         stack_signal=False,
         signal_colors=['blue', 'red'],
@@ -110,7 +107,7 @@ for year in (2015,):#(2011, 2012):
 
     # show justification of deta taus cut for vbf
     draw_channel_array(
-        analysis, {'dEta_jets': VARIABLES['dEta_jets']},
+        analysis, {'dEta_jets': VARIABLES['dijet_deta']},
         mass=125, mode=['gg', 'VBF'], signal_scale=50,
         stack_signal=False,
         signal_colors=['blue', 'red'],

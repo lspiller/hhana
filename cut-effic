@@ -17,7 +17,7 @@ Signal = analysis.higgs_125
 Data = analysis.data
 
 Presel  = OrderedDict([
-            ('Eta'        , Cut()),
+            ('Eta'        , Cut('selection_lepton_veto')),
             ('MET'        , Cut('selection_met == 1')),
             ('Deta'       , Cut('selection_delta_eta == 1')),
             ('Dr'         , Cut('selection_delta_r == 1')),

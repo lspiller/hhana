@@ -3,7 +3,7 @@ import ROOT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-ROOT.gSystem.CompileMacro(os.path.join(HERE, 'src', 'FitCrossCheckForLimits.C'),
+ROOT.gSystem.CompileMacro(os.path.join(HERE, 'extern', 'FitCrossCheckForLimits.C'),
         'k',
         'NuisanceCheck',
         '/tmp')

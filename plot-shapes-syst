@@ -36,10 +36,9 @@ output_suffix = analysis.get_suffix()
 from mva.variables import MMC_MASS
 fields=[
     MMC_MASS,
-#    'mmc1_mass',
-#    'dR_tau1_tau2',
-    'ditau_dr',
-    'dEta_jets',
+#    'bdt',
+#    'ditau_dr',
+#    'dijet_deta',
     ]
 
 field_dict = dict([(field, VARIABLES[field]) for field in fields])

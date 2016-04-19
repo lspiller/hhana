@@ -41,7 +41,7 @@ def get_yield( sample, Category=Category_Preselection, cut='' ):
     pass a given cut after the preselection
     """
     hist = sample.events( Category, TARGET_REGION, cut )
-    val, err = hist[1].value,hist[1].error 
+    val, err = hist[1].value,hist[1].error
     return ufloat(val,err)
 # -------------------------------------
 
@@ -60,11 +60,11 @@ def get_yield_latexline( analysis,Category=Category_Preselection, cut='' ):
     latex_line += str(total_signal) + '  &  '
     # --> signals (VH,ggH,VBF)
     for signal in analysis.signals:
-        latex_line+= str(get_yield(signal,Category,cut)) + '  &  ' 
-    # --> Ztautau 
-    latex_line+= str(get_yield(analysis.ztautau,Category,cut)) + '  &  ' 
-    # --> Multi-jets 
-    latex_line+= str(get_yield(analysis.qcd,Category,cut)) + '  &  ' 
+        latex_line+= str(get_yield(signal,Category,cut)) + '  &  '
+    # --> Ztautau
+    latex_line+= str(get_yield(analysis.ztautau,Category,cut)) + '  &  '
+    # --> Multi-jets
+    latex_line+= str(get_yield(analysis.qcd,Category,cut)) + '  &  '
     # --> Others
     latex_line+= str(get_yield(analysis.others,Category,cut) ) +'\\\\'
     return latex_line
@@ -77,7 +77,8 @@ def get_yield_latexline( analysis,Category=Category_Preselection, cut='' ):
 norm_cache.qcd_ztautau_norm( ztautau = analysis.ztautau,
                              qcd = analysis.qcd,
                              category=Category_Preselection,
-                             param=analysis.norm_field)
+                             param=analysis.norm_field,
+                             target_region='OS_ISOL')
 
 vbf_cuts = OrderedDict( )
 vbf_cuts['2jets sel.'] = CUTS_2J
@@ -87,7 +88,7 @@ vbf_cuts['$M_{jj}$'] = CUTS_VBF & DETA_JETS & MASS_JETS
 vbf_cuts['$\\eta_{min,j}<\\tau_1,\\tau_2<\\eta_{max,j}$'] = CUTS_VBF & DETA_JETS & MASS_JETS & TAUS_CENTR
 
 vbf_cats = []
-if args.year==2012:
+if args.year==2012 or args.year == 2015:
     vbf_cats = [Category_Cuts_VBF_LowDR,
                 Category_Cuts_VBF_HighDR_Tight,
                 Category_Cuts_VBF_HighDR_Loose,]
@@ -95,7 +96,7 @@ if args.year==2012:
 elif args.year==2011:
     vbf_cats = [Category_Cuts_VBF_LowDR,
                 Category_Cuts_VBF_HighDR,]
-    
+
 f_latex = open('cutbased_yields'+output_suffix+'.txt','w')
 f_latex.write('Data \t H(125) \t VH \t ggH \t VBF \t Ztautau \t QCD \t Others \n')
 f_latex.write('Preselection & '+get_yield_latexline( analysis, Category=Category_Preselection,cut='') +'\n')
@@ -115,7 +116,7 @@ f_latex.write('\\hline\n')
 boosted_cuts = OrderedDict()
 boosted_cuts['Preselection'] = -CUTS_2J
 boosted_cuts['$|\\Delta\\eta_{\\tau\\tau}|$'] = -CUTS_2J & DETA_TAUS
-boosted_cuts['$p_T^{H}$'] = -CUTS_2J & DETA_TAUS & RESONANCE_PT 
+boosted_cuts['$p_T^{H}$'] = -CUTS_2J & DETA_TAUS & RESONANCE_PT
 
 boosted_cats = [Category_Cuts_Boosted_Tight,
                 Category_Cuts_Boosted_Loose]
@@ -129,17 +130,5 @@ for cat in boosted_cats:
     latex_line = get_yield_latexline(analysis, Category=cat)
     f_latex.write(cat.latex+' & '+latex_line+'\n')
     log.info(cat.latex)
-
-
-
-
-
-    
-
-
-
-
-    
-
 
 

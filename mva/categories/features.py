@@ -21,7 +21,7 @@ fischer_boosted = ['dijet_deta', 'dijet_vis_mass']
 features_vbf = [
 #    MMC_MASS,
     'dijet_deta',
-    'eta_product_jets',
+#    'eta_product_jets',
     'dijet_vis_mass',
     #'sphericity',
     #'aplanarity',

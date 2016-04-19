@@ -447,7 +447,7 @@ class InclusiveHiggs(MC, Signal):
                 'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
             ]
         super(InclusiveHiggs, self).__init__(
-            year=2012, name='Signal', label='Signal',
+            year=2015, name='Signal', label='Signal',
             ntuple_path='ntuples/prod_v29',
             student='hhskim_overlap',
             **kwargs)

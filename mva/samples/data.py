@@ -146,59 +146,59 @@ class Data(Sample):
                 arrs=weights,
                 dtypes=np.dtype('f8'))
 
-        taupt_br = rec[['ditau_tau0_pt', 'ditau_tau1_pt']]
-        taupt_br = rec2array( taupt_br ).reshape((taupt_br.shape[0],2))
-        taupt_ratio = taupt_br[:,0]/taupt_br[:,1]
-        rec = rec_append_fields(rec,
-                names='ditau_pt_ratio',
-                arrs=taupt_ratio,
-                dtypes=np.dtype('f8'))
-
-        mom_branches = [
-                'ditau_tau0_pt', 'ditau_tau0_eta', 'ditau_tau0_phi', 'ditau_tau0_m',
-                'ditau_tau1_pt', 'ditau_tau1_eta', 'ditau_tau1_phi', 'ditau_tau1_m',
-                'jet_0_pt', 'jet_0_eta', 'jet_0_phi', 'jet_0_m',
-                'jet_1_pt', 'jet_1_eta', 'jet_1_phi', 'jet_1_m',
-            ]
-        mom_arr = rec[mom_branches]
-        mom_arr = rec2array( mom_arr ).reshape((mom_arr.shape[0], 4, 4))
-        # convert array of pT, eta, phi, m
-        # to array of p, px, py, pz, pT, eta, phi, m
-        kin_arr = np.empty(shape=(mom_arr.shape[0], 4, 8))
-        # |p| = pT cosh eta
-        kin_arr[:,:,0] = mom_arr[:,:,0] * np.cosh(mom_arr[:,:,1])
-        # px, py, pz
-        kin_arr[:,:,1] = mom_arr[:,:,0] * np.cos(mom_arr[:,:,2])
-        kin_arr[:,:,2] = mom_arr[:,:,0] * np.sin(mom_arr[:,:,2])
-        kin_arr[:,:,3] = mom_arr[:,:,0] * np.sinh(mom_arr[:,:,1])
-        # pT, eta, phi, m
-        kin_arr[:,:,4] = mom_arr[:,:,0]
-        kin_arr[:,:,5] = mom_arr[:,:,1]
-        kin_arr[:,:,6] = mom_arr[:,:,2]
-        kin_arr[:,:,7] = mom_arr[:,:,3]
-
-        rec = rec_append_fields(rec,
-            names='eta_product_jets',
-            arrs=(kin_arr[:,2,5]*kin_arr[:,3,5]),
-            dtypes=np.dtype('f8'))
-        # centrality: exp( -4/(eta1-eta2)^2 (eta- eta1+eta2.2)^2)
-        tau1_centrality = np.exp( \
-                -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
-                * (kin_arr[:,0,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
-                )
-        tau2_centrality = np.exp( \
-                -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
-                * (kin_arr[:,1,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
-                )
-
-        rec = rec_append_fields(rec,
-            names='tau1_centrality',
-            arrs=tau1_centrality,
-            dtypes=np.dtype('f8'))
-        rec = rec_append_fields(rec,
-            names='tau2_centrality',
-            arrs=tau2_centrality,
-            dtypes=np.dtype('f8'))
+#        taupt_br = rec[['ditau_tau0_pt', 'ditau_tau1_pt']]
+#        taupt_br = rec2array( taupt_br ).reshape((taupt_br.shape[0],2))
+#        taupt_ratio = taupt_br[:,1]/taupt_br[:,0]
+#        rec = rec_append_fields(rec,
+#                names='ditau_pt_ratio',
+#                arrs=taupt_ratio,
+#                dtypes=np.dtype('f8'))
+#
+#        mom_branches = [
+#                'ditau_tau0_pt', 'ditau_tau0_eta', 'ditau_tau0_phi', 'ditau_tau0_m',
+#                'ditau_tau1_pt', 'ditau_tau1_eta', 'ditau_tau1_phi', 'ditau_tau1_m',
+#                'jet_0_pt', 'jet_0_eta', 'jet_0_phi', 'jet_0_m',
+#                'jet_1_pt', 'jet_1_eta', 'jet_1_phi', 'jet_1_m',
+#            ]
+#        mom_arr = rec[mom_branches]
+#        mom_arr = rec2array( mom_arr ).reshape((mom_arr.shape[0], 4, 4))
+#        # convert array of pT, eta, phi, m
+#        # to array of p, px, py, pz, pT, eta, phi, m
+#        kin_arr = np.empty(shape=(mom_arr.shape[0], 4, 8))
+#        # |p| = pT cosh eta
+#        kin_arr[:,:,0] = mom_arr[:,:,0] * np.cosh(mom_arr[:,:,1])
+#        # px, py, pz
+#        kin_arr[:,:,1] = mom_arr[:,:,0] * np.cos(mom_arr[:,:,2])
+#        kin_arr[:,:,2] = mom_arr[:,:,0] * np.sin(mom_arr[:,:,2])
+#        kin_arr[:,:,3] = mom_arr[:,:,0] * np.sinh(mom_arr[:,:,1])
+#        # pT, eta, phi, m
+#        kin_arr[:,:,4] = mom_arr[:,:,0]
+#        kin_arr[:,:,5] = mom_arr[:,:,1]
+#        kin_arr[:,:,6] = mom_arr[:,:,2]
+#        kin_arr[:,:,7] = mom_arr[:,:,3]
+#
+#        rec = rec_append_fields(rec,
+#            names='eta_product_jets',
+#            arrs=(kin_arr[:,2,5]*kin_arr[:,3,5]),
+#            dtypes=np.dtype('f8'))
+#        # centrality: exp( -4/(eta1-eta2)^2 (eta- eta1+eta2.2)^2)
+#        tau1_centrality = np.exp( \
+#                -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
+#                * (kin_arr[:,0,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
+#                )
+#        tau2_centrality = np.exp( \
+#                -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
+#                * (kin_arr[:,1,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
+#                )
+#
+#        rec = rec_append_fields(rec,
+#            names='tau1_centrality',
+#            arrs=tau1_centrality,
+#            dtypes=np.dtype('f8'))
+#        rec = rec_append_fields(rec,
+#            names='tau2_centrality',
+#            arrs=tau2_centrality,
+#            dtypes=np.dtype('f8'))
 
         if fields is not None:
             rec = rec[fields]

@@ -18,7 +18,8 @@ def get_sig(path, analysis='mva'):
 
 
 for analysis in ('mva', 'cuts'):
-    for mass in range(100, 155, 5):
+#    for mass in range(100, 155, 5):
+    for mass in [125]:
         baseline = get_sig('hh_combination_{0}_fixed/measurement_hh_combination_{0}.pickle'.format(mass))
         graph_symm = Graph(len(chi2_thresh), color='red', title='Full Symmetrization',
                         drawstyle='P', legendstyle='P', markerstyle='o',

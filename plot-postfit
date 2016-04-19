@@ -79,7 +79,7 @@ def fit_workspace(file_name, ws_name,
 def plot_from_frame(
     file, name, fit_var, category, year,
     binning=None, unblind=False, path=None, mu=None, density_hist=False):
-    ana = Analysis(2012)
+    ana = Analysis(2015) # HACK - need to add --year option
     frame = file[name]
     hbkg = file.Get('h_sum_bkg_{0}'.format(frame.GetName()))
     curve_uncert_bkg = frame.getCurve('FitError_AfterFit_sum_bkg_{0}'.format(frame.GetName()))
@@ -176,12 +176,14 @@ def plot_from_frame(
         categories = CATEGORIES['mva_all']
     else:
         xtitle = get_label(MMC_MASS)
-        categories = CATEGORIES['cuts'] + CATEGORIES['cuts_2011']
+        categories = CATEGORIES['cuts']# + CATEGORIES['cuts_2011']
 
     if year == 2011:
         sqrts = 7
-    else:
+    elif year == 2012:
         sqrts = 8
+    elif year == 2015:
+        sqrts = 13
 
     plottables = [
         model,
@@ -288,7 +290,7 @@ if __name__ == '__main__':
     if args.fit_var == 'bdt':
         categories = CATEGORIES['mva_all']
     else:
-        categories = CATEGORIES['cuts'] + CATEGORIES['cuts_2011']
+        categories = CATEGORIES['cuts']# + CATEGORIES['cuts_2011']
 
     input = os.path.splitext(args.file)[0]
     output = input + '_postfit'

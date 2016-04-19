@@ -7,9 +7,8 @@ from .truth import CUTS_TRUE_VBF_CUTBASED, CUTS_TRUE_BOOSTED
 # Documentation:
 # https://cds.cern.ch/record/1629891/files/ATL-COM-PHYS-2013-1558.pdf
 
-#DETA_JETS = Cut('dEta_jets > 2.6')
-DETA_JETS = Cut('dijet_deta > 2.6')# & Cut('(jet_0_eta - jet_1_eta) < 2.6')
-MASS_JETS = Cut('dijet_vis_mass > 250000')
+DETA_JETS = Cut('dijet_deta > 2.6')
+MASS_JETS = Cut('dijet_vis_mass > 250')
 
 TAU1_CENTR = Cut('tau1_centrality > %f' % (1. / math.e))
 TAU2_CENTR = Cut('tau2_centrality > %f' % (1. / math.e))
@@ -54,11 +53,11 @@ class Category_Cuts_VBF_LowDR(Category_Preselection):
     linestyle = 'dotted'
     cuts = (
         CUTS_VBF_CUTBASED
-        & Cut('dR_tau1_tau2 < 1.5')
-        & Cut('resonance_pt > 140000'))
+        & Cut('ditau_dr < 1.5')
+        & Cut('ditau_mmc_maxw_pt > 140'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
-        & Cut('true_resonance_pt>140000'))
+        & Cut('true_ditau_mmc_maxw_pt>140'))
     limitbins = {}
     limitbins[2011] = [0, 64, 80, 92, 104, 116, 132, INF]
     # limitbins[2012] = [0, 64, 80, 92, 104, 116, 132, 176, INF]
@@ -78,12 +77,12 @@ class Category_Cuts_VBF_HighDR_Tight(Category_Preselection):
     linestyle = 'verylongdash'
     cuts = (
         CUTS_VBF_CUTBASED
-        & (Cut('dR_tau1_tau2 > 1.5') | Cut('resonance_pt < 140000'))
-        & Cut('dijet_vis_mass > (-250000 * dijet_deta + 1550000)'))
+        & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt < 140'))
+        & Cut('dijet_vis_mass > (-250 * dijet_deta + 1.550)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
-        & Cut('true_resonance_pt<140000')
-        & Cut('true_mass_jet1_jet2_no_overlap > (-250000 * true_dEta_jet1_jet2_no_overlap + 1550000)'))
+        & Cut('true_ditau_mmc_maxw_pt<140')
+        & Cut('true_mass_jet1_jet2_no_overlap > (-250 * true_dEta_jet1_jet2_no_overlap + 1.550)'))
 
     # limitbins = [0, 80, 92, 104, 116, 132, 152, INF] - old binning
     # limitbins = [0, 80, 104, 132, INF] - new bining (merging of old)
@@ -101,12 +100,12 @@ class Category_Cuts_VBF_HighDR_Loose(Category_Preselection):
     jk_number = 8
     cuts = (
         CUTS_VBF_CUTBASED
-        & (Cut('dR_tau1_tau2 > 1.5') | Cut('resonance_pt < 140000'))
-        & Cut('dijet_vis_mass < (-250000 * dijet_deta + 1550000)'))
+        & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt < 140'))
+        & Cut('dijet_vis_mass < (-250 * dijet_deta + 1550)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
-        & Cut('true_resonance_pt<140000')
-        & Cut('true_mass_jet1_jet2_no_overlap < (-250000 * true_dEta_jet1_jet2_no_overlap + 1550000)'))
+        & Cut('true_ditau_mmc_maxw_pt<140')
+        & Cut('true_mass_jet1_jet2_no_overlap < (-250 * true_dEta_jet1_jet2_no_overlap + 1550)'))
     # limitbins = [0, 64, 80, 92, 104, 116, 132, 152, 176, INF] - old binning
     # limitbins = [0, 64, 80, 92, 104, 116, 152, INF] - new binning (merging of old)
     limitbins = [0, 50, 70, 85, 100, 120, 150, INF] # - new binning
@@ -134,10 +133,10 @@ class Category_Cuts_Boosted_Tight(Category_Preselection):
     linestyle = 'verylongdashdot'
     jk_number = 6
     cuts = ((- CUTS_VBF_CUTBASED) & CUTS_BOOSTED_CUTBASED
-            & (Cut('dR_tau1_tau2 < 1.5') & Cut('resonance_pt>140000')))
+            & (Cut('ditau_dr < 1.5') & Cut('ditau_mmc_maxw_pt>140')))
     cuts_truth = (
         CUTS_TRUE_BOOSTED
-        & Cut('true_resonance_pt>140000'))
+        & Cut('true_ditau_mmc_maxw_pt>140'))
     limitbins = {}
     # limitbins[2011] = [0,64,72,76,80,84,88,92,96,100,104,108,112,116,120,124,128,132,140,INF] - old binning
     limitbins[2011] = [0, 64, 72, 80, 88, 96, 104, 112, 120, 128, 140, 156, 176, INF]
@@ -157,10 +156,10 @@ class Category_Cuts_Boosted_Loose(Category_Preselection):
     linestyle = 'dotted'
     jk_number = 5
     cuts = ((- CUTS_VBF_CUTBASED) & CUTS_BOOSTED_CUTBASED
-            & (Cut('dR_tau1_tau2 > 1.5') | Cut('resonance_pt<140000')))
+            & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt<140')))
     cuts_truth = (
         CUTS_TRUE_BOOSTED
-        & Cut('true_resonance_pt<140000'))
+        & Cut('true_ditau_mmc_maxw_pt<140'))
     limitbins = {}
     # limitbins[2011] = [0,80,84,88,92,96,100,104,108,112,116,120,124,128,132,136,140,156,200,INF] - old binning
     limitbins[2011] = [0, 80, 88 ,96 ,104 ,112 ,120 ,128, 140, 156, INF]
@@ -193,7 +192,7 @@ class Category_Cuts_Boosted_Tight_NoDRCut(Category_Preselection):
     name = 'cuts_boosted_tight_nodrcut'
     label = '#tau_{had}#tau_{had} CB Boosted Tight No dR Cut'
     cuts = ((- CUTS_VBF_CUTBASED) & CUTS_BOOSTED_CUTBASED
-            & Cut('resonance_pt>140000') )
+            & Cut('ditau_mmc_maxw_pt>140') )
     norm_category = Category_Preselection
 
 

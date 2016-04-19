@@ -455,10 +455,6 @@ def draw(name,
         legends.append(legend)
 
     # draw the objects
-    log.debug("Histograms: ")
-    for h in objects:
-        print h, h.color, h.fillstyle, h.title, h.name
-        h.Print('v')
     bounds = fig.draw('main', objects, ypadding=ypadding,
                       logy_crop_value=1E-1,
                       xdivisions=xdivisions)

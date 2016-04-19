@@ -9,9 +9,6 @@ TAUID = (Cut('ditau_tau0_jet_bdt_medium == 1') & \
          Cut('ditau_tau1_jet_bdt_tight == 1')) | \
         (Cut('ditau_tau0_jet_bdt_tight == 1') & \
          Cut('ditau_tau1_jet_bdt_medium == 1'))
-MET = Cut('selection_met == 1')
-DETA = Cut('selection_delta_eta == 1')
-DELTAR = Cut('selection_delta_r == 1')
 
 TAU_SAME_VERTEX = Cut('tau_same_vertex')
 
@@ -25,12 +22,14 @@ AT_LEAST_1JET = Cut('jet_0_pt > 30')
 CUTS_2J = LEAD_JET_50 & SUBLEAD_JET_30
 CUTS_1J = LEAD_JET_50 & (- SUBLEAD_JET_30)
 CUTS_0J = (- LEAD_JET_50)
-JVT = (Cut('jet_1_jvt > 0.59')|Cut('jet_1_jvt < -0.59'))|Cut('jet_1_eta > 2.4')|Cut('jet_1_eta < -2.4')
 MET = Cut('met_et > 20')
 DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
 DETA_TAUS = Cut('ditau_deta < 1.5')
 DETA_TAUS_CR = Cut('ditau_deta > 1.5')
-RESONANCE_PT = Cut('ditau_vect_sum_pt > 100')
+RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
+
+LEPTON_VETO = Cut('selection_lepton_veto == 1')
+TRIGGER = Cut('selection_trigger == 1')
 
 # use .format() to set centality value
 MET_CENTRALITY = 'ditau_met_bisect==1 || (ditau_met_min_dphi < {0})'
@@ -44,12 +43,13 @@ PRESELECTION = (
     & DR_TAUS
     # & TAU_SAME_VERTEX
     & TAUID
+    & LEPTON_VETO
+    & TRIGGER
     )
 
 # VBF category cuts
 CUTS_VBF = (
     CUTS_2J
-#    & JVT
     & DETA_TAUS
     )
 

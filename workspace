@@ -57,6 +57,8 @@ else:
 
 years = args.years
 categories = args.categories
+print categories
+print years
 if len(categories) == 1 and len(years) > 1:
     categories = categories * len(years)
 elif len(categories) != len(years):

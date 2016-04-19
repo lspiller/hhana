@@ -48,7 +48,8 @@ def plot_nuis(name, graphs, outdir):
          xlimits=(-3, 3), ylimits=(-1, 10))
     for graph in graphs:
         graph.legendstyle = 'L'
-    leg = Legend(graphs, x=0.30, y=0.01, textsize=15)
+#    leg = Legend(graphs, x=0.30, y=0.01, textsize=15)
+    leg = Legend(graphs, leftmargin=0.30, topmargin=0.01, textsize=15)
     leg.Draw()
     ATLAS_label(0.68, 0.88, text="Internal", sqrts=None, pad=c, sep=0.12)
     c.SaveAs(os.path.join(outdir, '{0}.png'.format(name)))
@@ -78,10 +79,10 @@ if __name__ == '__main__':
     parser.add_argument('path')
     parser.add_argument('--mass', default='125')
     parser.add_argument('--ana', default='mva', choices=['mva', 'cba'])
-    parser.add_argument('--reference-workspace', default='hh_combination',
+    parser.add_argument('--reference-workspace', default='hh_15_combination',
                         choices=['hh_combination', 'hh_12_combination'])
     args = parser.parse_args()
-    
+
     if args.ana == 'mva':
         categories = CATEGORIES['mva_all']
     else:

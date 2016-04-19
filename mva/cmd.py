@@ -3,7 +3,7 @@ from rootpy.extern import argparse
 
 from .categories.hadhad import CATEGORIES
 from .massregions import DEFAULT_LOW_MASS, DEFAULT_HIGH_MASS
-from .variables import VARIABLES, HH_VARIABLES, LH_VARIABLES
+from .variables import VARIABLES
 from .regions import REGIONS
 from .defaults import FAKES_REGION, TARGET_REGION
 
