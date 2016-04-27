@@ -9,10 +9,15 @@ from .truth import CUTS_TRUE_VBF_CUTBASED, CUTS_TRUE_BOOSTED
 
 DETA_JETS = Cut('dijet_deta > 2.6')
 MASS_JETS = Cut('dijet_vis_mass > 250')
-
-TAU1_CENTR = Cut('tau1_centrality > %f' % (1. / math.e))
-TAU2_CENTR = Cut('tau2_centrality > %f' % (1. / math.e))
+TAU1_CENTR = Cut('ditau_tau0_centr==1')
+TAU2_CENTR = Cut('ditau_tau1_centr==1')
 TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
+#TAU1_CENTR = Cut('tau1_centrality > %f' % (1. / math.e))
+#TAU2_CENTR = Cut('tau2_centrality > %f' % (1. / math.e))
+#TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
+#TAU1_CENTR = Cut('min( jet_1_eta, jet_2_eta ) < ditau_tau0_eta < max( jet_1_eta, jet_2_eta )')
+#TAU2_CENTR = Cut('min( jet_1_eta, jet_2_eta ) < ditau_tau1_eta < max( jet_1_eta, jet_2_eta )')
+#TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
 
 CUTS_VBF_CUTBASED = (
     CUTS_VBF

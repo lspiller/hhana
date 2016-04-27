@@ -315,6 +315,15 @@ VARIABLES = {
            'PRESELECTION': (9, 0.4, 2.8)},
        'ypadding': (0.5, 0),
    },
+   'dijet_dr': {
+       'title': r'$\Delta R(j,j)$',
+       'root': '#font[152]{#Delta}#font[52]{R}(#font[152]{j},#font[152]{j})',
+       'filename': 'dijet_dr',
+       'binning': {
+           None: (10, 0.0, 10.),
+           'PRESELECTION': (10, 0., 10.)},
+       'ypadding': (0.5, 0),
+   },
    'ditau_dphi': {
        'title': r'$\Delta \phi(\tau,\tau)$',
        'root': '#font[152]{#Delta#phi}(#font[152]{#tau},#font[152]{#tau})',

@@ -35,7 +35,8 @@ bounds = {
     'ditau_mmc_maxw_pt': (50, 300),
     'ditau_dr': (0.8, 2.4),
     'dijet_deta': (2.6, 6),
-    'dijet_vis_mass': (20, 140),
+    'dijet_dr': (0, 10),
+    'dijet_vis_mass': (20, 1000),
 }
 scales = {
     'ditau_mmc_mlm_m': 1,
@@ -43,6 +44,7 @@ scales = {
     'ditau_dr': 1,
     'dijet_deta': 1,
     'dijet_vis_mass': 1,
+    'dijet_dr': 1,
 }
 
 
@@ -139,10 +141,10 @@ legend(canvas)
 labels(canvas, Category_Cuts_VBF_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_vbf_mass_pt', formats)
 
-canvas = Canvas()
-bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'ditau_mmc_mlm_m', 'ditau_mmc_maxw_pt')
-labels(canvas, Category_Cuts_VBF_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_vbf_mass_pt_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'ditau_mmc_mlm_m', 'ditau_mmc_maxw_pt')
+#labels(canvas, Category_Cuts_VBF_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_vbf_mass_pt_bdt', formats)
 
 ##########
 
@@ -153,10 +155,10 @@ legend(canvas)
 labels(canvas, Category_Cuts_VBF_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_vbf_mass_dr', formats)
 
-canvas = Canvas()
-bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'ditau_mmc_mlm_m', 'ditau_dr')
-labels(canvas, Category_Cuts_VBF_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_vbf_mass_dr_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'ditau_mmc_mlm_m', 'ditau_dr')
+#labels(canvas, Category_Cuts_VBF_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_vbf_mass_dr_bdt', formats)
 
 ##########
 
@@ -170,10 +172,10 @@ legend(canvas, right=True)
 labels(canvas, Category_Cuts_VBF_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_vbf_dr_pt', formats)
 
-canvas = Canvas()
-bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'ditau_dr', 'ditau_mmc_maxw_pt')
-labels(canvas, Category_Cuts_VBF_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_vbf_dr_pt_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'ditau_dr', 'ditau_mmc_maxw_pt')
+#labels(canvas, Category_Cuts_VBF_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_vbf_dr_pt_bdt', formats)
 
 ##########
 
@@ -186,10 +188,10 @@ legend(canvas)
 labels(canvas, Category_Cuts_VBF_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_vbf_deta_mjj', formats)
 
-canvas = Canvas()
-bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'dijet_deta', 'dijet_vis_mass')
-labels(canvas, Category_Cuts_VBF_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_vbf_deta_mjj_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_VBF, Category_Cuts_VBF_Preselection, 'dijet_deta', 'dijet_vis_mass')
+#labels(canvas, Category_Cuts_VBF_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_vbf_deta_mjj_bdt', formats)
 
 # Boosted
 canvas = Canvas()
@@ -199,10 +201,10 @@ legend(canvas)
 labels(canvas, Category_Cuts_Boosted_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_boosted_mass_pt', formats)
 
-canvas = Canvas()
-bdt_contours(Category_Boosted, Category_Cuts_Boosted_Preselection, 'ditau_mmc_mlm_m', 'ditau_mmc_maxw_pt')
-labels(canvas, Category_Cuts_Boosted_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_boosted_mass_pt_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_Boosted, Category_Cuts_Boosted_Preselection, 'ditau_mmc_mlm_m', 'ditau_mmc_maxw_pt')
+#labels(canvas, Category_Cuts_Boosted_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_boosted_mass_pt_bdt', formats)
 
 #########
 
@@ -213,10 +215,10 @@ legend(canvas)
 labels(canvas, Category_Cuts_Boosted_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_boosted_mass_dr', formats)
 
-canvas = Canvas()
-bdt_contours(Category_Boosted, Category_Cuts_Boosted_Preselection, 'ditau_mmc_mlm_m', 'dijet_dr')
-labels(canvas, Category_Cuts_Boosted_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_boosted_mass_dr_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_Boosted, Category_Cuts_Boosted_Preselection, 'ditau_mmc_mlm_m', 'dijet_dr')
+#labels(canvas, Category_Cuts_Boosted_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_boosted_mass_dr_bdt', formats)
 
 #########
 
@@ -230,7 +232,7 @@ legend(canvas, right=True)
 labels(canvas, Category_Cuts_Boosted_Preselection)
 save_canvas(canvas, 'plots/contours', 'contour_boosted_dr_pt', formats)
 
-canvas = Canvas()
-bdt_contours(Category_Boosted, Category_Cuts_Boosted_Preselection, 'dijet_dr', 'ditau_mmc_maxw_pt')
-labels(canvas, Category_Cuts_Boosted_Preselection)
-save_canvas(canvas, 'plots/contours', 'contour_boosted_dr_pt_bdt', formats)
+#canvas = Canvas()
+#bdt_contours(Category_Boosted, Category_Cuts_Boosted_Preselection, 'dijet_dr', 'ditau_mmc_maxw_pt')
+#labels(canvas, Category_Cuts_Boosted_Preselection)
+#save_canvas(canvas, 'plots/contours', 'contour_boosted_dr_pt_bdt', formats)

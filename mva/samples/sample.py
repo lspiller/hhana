@@ -58,6 +58,8 @@ def get_workspace_np_name(sample, syst, year):
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HiggsPropertiesNuisanceParameterNames
     npname = 'ATLAS_{0}_{1:d}'.format(syst, year)
     # special cases
+    npname = npname.replace('TAUS_TRUEHADTAU_SME_TES', 'TAU_TES')
+    npname = npname.replace('_1_', '')
 #    npname = npname.replace('JES_Detector_{0}'.format(year),
 #                            'JES_{0}_Detector1'.format(year))
 #    npname = npname.replace('JES_EtaMethod_{0}'.format(year),
@@ -87,14 +89,15 @@ def get_workspace_np_name(sample, syst, year):
     if isinstance(sample, Embedded_Ztautau):
         npname = npname.replace('TRIGGER', 'TRIGGER_EMB_HH')
     else:
-        npname = npname.replace('TRIGGER', 'TRIGGER_HH')
+#        npname = npname.replace('TRIGGER', 'TRIGGER_HH')
+        npname = npname.replace('TRIGGER', 'TAU_TRIGGER_')
     # Decorrelate embedding NPs
     # * Decorrelate the NP between 2011 and 2012 for MFS because the cell
     #   subtraction yield was changed from 30% in 2011 to 20% in 2012.
-    npname = npname.replace('ISOL', 'ANA_EMB_ISOL')
-    npname = npname.replace('MFS', 'ANA_EMB_MFS')
-    # correlate across years:
-    npname = npname.replace('JER_{0}'.format(year), 'JER')
+#    npname = npname.replace('ISOL', 'ANA_EMB_ISOL')
+#    npname = npname.replace('MFS', 'ANA_EMB_MFS')
+#    # correlate across years:
+#    npname = npname.replace('JER_{0}'.format(year), 'JER')
     return npname
 
 
