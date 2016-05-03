@@ -8,39 +8,44 @@ from mva.samples.db import get_file
 from collections import OrderedDict
 import yellowhiggs
 from mva.samples import Higgs
-
+from mva.samples import Data
 from mva.cmd import get_parser
+from mva.categories.hadhad import (TAUID, LEAD_TAU_40, SUBLEAD_TAU_30, MET, DR_TAUS, LEPTON_VETO, TRIGGER)
 
-
+from mva.categories.hadhad import (CUTS_2J, DETA_TAUS, RESONANCE_PT, DETA_TAUS )
+from mva.regions import Q, OS, TRACK_ISOLATION, P1P3, ID_MEDIUM, TRACK_ISOLATION
 from mva.analysis import get_analysis
 from mva.categories.hadhad import Category_Preselection
 
-
-higgs = Higgs(
+#OS & P1P3 & ID_MEDIUM & TRACK_ISOLATION & Q
+HiggsMC = Higgs(
 #                sample_pattern='*PoPy8_ggH125_tautauhh*',
                 year=2015,
-                modes=['gg'],
+                modes=['VBF'],
                 mass=125,
                 linecolor='red',
                 linewidth=2,
                 linestyle='dashed',
                 ggf_weight=None)
-
-cutlist = OrderedDict([
-            ('Eta'        , Cut()),
-            ('Charge'     , Cut('(ditau_tau0_q == 1) || (ditau_tau0_q == -1)') & \
-                            Cut('(ditau_tau1_q == 1) || (ditau_tau1_q == -1)')),
-            ('nTracks'    , Cut('(ditau_tau0_n_tracks == 1) || (ditau_tau0_n_tracks == 3)') & \
-                            Cut('(ditau_tau1_n_tracks == 1) || (ditau_tau1_n_tracks == 3)')),
-            ('tauID'      , Cut('ditau_tau0_jet_bdt_medium == 1') & \
-                            Cut('ditau_tau1_jet_bdt_medium == 1')),
-            ('Leading'    , Cut('ditau_tau0_pt > 40')),
-            ('Subleading' , Cut('ditau_tau1_pt > 30')),
-            ('OS'         , Cut('selection_opposite_sign == 1')),
-            ('MET'        , Cut('selection_met == 1')),
-            ('Deta'       , Cut('selection_delta_eta == 1')),
-            ('Dr'         , Cut('selection_delta_r == 1')),
-        ])
+for higgs in [Data(2015), HiggsMC]:
+    print higgs
+#higgs = Data( 2015 )
+    cutlist = OrderedDict([
+                ('Initial'    , Cut()),
+                ('Trigger'    , TRIGGER),
+                ('Charge'     , Q),
+                ('nTracks'    , P1P3),
+                ('tauID'      , TAUID),
+                ('tauIso'     , TRACK_ISOLATION),
+                ('Leading'    , LEAD_TAU_40),
+                ('Subleading' , SUBLEAD_TAU_30),
+                ('OS'         , OS),
+                ('MET'        , MET),
+                ('MET Cent'   , Cut('selection_met_centrality == 1')),
+                ('Deta'       , Cut('selection_delta_eta == 1')),
+                ('Dr'         , Cut('selection_delta_r == 1')),
+                ('Lepton Veto', LEPTON_VETO),
+            ])
 
 #rfile = get_file(hdf=True)
 #table = rfile.get_node('/PoPy8_ggH125_tautauhh')
@@ -49,20 +54,20 @@ cutlist = OrderedDict([
 #kfact, effic = 1.
 #weight = 1E3 * LUMI * xsec * kfact / (effic * events)
 
-table = []
-selection = None
-table.append( '{0: <9}\t {1: <0}\t {2}'.format('Cut', 'Unweighted', 'Weighted') )
-for name, cut in cutlist.iteritems():
-    selection = selection & cut if selection else cut
+    table = []
+    selection = None
+    table.append( '{0: <9}\t {1: <0}\t {2}'.format('Cut', 'Unweighted', 'Weighted') )
+    for name, cut in cutlist.iteritems():
+        selection = selection & cut if selection else cut
 #    if selection:
 #        rec = table.read_where(selection.where())
 #    else:
 #        rec = table.read()
 
-    weighted_events = higgs.events(cuts=selection)[1].value
-    unweighted_events = higgs.events(cuts=selection, weighted=False)[1].value
+        weighted_events = higgs.events(cuts=selection)[1].value
+        unweighted_events = higgs.events(cuts=selection, weighted=False)[1].value
 #    table.append( '{0: <9}\t {1: <9.2f}\t {2.2f}'.format(name, unweighted_events, weighted_events) )
-    table.append( '{0: <9}\t {1}\t {2}'.format(name, unweighted_events, weighted_events) )
-for line in table:
-    print line
+        table.append( '{0: <9}\t {1}\t {2}'.format(name, unweighted_events, weighted_events) )
+    for line in table:
+        print line
 

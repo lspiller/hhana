@@ -13,8 +13,8 @@ from mva.analysis import get_analysis
 from mva.categories.hadhad import Category_Preselection
 from mva.samples import Data
 from statstools.ufloat import ufloat
-from statstools.jobs import run_pool
-
+#from statstools.jobs import run_pool
+from statstools.parallel import run_pool
 
 def get_yield(sample, Category=Category_Preselection, cuts='', systematic='NOMINAL'):
     """ 

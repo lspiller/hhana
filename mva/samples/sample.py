@@ -860,7 +860,7 @@ class SystematicsSample(Sample):
 #            'MET_RESOSOFTTERMS',
 #            'MET_SCALESOFTTERMS',
             'TAU_ID',
-            'TRIGGER',
+            'TAU_TRIGGER',
         ]
         # No FAKERATE for embedding since fakes are data
         # so don't include FAKERATE here
@@ -888,11 +888,12 @@ class SystematicsSample(Sample):
 #                'MET_sofTrk_ResoPerp', # Not varied up or down
 #                'MET_SoftTrk_ScaleDown', # different convention from above: Down/Up instead of _DOWN/_UP
 #                'MET_SoftTrk_ScaleUp',
-                'TAUS_TRUEHADTAU_SME_TES_DETECTOR',
-                'TAUS_TRUEHADTAU_SME_TES_MODEL',
-                'TAUS_TRUEHADTAU_SME_TES_INSITU',
-                'TRIGGER_STATDATA',
-                'TRIGGER_STATMC',
+                'TAU_TES_DETECTOR',
+                'TAU_TES_MODEL',
+                'TAU_TES_INSITU',
+                'TAU_TRIGGER_STATDATA',
+                'TAU_TRIGGER_STATMC',
+                'TAU_TRIGGER_SYST',
                 ]
         else:
             log.warning('Incomplete list of SF !')
@@ -1475,7 +1476,7 @@ class MC(SystematicsSample):
         elif self.year == 2015:
             log.warning('No trigger scale factor for 2015 yet - No longer true, recently added')
             systematics.update({
-                    'TRIGGER': {
+                    'TAU_TRIGGER': {
                         'STATDATA_UP': [
                             'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
                             'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
@@ -1488,10 +1489,10 @@ class MC(SystematicsSample):
                         'STATMC_DOWN': [
                             'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
                             'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                        'UP': [
+                        'SYST_UP': [
                             'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
                             'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-                        'DOWN': [
+                        'SYST_DOWN': [
                             'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
                             'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
                         'NOMINAL': [
