@@ -40,7 +40,7 @@ from ..cachedtable import CachedTable
 from ..variables import get_binning, get_scale
 from mva.categories import get_trigger
 
-BCH_UNCERT = pickle.load(open(os.path.join(CACHE_DIR, 'bch_cleaning.cache')))
+#BCH_UNCERT = pickle.load(open(os.path.join(CACHE_DIR, 'bch_cleaning.cache')))
 
 
 class Dataset(namedtuple('Dataset',
@@ -413,14 +413,14 @@ class Sample(object):
                         high=1. + lumi_uncert,
                         low=1. - lumi_uncert)
                     sample.AddOverallSys(lumi_sys)
-                    if (self.year == 2012 and
-                            do_systematics and category.name in BCH_UNCERT):
-                        bch_uncert = BCH_UNCERT[category.name]
-                        bch_sys = histfactory.OverallSys(
-                            'ATLAS_BCH_Cleaning',
-                            high=1. + bch_uncert,
-                            low=1. - bch_uncert)
-                        sample.AddOverallSys(bch_sys)
+#                    if (self.year == 2012 and
+#                            do_systematics and category.name in BCH_UNCERT):
+#                        bch_uncert = BCH_UNCERT[category.name]
+#                        bch_sys = histfactory.OverallSys(
+#                            'ATLAS_BCH_Cleaning',
+#                            high=1. + bch_uncert,
+#                            low=1. - bch_uncert)
+#                        sample.AddOverallSys(bch_sys)
             # HACK: disable calling this on signal for now since while plotting
             # we only want to show the combined signal but in the histfactory
             # method we require only a single mode

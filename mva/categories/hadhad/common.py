@@ -8,7 +8,8 @@ from ... import MMC_MASS
 TAUID = (Cut('ditau_tau0_jet_bdt_medium == 1') & \
          Cut('ditau_tau1_jet_bdt_tight == 1')) | \
         (Cut('ditau_tau0_jet_bdt_tight == 1') & \
-         Cut('ditau_tau1_jet_bdt_medium == 1'))
+         Cut('ditau_tau1_jet_bdt_medium == 1')) & \
+         Cut('n_taus_medium == 2')
 
 TAU_SAME_VERTEX = Cut('tau_same_vertex')
 
@@ -28,7 +29,7 @@ DETA_TAUS = Cut('ditau_deta < 1.5')
 DETA_TAUS_CR = Cut('ditau_deta > 1.5')
 RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
 
-LEPTON_VETO = Cut('selection_lepton_veto == 1')
+LEPTON_VETO = Cut('selection_lepton_veto == 1') & -Cut('ditau_tau0_ele_bdt_loose==1') & -Cut('ditau_tau1_ele_bdt_loose==1')
 TRIGGER = Cut('selection_trigger == 1')
 
 # use .format() to set centality value

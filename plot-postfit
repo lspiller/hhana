@@ -84,6 +84,9 @@ def plot_from_frame(
     hbkg = file.Get('h_sum_bkg_{0}'.format(frame.GetName()))
     curve_uncert_bkg = frame.getCurve('FitError_AfterFit_sum_bkg_{0}'.format(frame.GetName()))
     graph_bkg_ws = get_uncertainty_graph(hbkg, curve_uncert_bkg)
+    print binning, graph_bkg_ws
+    graph_bkg_ws.Print('v')
+
     graph_bkg = get_rebinned_graph(graph_bkg_ws, binning)
     graph_bkg.fillstyle = '/'
     graph_bkg.linewidth = 0
@@ -105,8 +108,8 @@ def plot_from_frame(
     hist_signal.linewidth = 2
     hist_signal.name = 'Signal'
     hist_signal.title = ana.higgs_125.label
-    if mu is not None:
-        hist_signal.title += ' (#mu={0:.1f})'.format(mu)
+ #   if mu is not None:
+ #       hist_signal.title += ' (#mu={0:.1f})'.format(mu)
     hist_signal.legendstyle = 'L'
 
     data_ws = frame.getHist('Data')
@@ -157,8 +160,9 @@ def plot_from_frame(
 
     background = [hist_fake, hist_others, hist_ztautau]
     hists = background[:]
-    if unblind is True:
-        hists.append(hist_signal)
+#    if unblind is True:
+#        hists.append(hist_signal)
+    hists.append(hist_signal)
 
     if density_hist:
         for hist in hists+[data, graph_bkg]:
@@ -319,6 +323,7 @@ if __name__ == '__main__':
             if category_name == 'rest':
                 continue
             binning = get_binning(category, year, fit_var=args.fit_var, clf_bins=args.clf_bins, suffix=args.suffix)
+            print binning
             if category_name != 'rest' and not args.unblind:
                 unblind = get_blinding(category, year, fit_var=args.fit_var)
                 log.info('Blinding region: {0}'.format(unblind))

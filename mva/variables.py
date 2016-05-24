@@ -94,6 +94,14 @@ YEAR_VARIABLES = {
 }
 
 VARIABLES = {
+
+    'n_avg_int_cor': {
+        'title': r'$\langle\mu\rangle|_{LB,BCID}$',
+        'root': '#font[152]{#LT#mu#GT#cbar}_{LB,BCID}',
+        'filename': 'n_avg_int_corr',
+        'binning': (40, 0, 40),
+        'integer': True,
+    },
     'n_avg_int': {
         'title': r'$\langle\mu\rangle|_{LB,BCID}$',
         'root': '#font[152]{#LT#mu#GT#cbar}_{LB,BCID}',

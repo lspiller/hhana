@@ -68,6 +68,9 @@ def analysis_parser(parser=None):
     parser.add_argument('--embedding', action='store_true', default=False,
             dest='embedding',
             help='use embedding instead of Z->tautau')
+    parser.add_argument('--madgraph', action='store_true', default=False,
+            dest='madgraph',
+            help='use MadPy8 Ztautau samples')
     parser.add_argument('--fakes-region', choices=REGIONS.keys(),
             default=FAKES_REGION,
             help='fakes shape region')

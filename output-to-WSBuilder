@@ -20,8 +20,11 @@ CHANNEL_RULES = [
 
 BACKGROUND_RULES = [
         lambda chan: chan.replace('Signal_', ''),
-        lambda chan: chan.replace('gg_', 'ggH_'),
-        lambda chan: chan.replace('VBF_', 'VBFH_'),
+        lambda chan: chan.replace('gg_125', 'ggH'),
+        lambda chan: chan.replace('VBF_125', 'VBFH'),
+        lambda chan: chan.replace('Ztautau', 'Ztt'),
+        lambda chan: chan.replace('Fakes', 'Fake'),
+        lambda chan: chan.replace('data', 'Data'),
         ]
 
 #hh_category_cuts_vbf_lowdr_Ztautau_125_ditau_mmc_mlm_m_TAU_TRIGGER_SYST_UP_uniform_binning

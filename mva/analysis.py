@@ -97,14 +97,22 @@ class Analysis(object):
                 constrain_norm=constrain_norms,
                 color='#00A3FF')
         else:
-            log.info("Using Pythia Ztautau")
-            self.ztautau = samples.Pythia_Ztautau(
+            log.info("Using MadGraph Ztautau")
+            self.ztautau = samples.MadGraph_Ztautau(
                 year=year,
                 trigger=self.trigger,
                 systematics=systematics,
                 workspace_norm=ztt_workspace_norm,
                 constrain_norm=constrain_norms,
                 color='#00A3FF')
+#            log.info("Using Pythia Ztautau")
+#            self.ztautau = samples.Pythia_Ztautau(
+#                year=year,
+#                trigger=self.trigger,
+#                systematics=systematics,
+#                workspace_norm=ztt_workspace_norm,
+#                constrain_norm=constrain_norms,
+#                color='#00A3FF')
 
         self.others = samples.Others(
             year=year,

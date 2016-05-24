@@ -107,7 +107,7 @@ for year in (2015,):#(2011, 2012):
 
     # show justification of deta taus cut for vbf
     draw_channel_array(
-        analysis, {'dEta_jets': VARIABLES['dijet_deta']},
+        analysis, {'dijet_deta': VARIABLES['dijet_deta']},
         mass=125, mode=['gg', 'VBF'], signal_scale=50,
         stack_signal=False,
         signal_colors=['blue', 'red'],

@@ -19,7 +19,7 @@ cuts_boosted = [
 fischer_boosted = ['dijet_deta', 'dijet_vis_mass']
 
 features_vbf = [
-#    MMC_MASS,
+    MMC_MASS,
     'dijet_deta',
 #    'eta_product_jets',
     'dijet_vis_mass',
@@ -42,7 +42,7 @@ features_vbf = [
 ]
 
 features_boosted = [
-#    MMC_MASS,
+    MMC_MASS,
     #'mass_tau1_tau2_jet1',
     #'sphericity',
     #'aplanarity',

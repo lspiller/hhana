@@ -6,98 +6,17 @@
           OS_ISOL:
             qcd_data_scale: 1.0
             qcd_others_scale: 1.0
-            qcd_scale: 1.3566169353309745
-            qcd_scale_error: 0.09219072639987994
+            qcd_scale: 1.3304746088664015
+            qcd_scale_error: 0.09079419361121523
             qcd_z_scale: 1.0
-            z_scale: 0.5833196922291953
-            z_scale_error: 0.14872769761327076
-        OS_NONID:
-          OS:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 2.2646599728872197
-            qcd_scale_error: 0.2998401976661628
-            qcd_z_scale: 1.0
-            z_scale: 0.9451733350044333
-            z_scale_error: 0.26301610597875946
-          OS_ISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 0.7751106266900256
-            qcd_scale_error: 1.544105445895835
-            qcd_z_scale: 1.0
-            z_scale: 3.3445022588021986
-            z_scale_error: 1.3874817488654698
-        OS_NONID_ISOL:
-          OS_ISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 3.026236411007537
-            qcd_scale_error: 0.517823476049236
-            qcd_z_scale: 1.0
-            z_scale: 0.8333841206642217
-            z_scale_error: 0.2630749955527622
-        OS_NONISOL:
-          OS_ISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 2.6047099155646105
-            qcd_scale_error: 0.442622554660909
-            qcd_z_scale: 1.0
-            z_scale: 9.393892139368359e-11
-            z_scale_error: 2.951837518549267e-09
-        nOS:
-          OS:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 0.6803203787982531
-            qcd_scale_error: 0.07870380128225622
-            qcd_z_scale: 1.0
-            z_scale: 1.0243949494145137
-            z_scale_error: 0.19369539438327496
-          OS_ISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 0.1824423605018212
-            qcd_scale_error: 0.13487840368474166
-            qcd_z_scale: 1.0
-            z_scale: 2.745222636264566
-            z_scale_error: 0.988382372199548
-        nOS_ISOL:
-          OS_ISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 1.5433703257628264
-            qcd_scale_error: 0.16628062675030453
-            qcd_z_scale: 1.0
-            z_scale: 0.3790464434391903
-            z_scale_error: 0.06234482991276365
+            z_scale: 0.5996587230618505
+            z_scale_error: 0.13343077279877852
         nOS_NONISOL:
-          NONISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 2.649329286842886
-            qcd_scale_error: 0.31196457114616394
-            qcd_z_scale: 1.0
-            z_scale: 4.194924053482449
-            z_scale_error: 1.1583057154794931
           OS_ISOL:
             qcd_data_scale: 1.0
             qcd_others_scale: 1.0
-            qcd_scale: 3.6198329602815704
-            qcd_scale_error: 0.39690464869365244
+            qcd_scale: 2.214270785876512
+            qcd_scale_error: 0.20527975864898748
             qcd_z_scale: 1.0
-            z_scale: 1.1986226348951867
-            z_scale_error: 0.16475203342891437
-  TAU_SELECTION:
-    false:
-      DITAU_DETA:
-        nOS_ISOL:
-          OS_ISOL:
-            qcd_data_scale: 1.0
-            qcd_others_scale: 1.0
-            qcd_scale: 0.744744051212679
-            qcd_scale_error: 0.013851091529434567
-            qcd_z_scale: 1.0
-            z_scale: 0.2739460945241674
-            z_scale_error: 0.022787537143881466
+            z_scale: 1.0010992671003751
+            z_scale_error: 0.1410959682482586
