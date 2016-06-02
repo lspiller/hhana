@@ -1,22 +1,19 @@
 from .. import MMC_MASS
 
-cuts_vbf = [
-    'jet_0_pt',
-    'jet_1_pt',
-    'ditau_dr',
-    'ditau_vect_sum_pt',
-    'dijet_deta',
-]
-fischer_vbf = [
-    'dijet_deta',
-    'dijet_vis_mass',
-]
-cuts_boosted = [
-    'jet_0_pt',
-    'ditau_dr',
-    'ditau_vect_sum_pt',
-]
-fischer_boosted = ['dijet_deta', 'dijet_vis_mass']
+#features_boosted = [
+#        'ditau_mmc_maxw_pt',
+#        'ditau_dr',
+#        'ditau_deta',
+#        'jet_0_pt',
+#]
+#
+#features_vbf = [
+#        'ditau_dr',
+#        'ditau_deta',
+#        'dijet_deta',
+#        'jet_0_pt',
+#        'jet_1_pt',
+#]
 
 features_vbf = [
     MMC_MASS,

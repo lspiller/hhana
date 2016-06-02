@@ -2,7 +2,8 @@ from .common import *
 from .mva import *
 from .cb import *
 from .mva_cb_overlap import *
-from .cba_train import *
+#from .cba_train import *
+from .cb_optimised import *
 
 CATEGORIES = {
     # Preselection
@@ -18,6 +19,10 @@ CATEGORIES = {
         ],
 
     # CB Categories
+    'opticuts' : [
+        Category_OptiCuts_VBF,
+        Category_OptiCuts_Boosted,
+        ],
     'cuts' : [
         Category_Cuts_VBF_LowDR,
         Category_Cuts_VBF_HighDR_Tight,
@@ -51,6 +56,20 @@ CATEGORIES = {
     'cuts_merged' : [
         Category_Cuts_VBF,
         Category_Cuts_Boosted,
+        ],
+    'cuts_new' : [
+        Category_Cuts_VBF_LowDR,
+        Category_Cuts_VBF_HighDR,
+        Category_Cuts_Boosted_Tight,
+        Category_Cuts_Boosted_Loose,
+        ],
+    'cuts_vbf_merged' : [
+        Category_Cuts_VBF,
+        Category_Rest,
+        ],
+    'cuts_boosted_merged' : [
+        Category_Cuts_Boosted,
+        Category_Rest,
         ],
     'cuts_cr' : [
         Category_Cuts_VBF_CR,

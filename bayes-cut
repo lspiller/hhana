@@ -1,141 +1,175 @@
 #!/usr/bin/env python
 
+import numpy as np
+import operator
 from statstools.significance import significance
 from rootpy.tree import Cut
-from multiprocessing import Process
-from statstools.parallel import map_pool
-from rootpy.io import root_open
+from multiprocessing import Process, cpu_count
+from statstools.parallel import run_pool
 from mva.categories.hadhad import (
-        Category_Preselection,
         Category_Cuts_VBF,
         Category_Cuts_Boosted,)
 
-from mva.categories.hadhad.common import CUTS_VBF, CUTS_BOOSTED
-
+from mva.categories.hadhad import PRESELECTION
 from rootpy.stats import histfactory
-from mva.workspace import cuts_workspace, write_workspaces
+from mva.workspace import cuts_workspace
 from mva import log;
 from rootpy.extern.argparse import ArgumentParser
 
-from mva.analysis import Analysis, get_analysis
-import tempfile, os
+from mva.analysis import Analysis
 
-from mva import CONST_PARAMS, CACHE_DIR, MMC_MASS, POI
+from mva import CONST_PARAMS, POI
 parser = ArgumentParser()
 parser.add_argument('--suffix', default=None)
-parser.add_argument('--procs', type=int, default=-1)
-parser.add_argument('category', choices=('vbf', 'boosted'))
-parser.add_argument('--max-iter', type=int, default=500)
+parser.add_argument('--max-iter', type=int, default=20)
 parser.add_argument('--systematics', default=True, action='store_false')
+parser.add_argument('--jobs', default=-1, type=int)
 args = parser.parse_args()
 
 
 Boosted_Cuts = [
-        ('Deta_taus', 'ditau_deta < {0}', (1, 3) ),
-        ('Pt_j1'    , 'jet_0_pt > {0}', (30, 100) ),
-        ('ditau_dr' , 'ditau_dr < {0}', (1, 3) ),
-        ('higgspt'  , 'ditau_mmc_maxw_pt > {0}', (50, 400) ),
+        ('Deta_taus', 'ditau_deta < {0}', (1.3, 1.8) ),
+        ('Pt_j1'    , 'jet_0_pt > {0}', (30, 35) ),
+        ('ditau_dr' , 'ditau_dr < {0}', (1, 2) ),
+        ('higgspt'  , 'ditau_mmc_maxw_pt > {0}', (90, 110) ),
     ]
 
 VBF_Cuts = [
-        ('Deta_taus', 'ditau_deta < {0}', (1, 2) ),
+        ('Deta_taus', 'ditau_deta < {0}', (1.3, 1.8) ),
         ('Pt_j1'    , 'jet_0_pt > {0}', (40, 100) ),
         ('Pt_j2'    , 'jet_1_pt > {0}', (30, 80) ),
         ('ditau_dr' , 'ditau_dr < {0}', (1, 2) ),
-        ('Deta_jets', 'dijet_deta > {0}', (2, 3) ),
+        ('Deta_jets', 'dijet_deta > {0}', (2, 6) ),
     ]
 
+def getSignificance(category, cut_values=None):
+    name = 'combined'
+    analysis = Analysis(
+                    year=2015,
+                    systematics=False,
+                    suffix=args.suffix)
 
-analysis = Analysis(
-                year=2015,
-                systematics=False,
-                suffix=args.suffix)
+    if category == 'vbf':
+        Category_Cuts = Category_Cuts_VBF
+        Cut_Templates = VBF_Cuts
+        category_name = 'cuts_vbf_merged'
+    else:
+        Category_Cuts = Category_Cuts_Boosted
+        Cut_Templates = Boosted_Cuts
+        category_name = 'cuts_boosted_merged'
+
+    if cut_values is not None:
+        cut_values=list(cut_values)
+        cut_strings, output = [], []
+        for name, cutstr, bounds in Cut_Templates:
+            cut_value = cut_values.pop(0)
+            cut_strings.append( Cut( cutstr.format(cut_value*(bounds[1]-bounds[0]) + bounds[0]) ) )
+            output.append( cutstr.format(cut_value*(bounds[1]-bounds[0]) + bounds[0]) )
 
 
-def getSignificance(cut_values):
 
-    cut_values=list(cut_values)
-    vbf_cut = {}
-    for name, cutstr, bounds in VBF_Cuts:
-        cut_value = cut_values.pop(0)
-        vbf_cut[name] = Cut( cutstr.format(cut_value*(bounds[1]-bounds[0]) + bounds[0]) )
-
-    VBF = vbf_cut['Deta_taus']&vbf_cut['Pt_j1']&vbf_cut['Pt_j2']&vbf_cut['ditau_dr']&vbf_cut['Deta_jets']
-
-    Category_Cuts_VBF.cuts = VBF
-#    Category_Cuts_Boosted.cuts = Boosted_Cuts
+        Category_Cuts.cuts = reduce( operator.__and__, cut_strings ) & PRESELECTION
 
     sr, cr = cuts_workspace(analysis=analysis,
-                        categories='cuts_merged',
+                        categories=category_name,
                         masses=[125.],
                         systematics=args.systematics,
                         sideband=True,
                         cuts=None)
 
-#    signal_regions, control_regions = {}, {}
-#    signal_regions[2015] = sr
-#    control_regions[2015] = cr
-    print sr[125]
     measurement = histfactory.make_measurement(
         name, sr[125].values(),
         POI=POI,
         const_params=CONST_PARAMS)
     workspace = histfactory.make_workspace(measurement, name=name,
-                                                   silence=False)
+                                                   silence=True)
 
     sig, mu, mu_error = significance(workspace)
-    print "1"*20
-    print "SIGNIFICANCE: {0}".format(sig)
-    print "MU: {0} +- {1}".format(mu, mu_error)
-    print "1"*20
-    return 0 if sig != sig else -sig # Handle case where sig is nan and fit doesnt converge
+    if cut_values is not None:
+        print "("*40
+        print "\n".join(output)
+        print "Significance: ", sig
+        print ")"*40
+    return 0 if sig != sig else -sig # Handle case where sig is nan
 
 class Worker(Process):
     output = None
-    def __init__(self, *cut_values):
+    def __init__(self, func, category, cut_values):
         super(Worker, self).__init__()
         self.cut_values = cut_values
+        self.func = func
+        self.category = category
     def run(self):
-        cut_values = self.cut_values
-        sig = getSignificance( cut_values )
+        sig = self.func( self.category, self.cut_values )
         self.output = sig
 
 class ObjectiveFunction(object):
-    def __init__(self, model_name, function ):
-        self.model_name = model_name
+    def __init__(self, category, function ):
+        self.category = category
         self.function = function
 
     def __call__( self, args ):
-        import numpy as np
-#        workers_sig = [Worker(cut_values) for cut_values in args]
-        output = []
+        workers = []
+        log.info(args)
         for cut_values in args:
-            output.append( getSignificance(cut_values) )
+            workers.append(
+                   Worker(getSignificance, self.category, cut_values )
+                   )
+        log.info("Number of workers in batch: {}".format(len(workers)))
+
+        run_pool( workers, n_jobs=max(n_jobs, len(workers)) )
+        output = [w.output for w in workers]
         return np.array(output)[:,np.newaxis]
-#        return np.array( map_pool( Worker, args ) )[:,np.newaxis]
 
-import GPyOpt
+import GPyOpt, GPy
 from numpy.random import seed
-seed(22125)
+seed(23127)
 
-list_of_bounds = []
-for _, _, bounds in VBF_Cuts:
-#    list_of_bounds.append( bounds )
-    list_of_bounds.append((0,1))
+vbf_sig = getSignificance("vbf")
+#boosted_sig = getSignificance("boosted")
+log.info("Current sensitivity: ")
+log.info("VBF: {}".format(-vbf_sig))
+#log.info("Boosted: {}".format(-boosted_sig))
 
-objective = ObjectiveFunction( "VBF Cuts", getSignificance )
-bo = GPyOpt.methods.BayesianOptimization( f=objective, bounds=list_of_bounds, )
+n_jobs = cpu_count() if args.jobs < 1 else args.jobs
+log.info("Using {} CPU cores".format(n_jobs))
 
-bo.run_optimization(max_iter=args.max_iter, eps=1e-3, n_inbatch=1, n_procs=1,
-                    batch_method='predictive',
-                    acqu_optimize_method='fast_random',
-                    verbose=True)
+for cat in ('vbf', 'boosted'):
 
-print bo.x_opt
-for x, (n,b) in zip(bo.x_opt, [(n,b) for n,_, b in VBF_Cuts]):
-    print "{} : {}".format(n, x*(b[1]-b[0])+b[0])
+    log.info("Optimising cuts for {} region".format(cat))
 
-print bo.fx_opt
+    Cat_Cuts = VBF_Cuts if cat=='vbf' else Boosted_Cuts
 
-bo.plot_acquisition(filename='bo_acquisition.pdf')
-bo.plot_convergence(filename='bo_convergence.pdf')
+    list_of_bounds = []
+    for _, _, bounds in Cat_Cuts:
+        list_of_bounds.append((0,1))
+    log.info("{} parameters to optimise".format(len(list_of_bounds)))
+
+    objective = ObjectiveFunction( cat, getSignificance )
+    bo = GPyOpt.methods.BayesianOptimization(
+                        f=objective,
+                        bounds=list_of_bounds,
+                        acquisition='EI',
+                        kernel=GPy.kern.RBF(1)
+                        )
+
+    bo.run_optimization(max_iter=args.max_iter)
+#                        , eps=1e-3, n_inbatch=n_jobs, n_procs=n_jobs,
+#                        batch_method='predictive',
+#                        acqu_optimize_method='fast_random',
+#                        verbose=True)
+
+
+    print "{"*30
+    print bo.x_opt
+    for x, (n,b) in zip(bo.x_opt, [(n,b) for n,_, b in Cat_Cuts]):
+        print "{} : {}".format(n, x*(b[1]-b[0])+b[0])
+
+    print "Significance: ", bo.fx_opt
+    print "Significance: ", getSignificance(cat, bo.x_opt)
+    print "VBF Initial: ", vbf_sig
+#    print "Boosted Initial: ", boosted_sig
+
+    bo.plot_acquisition(filename='plots/bayescut/{}_bo_acquisition.pdf'.format(cat))
+    bo.plot_convergence(filename='plots/bayescut/{}_bo_convergence.pdf'.format(cat))
+    print "}"*30

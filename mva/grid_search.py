@@ -14,8 +14,10 @@ import operator
 import numpy as np
 
 from sklearn.base import BaseEstimator, is_classifier, clone
-from sklearn.cross_validation import check_cv, _safe_split
-from sklearn.utils.validation import _num_samples, check_arrays
+#from sklearn.cross_validation import check_cv, _safe_split
+from .legacy.cross_validation import check_cv, _safe_split
+from sklearn.utils.validation import _num_samples
+from .legacy import check_arrays
 from sklearn.externals.joblib import Parallel, delayed, logger
 from sklearn.utils import safe_mask
 from sklearn.grid_search import GridSearchCV, ParameterGrid, _CVScoreTuple
@@ -141,6 +143,9 @@ class BoostGridSearchCV(GridSearchCV):
             param_grid=param_grid,
             **kwargs)
 
+    def fit(self, X, y, sample_weight=None):
+        return self._fit(X, y, sample_weight, ParameterGrid(self.param_grid))
+
     def _fit(self, X, y, sample_weight, parameter_iterable):
         """Actual fitting, performing the search over parameters."""
 
@@ -200,7 +205,7 @@ class BoostGridSearchCV(GridSearchCV):
             delayed(score_each_boost)(clf, clf_params,
                                       self.min_n_estimators,
                                       X, y, sample_weight,
-                                      self.score_func,
+                                      self.scoring,
                                       train, test,
                                       self.verbose)
             for clf, clf_params, train, test in clfs)

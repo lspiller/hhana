@@ -52,9 +52,9 @@ TotalBkg = CompositeSample(backgrounds, name='TotalBkg', label='Total Background
 TotalSig = CompositeSample(signals, name='TotalSig', label='H#rightarrow#tau#tau')
 
 samples = [
-    ztautau, qcd, 
+    ztautau, qcd, others,
     TotalBkg, TotalSig
-    ] 
+    ]
 
 log.info(backgrounds)
 for s in samples:
@@ -82,5 +82,5 @@ for s in samples:
                                  ratio_line_values=[0.9, 1, 1.1],
                                  optional_label_text=s.label)
                 save_canvas(plot, 'plots/systematics_shapes',
-                            '{0}/shape_{1}_{2}_{3}_{4}.eps'.format(
+                            '{0}/shape_{1}_{2}_{3}_{4}.png'.format(
                                 s.name, syst[0], field, category.name, args.year % 1000))

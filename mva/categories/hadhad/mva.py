@@ -100,6 +100,8 @@ class Category_Rest(Category_Preselection):
     common_cuts = Category_Preselection.common_cuts
     cuts = (- Category_Boosted.cuts) & (- Category_VBF.cuts) & DETA_TAUS
     norm_category = Category_Preselection
+    limitbins = {}
+    limitbins[2015]=[0,80,100,125,150, 1E100]
 
 class Category_MVA(Category_Preselection):
     name = 'mva'

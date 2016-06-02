@@ -16,8 +16,8 @@ TAU_SAME_VERTEX = Cut('tau_same_vertex')
 LEAD_TAU_40 = Cut('ditau_tau0_pt > 40')
 SUBLEAD_TAU_30 = Cut('ditau_tau1_pt > 30')
 
-LEAD_JET_50 = Cut('jet_0_pt > 50')
-SUBLEAD_JET_30 = Cut('jet_1_pt > 30')
+LEAD_JET_50 = Cut('jet_0_pt > 60')
+SUBLEAD_JET_30 = Cut('jet_1_pt > 40')
 AT_LEAST_1JET = Cut('jet_0_pt > 30')
 
 CUTS_2J = LEAD_JET_50 & SUBLEAD_JET_30
@@ -25,7 +25,7 @@ CUTS_1J = LEAD_JET_50 & (- SUBLEAD_JET_30)
 CUTS_0J = (- LEAD_JET_50)
 MET = Cut('met_et > 20')
 DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
-DETA_TAUS = Cut('ditau_deta < 1.5')
+DETA_TAUS = Cut('ditau_deta < 1.6')
 DETA_TAUS_CR = Cut('ditau_deta > 1.5')
 RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
 

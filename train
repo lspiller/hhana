@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from mva.defaults import TRAIN_FAKES_REGION, FAKES_REGION
 from rootpy.extern.argparse import ArgumentParser
 
 parser = ArgumentParser()
@@ -15,13 +16,14 @@ parser.add_argument('--masses', nargs='+', default=['125',])
 parser.add_argument('--suffix', default='')#None)
 parser.add_argument('--procs', type=int, default=-1)
 parser.add_argument('--dry-run', default=False, action='store_true')
+parser.add_argument('--qcd', default=TRAIN_FAKES_REGION, type=str, choices=(TRAIN_FAKES_REGION, FAKES_REGION))
+parser.add_argument('--boosting_algorithm', default='ADA', type=str, choices=('ADA','Gradient'))
 parser.add_argument('category', choices=('vbf', 'boosted'))
 args = parser.parse_args()
 
 from mva.categories.hadhad import Category_VBF, Category_Boosted
 from mva.analysis import Analysis
 from mva.samples import Higgs
-from mva.defaults import TRAIN_FAKES_REGION
 
 if args.masses == ['all',]:
     args.masses = Higgs.MASSES[:]
@@ -78,4 +80,7 @@ clf.train(signals=signals_train,
           min_fraction_steps=args.min_fraction_steps,
           cv_nfold=args.nfold,
           n_jobs=args.procs,
-          dry_run=args.dry_run)
+          dry_run=args.dry_run,
+          boosting_algorithm=args.boosting_algorithm,
+          )
+

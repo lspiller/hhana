@@ -13,9 +13,10 @@ import numpy as np
 import sklearn
 from sklearn.cross_validation import StratifiedKFold
 from sklearn.metrics import roc_auc_score
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 
+from sklearn.grid_search import GridSearchCV, ParameterGrid
 from prettytable import PrettyTable
 
 # root_numpy imports
@@ -472,6 +473,7 @@ class Classifier(object):
               min_fraction_steps=200,
               cv_nfold=10,
               n_jobs=-1,
+              boosting_algorithm='ADA',
               dry_run=False):
         """
         Determine best BDTs on left and right partitions. Each BDT will then be
@@ -531,17 +533,30 @@ class Classifier(object):
                 min_fraction_leaf = np.linspace(
                     min_fraction, max_fraction, min_fraction_steps)
 
-                grid_params = {
-                    #'base_estimator__min_samples_leaf': min_samples_leaf,
-                    'base_estimator__min_fraction_leaf': min_fraction_leaf,
-                }
-
                 # create a BDT
-                clf = AdaBoostClassifier(
-                    DecisionTreeClassifier(),
-                    learning_rate=learning_rate,
-                    algorithm='SAMME.R',
-                    random_state=0)
+                if boosting_algorithm == 'ADA':
+                    clf = AdaBoostClassifier(
+                        DecisionTreeClassifier(),
+                        learning_rate=learning_rate,
+                        algorithm='SAMME.R',
+                        random_state=0)
+
+
+                    grid_params = {
+                        #'base_estimator__min_samples_leaf': min_samples_leaf,
+#                        'base_estimator__min_fraction_leaf': min_fraction_leaf,
+                        'base_estimator__min_weight_fraction_leaf': min_fraction_leaf,
+                    }
+
+                else:
+                    clf = GradientBoostingClassifier(
+#                        init=DecisionTreeClassifier(),
+#                        loss='deviance',
+                        learning_rate=learning_rate,
+                        random_state=0)
+                    grid_params = {
+                            'min_weight_fraction_leaf': min_fraction_leaf,
+                    }
 
                 # more efficient grid-search for boosting
                 grid_clf = BoostGridSearchCV(
@@ -549,15 +564,17 @@ class Classifier(object):
                     max_n_estimators=max_trees,
                     min_n_estimators=min_trees,
                     #score_func=accuracy_score,
-                    score_func=roc_auc_score, # area under the ROC curve
+                    #score_func=roc_auc_score, # area under the ROC curve
+                    scoring=roc_auc_score,
                     cv=StratifiedKFold(labels_train, cv_nfold),
                     n_jobs=n_jobs)
 
-                #grid_clf = GridSearchCV(
-                #    clf, grid_params,
-                #    score_func=accuracy_score,
-                #    cv = StratifiedKFold(labels_train, cv_nfold),
-                #    n_jobs=n_jobs)
+#                grid_clf = GridSearchCV(
+#                    clf, grid_params,
+#                    scoring=roc_auc_score,
+#                    cv = StratifiedKFold(labels_train, cv_nfold),
+#                    fit_params={'sample_weight': sample_weight_train},
+#                    n_jobs=n_jobs)
 
                 log.info("")
                 log.info("using a %d-fold cross validation" % cv_nfold)
@@ -571,8 +588,8 @@ class Classifier(object):
 
                 # perform the cross-validated grid-search
                 grid_clf.fit(
-                    sample_train, labels_train,
-                    sample_weight=sample_weight_train)
+                    sample_train, labels_train,)
+#                    sample_weight=sample_weight_train)
 
                 clf = grid_clf.best_estimator_
                 grid_scores = grid_clf.grid_scores_
@@ -582,22 +599,40 @@ class Classifier(object):
                 log.info(grid_clf.best_params_)
 
                 # plot a grid of the scores
-                plot_grid_scores(
-                    grid_scores,
-                    best_point={
-                        'base_estimator__min_fraction_leaf':
-                        clf.base_estimator.min_fraction_leaf,
-                        'n_estimators':
-                        clf.n_estimators},
-                    params={
-                        'base_estimator__min_fraction_leaf':
-                        'leaf fraction',
-                        'n_estimators':
-                        'trees'},
-                    name=(self.category.name +
-                          ("_{0}".format(self.mass)) +
-                          self.output_suffix +
-                          ("_{0}".format(partition_idx))))
+                if boosting_algorithm == 'ADA':
+                    plot_grid_scores(
+                        grid_scores,
+                        best_point={
+                            'base_estimator__min_fraction_leaf':
+                            clf.base_estimator.min_fraction_leaf,
+                            'n_estimators':
+                            clf.n_estimators},
+                        params={
+                            'base_estimator__min_fraction_leaf':
+                            'leaf fraction',
+                            'n_estimators':
+                            'trees'},
+                        name=(self.category.name +
+                              ("_{0}".format(self.mass)) +
+                              self.output_suffix +
+                              ("_{0}".format(partition_idx))))
+                else:
+                    plot_grid_scores(
+                        grid_scores,
+                        best_point={
+                            'min_weight_fraction_leaf':
+                            clf.min_weight_fraction_leaf,
+                            'n_estimators':
+                            clf.n_estimators},
+                        params={
+                            'min_weight_fraction_leaf':
+                            'leaf fraction',
+                            'n_estimators':
+                            'trees'},
+                        name=(self.category.name +
+                              ("_{0}".format(self.mass)) +
+                              self.output_suffix +
+                              ("_{0}".format(partition_idx))))
 
                 # save grid scores
                 with open('{0}_grid_scores.pickle'.format(clf_filename), 'w') as f:
