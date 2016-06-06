@@ -143,8 +143,8 @@ class BoostGridSearchCV(GridSearchCV):
             param_grid=param_grid,
             **kwargs)
 
-    def fit(self, X, y, sample_weight=None):
-        return self._fit(X, y, sample_weight, ParameterGrid(self.param_grid))
+#    def fit(self, X, y, sample_weight=None):
+#        return self._fit(X, y, sample_weight, ParameterGrid(self.param_grid))
 
     def _fit(self, X, y, sample_weight, parameter_iterable):
         """Actual fitting, performing the search over parameters."""

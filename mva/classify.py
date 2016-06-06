@@ -545,7 +545,7 @@ class Classifier(object):
                     grid_params = {
                         #'base_estimator__min_samples_leaf': min_samples_leaf,
 #                        'base_estimator__min_fraction_leaf': min_fraction_leaf,
-                        'base_estimator__min_weight_fraction_leaf': min_fraction_leaf,
+                        'base_estimator__min_fraction_leaf': min_fraction_leaf,
                     }
 
                 else:
@@ -632,7 +632,7 @@ class Classifier(object):
                         name=(self.category.name +
                               ("_{0}".format(self.mass)) +
                               self.output_suffix +
-                              ("_{0}".format(partition_idx))))
+                              ("_{0}".format(partition_idx))), n_ticks=100)
 
                 # save grid scores
                 with open('{0}_grid_scores.pickle'.format(clf_filename), 'w') as f:

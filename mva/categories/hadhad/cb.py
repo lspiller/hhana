@@ -113,7 +113,7 @@ class Category_Cuts_VBF_HighDR_Loose(Category_Preselection):
         & Cut('true_mass_jet1_jet2_no_overlap < (-250 * true_dEta_jet1_jet2_no_overlap + 1550)'))
     # limitbins = [0, 64, 80, 92, 104, 116, 132, 152, 176, INF] - old binning
     # limitbins = [0, 64, 80, 92, 104, 116, 152, INF] - new binning (merging of old)
-    limitbins = [0, 70, 85, 100, 150, INF] # - new binning
+    limitbins = [0, 70, 85, 110, 135, 150, INF] # - new binning
     norm_category = Category_Preselection
 
 
@@ -122,7 +122,7 @@ class Category_Cuts_VBF_HighDR(Category_Preselection):
     label = '#tau_{had}#tau_{had} CB VBF Low-p_{T}^{H}'
     latex = '\\textbf{VBF Low-$p_T^{H}$}'
     color = 'red'
-    linestyle = 'longdash'
+    linestyle = 'dotted'
     cuts = Category_Cuts_VBF_HighDR_Loose.cuts | Category_Cuts_VBF_HighDR_Tight.cuts
     # limitbins = [0, 64, 80, 92, 104, 116, 132, 152, INF] - old binning
     # limitbins = [0, 80, 92, 104, 116, 132, 152, INF] - new binning (merging of old)
@@ -193,7 +193,7 @@ class Category_Cuts_Boosted(Category_Preselection):
     norm_category = Category_Preselection
 
     limitbins = {}
-    limitbins[2015] = [0, 80, 100, 120, 130, 140, 150, INF] # - new binning
+    limitbins[2015] = [0, 80, 100, 110, 135, 150, INF] # - new binning
 
 
 class Category_Cuts_Boosted_Tight_NoDRCut(Category_Preselection):
@@ -210,7 +210,7 @@ class Category_Cuts_VBF(Category_Preselection):
     cuts  = Category_Cuts_VBF_HighDR_Loose.cuts | Category_Cuts_VBF_HighDR_Tight.cuts | Category_Cuts_VBF_LowDR.cuts
     norm_category = Category_Preselection
     limitbins = {}
-    limitbins[2015] = [0, 60, 80, 100, 120, 150, INF] # - new binning
+    limitbins[2015] = [0, 60, 80, 110, 135, 150, INF] # - new binning
 
 
 class Category_Cuts(Category_Preselection):

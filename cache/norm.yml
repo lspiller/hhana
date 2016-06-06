@@ -15,8 +15,8 @@
           OS_ISOL:
             qcd_data_scale: 1.0
             qcd_others_scale: 1.0
-            qcd_scale: 2.214270785876512
-            qcd_scale_error: 0.20527975864898748
+            qcd_scale: 2.082629756115108
+            qcd_scale_error: 0.2556614746887625
             qcd_z_scale: 1.0
-            z_scale: 1.0010992671003751
-            z_scale_error: 0.1410959682482586
+            z_scale: 1.0513438836426856
+            z_scale_error: 0.12545715969764704

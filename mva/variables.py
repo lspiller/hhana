@@ -203,14 +203,14 @@ VARIABLES = {
 
     'ditau_met_centrality': {
         'title': r'$E^{miss}_{T}$ Centrality',
-        'root': '#font[52]{E}^{miss}_{T} #font[152]{#phi Centrality}',
+        'root': '#font[52]{E}^{miss}_{T} #font[152]{#phi} centrality',
         'filename': 'ditau_met_centrality',
         'binning': (10, -math.sqrt(2), math.sqrt(2)),
         'legend': 'left',
     },
     'tau1_centrality': {
         'title': r'$#tau_1$ Centrality',
-        'root': '#font[52]{#tau_1} #font[152]{#eta Centrality}',
+        'root': '#font[152]{#tau}_{2} #font[152]{#eta} centrality',
         'filename': 'tau1_centrality',
         'binning': (10, -math.sqrt(2), math.sqrt(2)),
         'legend': 'left',
@@ -383,7 +383,7 @@ VARIABLES = {
    'jet_1_pt': {
        'title': r'jet$_{2}$ $p_{T}$',
        'root': '#font[52]{p}_{T}(#font[52]{j}_{2})',
-       'filename': 'jet_1_pt',
+        'root': '#font[52]{p}_{T}(#font[52]{j}2)',
        'binning': (10, 15, 80),
        'scale': 1,
        'units': 'GeV',
@@ -391,7 +391,7 @@ VARIABLES = {
    },
    'jet_0_pt': {
        'title': r'jet$_{0}$ $p_{T}$',
-       'root': '#font[52]{p}_{T}(#font[52]{j}_{1})',
+       'root': '#font[52]{p}_{T}(#font[52]{j}1)',
        'filename': 'jet_0_pt',
        'binning': (10, 15, 150),
        'scale': 1,
@@ -419,7 +419,6 @@ VARIABLES = {
             'REST': (15, 0.0, 1.0),
             None: (20, 0.0, 1.0)},
         'scale': 1,
-        'units': 'No Units',
     },
     'moment_hcm2': {
         'title': r'HCM2',
@@ -431,7 +430,6 @@ VARIABLES = {
             'REST': (15, 0.0, 1.0),
             None: (20, 0.0, 1.0)},
         'scale': 1,
-        'units': 'No Units'
     },
     'moment_hcm3': {
         'title': r'HCM3',

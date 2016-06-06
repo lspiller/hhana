@@ -53,6 +53,8 @@ class DataInfo():
 class Data(Sample):
 
     def __init__(self, year, name='Data', label='Data', **kwargs):
+
+        kwargs.setdefault('student', 'hhskim_data')
         super(Data, self).__init__(
             year=year, scale=1.,
             name=name, label=label,
