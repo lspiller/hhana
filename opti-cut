@@ -1,0 +1,185 @@
+#!/usr/bin/env python
+
+from random import random
+import math
+
+from rootpy.plotting import Hist, Canvas
+from rootpy.tree import Cut
+import numpy as np
+from mva.classify import make_partitioned_dataset, get_partition, prepare_dataset
+from rootpy.extern.argparse import ArgumentParser
+from mva.analysis import Analysis
+from mva.analysis import get_analysis
+from mva.defaults import TRAIN_FAKES_REGION
+from mva.categories.hadhad import Category_Preselection, Category_Pre_VBF, Category_Pre_Boosted
+from mva.variables import (VARIABLES, HH_VARIABLES,
+                           YEAR_VARIABLES,
+                           get_label)
+from mva import log;
+
+from root_numpy.tmva import add_classification_events, evaluate_method
+from mva.plotting import draw_channel_array
+from mva import MMC_PT, MMC_MASS
+from mva.samples import Higgs
+VARIABLES.update(HH_VARIABLES)
+
+from mva.defaults import TARGET_REGION
+
+from statstools.fixups import fix_measurement
+from statstools.significance import significance
+from statstools.parallel import map_pool, FuncWorker
+from collections import namedtuple
+
+from rootpy.stats.histfactory import (
+    Data, Sample, Channel, make_measurement, make_workspace)
+from mva import CONST_PARAMS, CACHE_DIR
+
+from mva.categories.hadhad import (
+        Category_Cuts_VBF_LowDR,
+        Category_Cuts_VBF_HighDR_Tight,
+        Category_Cuts_VBF_HighDR_Loose,
+        Category_Cuts_Boosted_Tight,
+        Category_Cuts_Boosted_Loose,)
+
+parser = ArgumentParser()
+parser.add_argument('--suffix', default=None)
+parser.add_argument('--procs', type=int, default=-1)
+parser.add_argument('--dry-run', default=False, action='store_true')
+parser.add_argument('category', choices=('vbf', 'boosted'))
+args = parser.parse_args()
+
+masses = [125]
+masses_label = '125'
+
+def get_workspace(scores, binning,
+                  mass=125,
+                  systematics=False):
+    hist_template = Hist(binning)
+    background = []
+    for sample, scores_dict in scores.bkg_scores:
+        background.append(sample.get_histfactory_sample(
+            hist_template, 'classifier', category, TARGET_REGION,
+            scores=scores_dict,
+            systematics=systematics))
+    signal = []
+    for sample, scores_dict in scores.all_sig_scores[mass]:
+        signal.append(sample.get_histfactory_sample(
+            hist_template, 'classifier', category, TARGET_REGION,
+            scores=scores_dict,
+            systematics=systematics))
+    # TODO: why is the clone needed?
+    data_hist = sum([b.hist.Clone(shallow=True) for b in background])
+    data_hist.name = 'Data'
+    data = Data('Data', data_hist)
+    channel = Channel(category.name, signal + background, data)
+    measurement = make_measurement(
+        'MVA', channel,
+        POI='SigXsecOverSM',
+        const_params=CONST_PARAMS)
+    fix_measurement(measurement)
+    return make_workspace(measurement, silence=True)
+
+
+def get_sig(scores, binning, edge=None, pos=1,
+            mass=125,
+            systematics=False):
+    if edge is not None:
+        binning = binning[:]
+        binning.insert(pos, edge)
+    ws = get_workspace(scores, binning,
+                       mass=mass,
+                       systematics=systematics)
+    sig, mu, mu_error = significance(ws)
+    # handle nan
+    return 0 if sig != sig else sig
+
+def getBiGauss( mid, low, high ):
+    x = random.uniform(-1., 1.)
+    if x < 0.:
+        return math.exp( - ( x - mid )**2 / (2 * low**2) )
+    elif x > 0.:
+        return math.exp( - ( x - mid )**2 / (2 * high**2) )
+
+variance_decay = 0.8 #80%
+var = namedtuple('Variable', ['initial', 'up', 'down'])
+Opticut = namedtuple('opticut', ['name', 'cutstring', 'variables'])
+category = Category_Preselection
+if args.category == 'vbf':
+    Cuts = [
+        Opticut('Deta_taus', 'ditau_deta < {0}', [var(1.5, 0.5, -0.5)] ),
+        Opticut('Pt_j1'    , 'jet_0_pt > {0}', [var(40, 20, -10)] ),
+        Opticut('Pt_j2'    , 'jet_1_pt > {0}', [var(30, 10, -1)] ),
+        Opticut('Deta_jets', 'dijet_deta > {0}', [var(2.6, 0.5, -1)] ),
+        Opticut('MET Centr', '(jet_max_eta - ditau_tau0_eta) > {1} & (ditau_tau0_eta - jet_min_eta) > {1}' \
+                             '& (jet_max_eta - ditau_tau1_eta) > {1} & (ditau_tau1_eta - jet_min_eta) > {1}',
+                             [var(0, 0.1, -0.4)] ),
+        Opticut('Fischer'  , 'dijet_vis_mass > (-{0} * dijet_deta + {1})', [var(250, 100, 100), var(1.55, 0.7, -0.7)]),
+        ]
+else:
+    Cuts = [
+        Opticut('Deta_taus', 'ditau_deta < {0}', [var(1.5, 0.5, -0.5)] ),
+        Opticut('Pt_j1'    , 'jet_0_pt > {0}', [var(30, 10, -1)] ),
+        Opticut('Higgs Pt' , 'MMC_PT > {0}', [var(140, 40, -40)] ),
+        Opticut('DR_taus'  , 'ditau_dr < {0}', [var(1.5, 0.5, -0.5)] ),
+        ]
+
+analysis = Analysis(
+                year=2015,
+                systematics=False,
+                fakes_region=TRAIN_FAKES_REGION,
+                suffix=args.suffix)
+analysis.normalize(Category_Preselection)
+
+backgrounds_train = analysis.backgrounds
+
+signals_train = [
+    Higgs(year=2015,
+          masses=masses,
+          modes=category.train_signal_modes),
+    ]
+
+cba = analysis.get_cba(category, load=False, mass=masses_label, year=2015)
+
+current_best = []
+for c in Cuts:
+    tmp = []
+    for v in c.variables:
+        tmp.append(v.initial)
+    current_best.append(tmp)
+
+for i in range(10):
+    variance_factor = variance_decay ** i
+    test_variables = []
+    for i, c in enumerate(Cuts):
+        tmp = []
+        for j, v in enumerate(c.variables):
+            tmp.append(getBiGauss(current_best[i][j], v.low, v.high))
+        test_variables.append(tmp)
+
+    get_sig()
+
+#cba.train_cuts(signals=signals_train,
+#               backgrounds=backgrounds_train,
+#               remove_negative_weights=True)
+
+# Make plots of the chosen cuts
+#for cutname, arrows in cba.cut_arrows.iteritems():
+#    draw_channel_array(
+#            analysis, {cutname: VARIABLES[cutname]},
+#            mass=125, mode=['gg', 'VBF'], signal_scale=20,
+#            stack_signal=False,
+#            signal_colors=['blue', 'red'],
+#            signal_linestyles=['dashed', 'solid'],
+#            category=category,
+#            region=analysis.target_region,
+#            show_ratio=False,
+#            #legend_leftmargin=0.28,
+#            output_dir='plots/cba',
+#            output_suffix='_{0}'.format(analysis.year % 1000),
+#            output_formats=['png', 'C', 'eps'],
+#            arrow_values=arrows)
+#
+#cba.train_fischer(signals=signals_train,
+#                  backgrounds=backgrounds_train,
+#                  remove_negative_weights=True)
+#

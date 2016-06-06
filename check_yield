@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# python imports
+from rootpy.tree import Cut
+from mva.samples import Data
+
+data = Data( 2015 )
+
+cutlist = [
+            ('Eta'        , Cut()),
+            ('Charge'     , (Cut('ditau_tau0_q == 1') | Cut('ditau_tau0_q == -1'))
+                          & (Cut('ditau_tau1_q == 1') | Cut('ditau_tau1_q == -1'))
+                            ),
+            ('nTracks'    , (Cut('ditau_tau0_n_tracks == 1') | Cut('ditau_tau0_n_tracks == 3'))
+                          & (Cut('ditau_tau1_n_tracks == 1') | Cut('ditau_tau1_n_tracks == 3'))
+                          ),
+            ('tauID'      , Cut('n_taus_medium == 2')
+                          & Cut('n_taus_tight > 0')
+                          & Cut('ditau_tau0_jet_bdt_medium == 1')
+                          & Cut('ditau_tau1_jet_bdt_medium == 1')
+                          ),
+            ('tauIso'     , Cut('ditau_tau0_n_wide_tracks == 0') & Cut('ditau_tau1_n_wide_tracks == 0')),
+            ('tau pT'     , Cut('ditau_tau0_pt > 40') & Cut('ditau_tau1_pt > 30')),
+            ('OS'         , Cut('selection_opposite_sign == 1')),
+            ('MET'        , Cut('selection_met == 1')),
+            ('MET Cent'   , Cut('selection_met_centrality == 1')),
+            ('DEta'       , Cut('selection_delta_eta == 1')),
+            ('DR'         , Cut('selection_delta_r == 1')),
+            ('LepVeto'    , Cut('selection_lepton_veto ==1')
+                          & Cut('ditau_tau0_ele_bdt_loose==0')
+                          & Cut('ditau_tau1_ele_bdt_loose==0')),
+        ]
+
+def cumucut(cuts):
+    selection = None
+    for n, c in cuts:
+        selection = selection & c if selection else c
+        print (n, selection)
+        yield (n, selection)
+
+table = []
+table.append( '{0: <9}\t {1: <9}'.format('Cut', 'Unweighted') )
+for name, selection in cumucut(cutlist):
+    events = data.events(cuts=selection, weighted=False)[1].value
+    table.append( '{0: <9}\t {1}'.format(name, events) )
+    print table[-1]
+
+print "Efficiencies in Data"
+for line in table:
+    print line
+

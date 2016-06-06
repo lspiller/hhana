@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+"Add a column to an existing table"
+from root_numpy import rec2array
+import numpy as np
+from matplotlib.mlab import rec_append_fields
+import tables
+from rootpy.extern.argparse import ArgumentParser
+import logging
+import sys
+from moments import HCM
+
+log = logging.getLogger('h5-append')
+
+parser = ArgumentParser()
+parser.add_argument('-i', '--infile', required=True)
+args = parser.parse_args()
+
+fileh = tables.open_file(args.infile, "a")
+#log.info("Contents of {0}: \n{1}".format(args.infile, fileh))
+for table in fileh.root:
+    log.info("appending fields to {0}: {1}".format(table.name, table))
+    outname=table.name
+    outtitle=table.title
+    branches = ['jet_0_eta', 'jet_1_eta', 'ditau_tau0_eta', 'ditau_tau1_eta']
+
+    rec = table.read()
+
+    eta_arr = rec[['jet_0_eta', 'jet_1_eta', 'ditau_tau0_eta', 'ditau_tau1_eta']]
+    eta_arr = rec2array( eta_arr ).reshape((eta_arr.shape[0], 4))
+    min_jet_eta = np.minimum( eta_arr[:,0], eta_arr[:,1] )
+    max_jet_eta = np.maximum( eta_arr[:,0], eta_arr[:,1] )
+
+    tau1_centr = np.logical_and(
+            np.less_equal( min_jet_eta[:], eta_arr[:,2] ),
+            np.greater_equal( eta_arr[:,2], max_jet_eta[:] )
+            )
+
+    tau2_centr = np.logical_and(
+            np.less_equal( min_jet_eta[:], eta_arr[:,3] ),
+            np.greater_equal( eta_arr[:,3], max_jet_eta[:] )
+            )
+
+    rec = rec_append_fields(rec,
+        names='ditau_tau0_centr',
+        arrs=tau1_centr,
+        dtypes=np.dtype('B'))
+
+    rec = rec_append_fields(rec,
+        names='ditau_tau1_centr',
+        arrs=tau2_centr,
+        dtypes=np.dtype('B'))
+
+# Create a new table with the new description
+    new_table = fileh.create_table(
+        '/', outname+'_tmp',
+        rec, outtitle)
+
+    new_table.flush()
+
+    table.remove()
+
+# Move table2 to table
+    new_table.move('/', outname)
+
+
+log.info("Finished...")
+fileh.close()
+
