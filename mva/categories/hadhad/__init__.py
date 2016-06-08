@@ -4,6 +4,7 @@ from .cb import *
 from .mva_cb_overlap import *
 #from .cba_train import *
 from .cb_optimised import *
+from .cbruni import *
 
 CATEGORIES = {
     # Preselection
@@ -19,6 +20,13 @@ CATEGORIES = {
         ],
 
     # CB Categories
+    'runi' : [
+        hh_VBF_LowDR,
+        hh_VBF_HighDR_Tight,
+        hh_VBF_HighDR_Loose,
+        hh_Boosted_Tight,
+        hh_Boosted_Loose,
+        ],
     'opticuts' : [
         Category_OptiCuts_VBF,
         Category_OptiCuts_Boosted,

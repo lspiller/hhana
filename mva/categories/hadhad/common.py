@@ -28,7 +28,7 @@ MET = Cut('met_et > 20')
 DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
 DETA_TAUS = Cut('ditau_deta < 1.5')
 DETA_TAUS_CR = Cut('ditau_deta > 1.5')
-RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 110')
+RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
 
 LEPTON_VETO = Cut('selection_lepton_veto == 1') & -Cut('ditau_tau0_ele_bdt_loose==1') & -Cut('ditau_tau1_ele_bdt_loose==1')
 TRIGGER = Cut('selection_trigger == 1')

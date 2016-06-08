@@ -29,7 +29,7 @@ class Category_VBF_DEta_Control(Category_Preselection):
 
 
 class Category_VBF(Category_Preselection):
-    name = 'vbf'
+    name = 'hh_vbf'
     label = '#tau_{had}#tau_{had} VBF'
     latex = '\\textbf{VBF}'
     color = 'red'
@@ -71,7 +71,7 @@ class Category_Boosted_DEta_Control(Category_Preselection):
 
 
 class Category_Boosted(Category_Preselection):
-    name = 'boosted'
+    name = 'hh_boost'
     label = '#tau_{had}#tau_{had} Boosted'
     latex = '\\textbf{Boosted}'
     color = 'blue'
@@ -93,7 +93,7 @@ class Category_Boosted(Category_Preselection):
 
 class Category_Rest(Category_Preselection):
     analysis_control = True
-    name = 'rest'
+    name = 'hh_rest'
     label = '#tau_{had}#tau_{had} Rest'
     latex = '\\textbf{Rest}'
     jk_number = 4

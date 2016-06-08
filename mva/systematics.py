@@ -30,63 +30,44 @@ class Systematic(object):
 
 
 SYSTEMATICS_COMMON = {
-#    'MET_RESOSOFTTERMS': (('MET_RESOSOFTTERMS_UP',), ('MET_RESOSOFTTERMS_DOWN',)),
-#    'MET_SCALESOFTTERMS': (('MET_SCALESOFTTERMS_UP',), ('MET_SCALESOFTTERMS_DOWN',)),
-#
-#    'JES_Modelling': (('JES_Modelling_UP',), ('JES_Modelling_DOWN',)),
-#    'JES_Detector': (('JES_Detector_UP',), ('JES_Detector_DOWN',)),
-#    'JES_EtaModelling': (('JES_EtaModelling_UP',), ('JES_EtaModelling_DOWN',)),
-#    'JES_EtaMethod': (('JES_EtaMethod_UP',), ('JES_EtaMethod_DOWN',)),
-#    'JES_PURho': (('JES_PURho_UP',), ('JES_PURho_DOWN',)),
-#    'JES_FlavComp': (('JES_FlavComp_UP',), ('JES_FlavComp_DOWN',)),
-#    'JES_FlavResp': (('JES_FlavResp_UP',), ('JES_FlavResp_DOWN',)),
-#
-#    'JER': (('JER_UP',),),
-#
-#    'MFS': (('MFS_UP',), ('MFS_DOWN',)),
-#    'ISOL': (('ISOL_UP',), ('ISOL_DOWN',)),
-#
-#    'PU_RESCALE': (('PU_RESCALE_UP',), ('PU_RESCALE_DOWN',)),
-#
     'TAU_TRIGGER': (('TAU_TRIGGER_SYST_UP',), ('TAU_TRIGGER_SYST_DOWN',)),
-#    'FAKERATE': (('FAKERATE_UP',), ('FAKERATE_DOWN',)),
+    'TAU_RECO': (('TAU_RECO_UP',), ('TAU_RECO_DOWN',)),
+    'TAU_ELEOLR': (('TAU_ELEOLR_UP',), ('TAU_ELEOLR_DOWN',)),
     'TAU_ID': (('TAU_ID_UP',), ('TAU_ID_DOWN',)),
-
     'QCD_FIT': (('QCDFIT_UP',), ('QCDFIT_DOWN',)),
     'Z_FIT': (('ZFIT_UP',), ('ZFIT_DOWN',)),
-
     'QCD_SHAPE': (('QCDSHAPE_UP',), ('QCDSHAPE_DOWN',)),
 }
 
-SYSTEMATICS_2011 = {
-    'TES_TRUE_FINAL': (('TES_TRUE_FINAL_UP',), ('TES_TRUE_FINAL_DOWN',)),
-    'TES_FAKE_FINAL': (('TES_FAKE_FINAL_UP',), ('TES_FAKE_FINAL_DOWN',)),
-}
-SYSTEMATICS_2011.update(SYSTEMATICS_COMMON)
-
-SYSTEMATICS_2012 = {
-    'TES_TRUE_TOTAL': (('TES_TRUE_TOTAL_UP',), ('TES_TRUE_TOTAL_DOWN',)),
-    'TES_TRUE_INSITUINTERPOL': (('TES_TRUE_INSITUINTERPOL_UP',), ('TES_TRUE_INSITUINTERPOL_DOWN',)),
-    'TES_TRUE_SINGLEPARTICLEINTERPOL': (('TES_TRUE_SINGLEPARTICLEINTERPOL_UP',), ('TES_TRUE_SINGLEPARTICLEINTERPOL_DOWN',)),
-    'TES_TRUE_MODELING': (('TES_TRUE_MODELING_UP',), ('TES_TRUE_MODELING_DOWN',)),
-    'TES_FAKE_TOTAL': (('TES_FAKE_TOTAL_UP',), ('TES_FAKE_TOTAL_DOWN',)),
-    'JVF': (('JVF_UP',), ('JVF_DOWN',)),
-    'TAU_ID_STAT': (('TAU_ID_STAT_UP',), ('TAU_ID_STAT_DOWN',)),
-    'TRIGGER_STAT_PERIODA': (('TRIGGER_STAT_PERIODA_UP',), ('TRIGGER_STAT_PERIODA_DOWN',)),
-    'TRIGGER_STAT_PERIODBD_BARREL': (('TRIGGER_STAT_PERIODBD_BARREL_UP',), ('TRIGGER_STAT_PERIODBD_BARREL_DOWN',)),
-    'TRIGGER_STAT_PERIODBD_ENDCAP': (('TRIGGER_STAT_PERIODBD_ENDCAP_UP',), ('TRIGGER_STAT_PERIODBD_ENDCAP_DOWN',)),
-    'TRIGGER_STAT_PERIODEM_BARREL': (('TRIGGER_STAT_PERIODEM_BARREL_UP',), ('TRIGGER_STAT_PERIODEM_BARREL_DOWN',)),
-    'TRIGGER_STAT_PERIODEM_ENDCAP': (('TRIGGER_STAT_PERIODEM_ENDCAP_UP',), ('TRIGGER_STAT_PERIODEM_ENDCAP_DOWN',)),
-}
-SYSTEMATICS_2012.update(SYSTEMATICS_COMMON)
 
 SYSTEMATICS_2015 = {
+# TAU SYSTEMATICS
     'TAU_TRIGGER_STATDATA': (('TAU_TRIGGER_STATDATA_UP',), ('TAU_TRIGGER_STATDATA_DOWN',)),
-    'TAU_TRIGGER_SYST': (('TAU_TRIGGER_SYST_UP',), ('TAU_TRIGGER_SYST_DOWN',)),
+#    'TAU_TRIGGER_SYST': (('TAU_TRIGGER_SYST_UP',), ('TAU_TRIGGER_SYST_DOWN',)),
     'TAU_TRIGGER_STATMC': (('TAU_TRIGGER_STATMC_UP',), ('TAU_TRIGGER_STATMC_DOWN',)),
     'TAU_TES_DETECTOR': (('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1_up',), ('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1_down',)),
     'TAU_TES_MODEL': (('TAUS_TRUEHADTAU_SME_TES_MODEL_1_up',), ('TAUS_TRUEHADTAU_SME_TES_MODEL_1_down',)),
     'TAU_TES_INSITU': (('TAUS_TRUEHADTAU_SME_TES_INSITU_1_up',), ('TAUS_TRUEHADTAU_SME_TES_INSITU_1_down',)),
+# MET SYSTEMATICS
+    'MET_SoftTrk_ResoPara': (('MET_SoftTrk_ResoPara',),),
+    'MET_SoftTrk_ResoPerp': (('MET_SoftTrk_ResoPerp',),),
+    'MET_SoftTrk_Scale': (('MET_SoftTrk_ScaleUp',), ('MET_SoftTrk_ScaleDown',)),
+# JET SYSTEMATICS
+    'JET_EtaIntercalibration_NonClosure': (('JET_EtaIntercalibration_NonClosure_1_down',), ('JET_EtaIntercalibration_NonClosure_1_up',)),
+    'JET_Gro_upedNP_1' : (('JET_Gro_upedNP_1_1_down',), ('JET_Gro_upedNP_1_1_up',)),
+    'JET_Gro_upedNP_2' : (('JET_Gro_upedNP_2_1_down',), ('JET_Gro_upedNP_2_1_up',)),
+    'JET_Gro_upedNP_3' : (('JET_Gro_upedNP_3_1_down',), ('JET_Gro_upedNP_3_1_up',)),
+    'JET_JET_CROSS_CALIB_FORWARD' : (('JET_JET_CROSS_CALIB_FORWARD_1_up',),),
+    'JET_JET_NOISE_FORWARD': (('JET_JET_NOISE_FORWARD_1_up',),),
+    'JET_JER_NP0': (('JET_JER_NP0_1_down',), ('JET_JER_NP0_1_up',)),
+    'JET_JER_NP1': (('JET_JER_NP1_1_down',), ('JET_JER_NP1_1_up',)),
+    'JET_JER_NP2': (('JET_JER_NP2_1_down',), ('JET_JER_NP2_1_up',)),
+    'JET_JER_NP3': (('JET_JER_NP3_1_down',), ('JET_JER_NP3_1_up',)),
+    'JET_JER_NP4': (('JET_JER_NP4_1_down',), ('JET_JER_NP4_1_up',)),
+    'JET_JER_NP5': (('JET_JER_NP5_1_down',), ('JET_JER_NP5_1_up',)),
+    'JET_JER_NP6': (('JET_JER_NP6_1_down',), ('JET_JER_NP6_1_up',)),
+    'JET_JER_NP7': (('JET_JER_NP7_1_down',), ('JET_JER_NP7_1_up',)),
+    'JET_JER_NP8': (('JET_JER_NP8_1_down',), ('JET_JER_NP8_1_up',)),
 }
 SYSTEMATICS_2015.update(SYSTEMATICS_COMMON)
 
@@ -97,24 +78,8 @@ SYSTEMATICS_BY_WEIGHT = [
     ('TAU_TRIGGER_STATDATA_DOWN',),
     ('TAU_TRIGGER_STATMC_UP',),
     ('TAU_TRIGGER_STATMC_DOWN',),
-#    ('FAKERATE_UP',),
-#    ('FAKERATE_DOWN',),
     ('TAU_ID_UP',),
     ('TAU_ID_DOWN',),
-#    ('TAU_ID_STAT_UP',),
-#    ('TAU_ID_STAT_DOWN',),
-#    ('PU_RESCALE_UP',),
-#    ('PU_RESCALE_DOWN',),
-#    ('TRIGGER_STAT_PERIODA_UP',),
-#    ('TRIGGER_STAT_PERIODA_DOWN',),
-#    ('TRIGGER_STAT_PERIODBD_BARREL_UP',),
-#    ('TRIGGER_STAT_PERIODBD_BARREL_DOWN',),
-#    ('TRIGGER_STAT_PERIODBD_ENDCAP_UP',),
-#    ('TRIGGER_STAT_PERIODBD_ENDCAP_DOWN',),
-#    ('TRIGGER_STAT_PERIODEM_BARREL_UP',),
-#    ('TRIGGER_STAT_PERIODEM_BARREL_DOWN',),
-#    ('TRIGGER_STAT_PERIODEM_ENDCAP_UP',),
-#    ('TRIGGER_STAT_PERIODEM_ENDCAP_DOWN',),
 ]
 
 
@@ -133,12 +98,7 @@ def iter_systematics(include_nominal=False, year=2015, components=None):
 
 
 def get_systematics(year=2015):
-    if year == 2012:
-        return SYSTEMATICS_2012
-    elif year == 2011:
-        return SYSTEMATICS_2011
-    elif year == 2015:
-#        log.warning('Need to update the list of systematics for 2015')
+    if year == 2015:
         return SYSTEMATICS_2015
     else:
         raise ValueError("No systematics defined for year %d" % year)
