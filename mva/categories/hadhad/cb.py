@@ -7,7 +7,7 @@ from .truth import CUTS_TRUE_VBF_CUTBASED, CUTS_TRUE_BOOSTED
 # Documentation:
 # https://cds.cern.ch/record/1629891/files/ATL-COM-PHYS-2013-1558.pdf
 
-DETA_JETS = Cut('dijet_deta > 2.8')
+DETA_JETS = Cut('dijet_deta > 2.6')
 MASS_JETS = Cut('dijet_vis_mass > 250')
 TAU1_CENTR = Cut('ditau_tau0_centr==1')
 TAU2_CENTR = Cut('ditau_tau1_centr==1')
@@ -83,7 +83,7 @@ class Category_Cuts_VBF_HighDR_Tight(Category_Preselection):
     cuts = (
         CUTS_VBF_CUTBASED
         & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt < 140'))
-        & Cut('dijet_vis_mass > (-250 * dijet_deta + 1.550)'))
+        & Cut('dijet_vis_mass > (-250 * dijet_deta + 1550)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
         & Cut('true_ditau_mmc_maxw_pt<140')

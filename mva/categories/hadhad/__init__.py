@@ -91,6 +91,16 @@ CATEGORIES = {
     'mva': [
         Category_VBF,
         Category_Boosted,
+#        Category_Rest,
+        ],
+    'boosted': [
+        Category_Boosted,
+        ],
+    'vbf': [
+        Category_VBF,
+        ],
+    'rest': [
+        Category_Rest,
         ],
     'mva_all': [
         Category_VBF,

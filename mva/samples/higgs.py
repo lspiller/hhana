@@ -25,19 +25,19 @@ TAUTAUHADHADBR = 0.4194 # = (1. - 0.3521) ** 2
 
 class Higgs(MC, Signal):
     MASSES = range(100, 155, 5)
-    MODES = ['gg', 'VBF']#['Z', 'W', 'gg', 'VBF']
-    MODES_COMBINED = [['gg'], ['VBF']]#[['Z', 'W'], ['gg'], ['VBF']]
+    MODES = ['gg', 'VBF', 'W', 'Z']#['Z', 'W', 'gg', 'VBF']
+    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W']]#[['Z', 'W'], ['gg'], ['VBF']]
     MODES_DICT = {
         'gg': ('ggf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'VBF': ('vbf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
-#        'Z': ('zh', 'Pyth8_AU2CTEQ6L1_', 'Pyth8_AU2CTEQ6L1_'),
-#        'W': ('wh', 'Pyth8_AU2CTEQ6L1_', 'Pyth8_AU2CTEQ6L1_'),
+        'Z': ('zh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
+        'W': ('wh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
     }
     MODES_WORKSPACE = {
         'gg': 'ggH',
         'VBF': 'VBF',
-#        'Z': 'ZH',
-#        'W': 'WH',
+        'Z': 'ZH',
+        'W': 'WH',
     }
 
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HSG4Uncertainties
@@ -171,8 +171,8 @@ class Higgs(MC, Signal):
             name += '_%s' % str_mass
 
         if label is None:
-            label = '%s#font[52]{H}(%s)#rightarrow#tau#tau' % (
-                str_mode, str_mass)
+            label = '%s#font[52]{H}#rightarrow#tau#tau' % (
+                str_mode,)#, str_mass)
 
         if year == 2011:
             if suffix is None:
@@ -203,8 +203,12 @@ class Higgs(MC, Signal):
             for mode in modes:
                 generator = Higgs.MODES_DICT[mode][generator_index]
                 for mass in masses:
-                    self.samples.append('%s%sH%d_tautauhh%s' % (
-                        generator, mode, mass, suffix))
+                    if mode == 'gg' or mode == 'VBF':
+                        self.samples.append('%s%sH%d_tautauhh%s' % (
+                            generator, mode, mass, suffix))
+                    else:
+                        self.samples.append('%s%sH%d_inc%s' % (
+                            generator, mode, mass, suffix))
                     self.masses.append(mass)
                     self.modes.append(mode)
 

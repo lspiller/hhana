@@ -1,0 +1,186 @@
+#!/usr/bin/env python
+
+from rootpy.utils.path import mkdir_p
+import sys, os
+from rootpy.io import root_open
+from mva import cmd, MMC_MASS
+from mva.samples import Higgs
+from mva.workspace import (
+    write_workspaces, cuts_workspace, mva_workspace,
+    feature_workspace, weighted_mass_workspace, weighted_mass_cba_workspace)
+from mva.analysis import get_analysis
+from mva.massregions import MassRegions
+
+parser = cmd.analysis_parser(cmd.general_parser(
+    multi_years=True, multi_categories=True))
+parser.add_argument('type', choices=('mva', 'cuts', 'var', 'weighted-mass', 'weighted-mass-cba'), default='mva')
+parser.add_argument('--clf-mass', type=int, default=None)
+parser.add_argument('--clf-bins', default='optimal')
+parser.add_argument('--clf-swap', default=False, action='store_true')
+parser.add_argument('--sideband', default=False, action='store_true')
+parser.add_argument('--field', default=MMC_MASS)
+parser.add_argument('--binning', default='15,50,200')
+#parser.add_argument('--suffix', default=None)
+args = parser.parse_args()
+
+if args.masses == 'all':
+    args.masses = Higgs.MASSES
+else:
+    args.masses = map(int, args.masses.split(','))
+
+cuts = None
+if args.sideband:
+    massregions = MassRegions()
+    cuts = massregions.control_region
+    # always unblind in the mass sideband
+    args.unblind = True
+
+params = {}
+if args.type == 'mva':
+    workspace_func = mva_workspace
+    params['clf_mass'] = args.clf_mass
+    params['clf_bins'] = args.clf_bins
+    params['clf_swap'] = args.clf_swap
+    params['unblind'] = args.unblind
+    params['suffix'] = args.suffix
+elif args.type == 'cuts':
+    workspace_func = cuts_workspace
+    params['sideband'] = args.sideband
+    params['unblind'] = args.unblind
+
+years = args.years
+categories = args.categories
+print categories
+print years
+if len(categories) == 1 and len(years) > 1:
+    categories = categories * len(years)
+elif len(categories) != len(years):
+    sys.exit("specify the same number of category definitions as years")
+
+signal_regions = {}
+control_regions = {}
+for year, year_categories in zip(years, categories):
+    analysis = get_analysis(args, year=year)
+    sr, cr = workspace_func(analysis=analysis,
+                            categories=year_categories,
+                            masses=args.masses,
+                            systematics=args.systematics,
+                            cuts=cuts,
+                            **params)
+    signal_regions[year] = sr
+    control_regions[year] = cr
+
+    from pprint import pprint
+    pprint( signal_regions )
+    pprint( control_regions )
+
+suffix = analysis.get_suffix(year=False)
+if args.type == 'var':
+    suffix += '_' + args.field
+else:
+    suffix += '_' + args.type
+if args.sideband:
+    suffix += '_sideband'
+if args.output_suffix:
+    suffix += '_' + args.output_suffix
+
+Channel_Names = {
+    'hh_boost_loose': ''
+}
+
+Sample_Names = {
+    'Signal_gg_125'  : 'ggH',
+    'Signal_VBF_125' : 'VBFH',
+    'Signal_Z_125'   : 'ZH',
+    'Signal_W_125'   : 'WH',
+
+    'Ztautau' : 'Ztt',
+    'Fakes'   : 'Fake',
+    'Data'    : 'Data',
+    'Others'  : 'Others',
+}
+
+Sys_Names = {
+
+# NORMALIZATION
+#    'QCD_FIT_{UP|DOWN}': '',
+#    'Z_FIT_{UP|DOWN}': '',
+#    'QCD_SHAPE_{UP|DOWN}': '',
+
+    'nOS_ISOL': 'hh_qcd_shape',
+    'reflected': 'hh_qcd_shape_reflected',
+    # TAU SYSTEMATICS
+    'TAU_TRIGGER_STATDATA': 'tau_trigger_statdata',
+    'TAU_TRIGGER_SYST': 'tau_trigger_syst',
+    'TAU_TRIGGER_STATMC': 'tau_trigger_statmc',
+    'TAUS_TRUEHADTAU_SME_TES_DETECTOR_1': 'tau_tes_detector',
+    'TAUS_TRUEHADTAU_SME_TES_MODEL_1': 'tau_tes_model',
+    'TAUS_TRUEHADTAU_SME_TES_INSITU_1': 'tau_tes_insitu',
+    'TAU_RECO': 'tau_eff_reco',
+    'TAU_ELEOLR': 'tau_eff_eleolr',
+    'TAU_ID': 'tau_eff_jetid',
+
+    # MET SYSTEMATICS
+    'MET_SoftTrk_ResoPara': 'met_softtrk_resopara',
+    'MET_SoftTrk_ResoPerp': 'met_softtrk_resoperp',
+    'MET_SoftTrk_Scale{Up|Down}': 'met_softtrk_scale',
+
+    # JET SYSTEMATICS
+    'JET_EtaIntercalibration_NonClosure_1': 'jet_jes_etaintercalib',
+    'JET_Gro_upedNP_1_1': 'jet_jes_groupednp1',
+    'JET_Gro_upedNP_1_2': 'jet_jes_groupednp2',
+    'JET_Gro_upedNP_1_3': 'jet_jes_groupednp3',
+    'JET_JET_CROSS_CALIB_FORWARD' : 'jet_jer_crosscalibfwd',
+    'JET_JET_NOISE_FORWARD_1_up': 'jet_jer_noisefwd',
+    'JET_JER_NP0_1': 'jet_jer_np0',
+    'JET_JER_NP1_1': 'jet_jer_np1',
+    'JET_JER_NP2_1': 'jet_jer_np2',
+    'JET_JER_NP3_1': 'jet_jer_np3',
+    'JET_JER_NP4_1': 'jet_jer_np4',
+    'JET_JER_NP5_1': 'jet_jer_np5',
+    'JET_JER_NP6_1': 'jet_jer_np6',
+    'JET_JER_NP7_1': 'jet_jer_np7',
+    'JET_JER_NP8_1': 'jet_jer_np8',
+}
+
+signal_region = signal_regions[2015][125]
+path = 'workspaces/WSBuilder_hh{0}'.format(suffix.lower())
+
+if not os.path.exists(path):
+    mkdir_p(path)
+
+with root_open(os.path.join(path, 'combination.root'), 'recreate') as outfile:
+    for category, channel in signal_region.iteritems():
+        outfile.cd()
+        channel.name = category
+        print channel
+        print category
+        catfile = outfile.mkdir(category)
+
+        for s in channel.samples:
+            catfile.cd()
+            s.name = Sample_Names[s.name]
+            s.hist.name = 'nominal'
+            print s.name
+            print s.hist
+            print s.hist.name
+            samplefile = catfile.mkdir(s.name)
+
+            for histosys in s.histo_sys:
+                samplefile.cd()
+                for key, value in Sys_Names.iteritems():
+                    if key in histosys.name:
+                        histosys.name = value
+                        break
+                else:
+                    print "WARNING: ", histosys.name
+                    continue
+                print histosys
+                print histosys.name
+                print histosys.low.name
+                print histosys.high.name
+                histosys.Write()
+                histosys.high.Write()
+                histosys.low.Write()
+
+#write_workspaces(path, 'hh', signal_regions, controls=control_regions)

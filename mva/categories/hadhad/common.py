@@ -11,7 +11,10 @@ TAUID = (Cut('ditau_tau0_jet_bdt_medium == 1') & \
          Cut('ditau_tau1_jet_bdt_medium == 1')) & \
          Cut('n_taus_medium == 2')
 
-TAU_SAME_VERTEX = Cut('tau_same_vertex')
+#TAUID = (Cut('n_taus_medium == 2')
+#          & Cut('n_taus_tight > 0')
+#          & Cut('ditau_tau0_jet_bdt_medium == 1')
+#          & Cut('ditau_tau1_jet_bdt_medium == 1'))
 
 LEAD_TAU_40 = Cut('ditau_tau0_pt > 40')
 SUBLEAD_TAU_30 = Cut('ditau_tau1_pt > 30')
@@ -25,12 +28,15 @@ CUTS_2J = LEAD_JET_50 & SUBLEAD_JET_30
 CUTS_1J = LEAD_JET_50 & (- SUBLEAD_JET_30)
 CUTS_0J = (- LEAD_JET_50)
 MET = Cut('met_et > 20')
+#MET = Cut('selection_met == 1')
 DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
+#DR_TAUS = Cut('selection_delta_r == 1')
 DETA_TAUS = Cut('ditau_deta < 1.5')
-DETA_TAUS_CR = Cut('ditau_deta > 1.5')
+#DETA_TAUS = Cut('selection_delta_eta == 1')
+DETA_TAUS_CR = -DETA_TAUS
 RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
 
-LEPTON_VETO = Cut('selection_lepton_veto == 1') & -Cut('ditau_tau0_ele_bdt_loose==1') & -Cut('ditau_tau1_ele_bdt_loose==1')
+LEPTON_VETO = Cut('selection_lepton_veto == 1') & Cut('ditau_tau0_ele_bdt_loose==0') & Cut('ditau_tau1_ele_bdt_loose==0')
 TRIGGER = Cut('selection_trigger == 1')
 
 # use .format() to set centality value
@@ -42,9 +48,8 @@ PRESELECTION = (
     & SUBLEAD_TAU_30
     & MET
     & METCENT
-    & Cut('%s > 0' % MMC_MASS)
+#    & Cut('%s > 0' % MMC_MASS)
     & DR_TAUS
-    # & TAU_SAME_VERTEX
     & TAUID
     & LEPTON_VETO
     & TRIGGER

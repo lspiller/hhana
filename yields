@@ -3,10 +3,17 @@ from mva.cmd import get_parser
 
 args = get_parser(actions=False).parse_args()
 
+from mva.defaults import FAKES_REGION, TARGET_REGION
+
 from mva.analysis import get_analysis
 from mva.categories.hadhad import Category_Preselection
+from rootpy.tree import Cut
+from mva.regions import REGIONS
 
 analysis = get_analysis(args)
+
+print "Data"
+print analysis.data.events(Category_Preselection, cuts=(REGIONS[TARGET_REGION]&Cut('selection_delta_eta')))[1].value
 
 print "Ztautau"
 print analysis.ztautau.events(Category_Preselection)[1].value

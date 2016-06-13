@@ -1,0 +1,187 @@
+#!/usr/bin/env python
+
+from rootpy.extern.argparse import ArgumentParser
+import sys, os
+from rootpy.io import root_open
+import ROOT
+from collections import defaultdict
+from itertools import product
+
+parser = ArgumentParser()
+
+parser.add_argument('--reset', default=False, action='store_true')
+parser.add_argument('paths', nargs='+')
+args = parser.parse_args()
+
+CHANNEL_RULES = [
+        lambda chan: chan.replace('channel_hh_15_', ''),
+        lambda chan: chan.replace('_125_ditau_mmc_mlm_m_hists', ''),
+        lambda chan: chan.replace('_125_hists', '')
+        ]
+
+BACKGROUND_RULES = [
+        lambda chan: chan.replace('Signal_', ''),
+        lambda chan: chan.replace('gg_125', 'ggH'),
+        lambda chan: chan.replace('VBF_125', 'VBFH'),
+        lambda chan: chan.replace('Ztautau', 'Ztt'),
+        lambda chan: chan.replace('Fakes', 'Fake'),
+        lambda chan: chan.replace('data', 'Data'),
+        ]
+
+#hh_category_cuts_vbf_lowdr_Ztautau_125_ditau_mmc_mlm_m_TAU_TRIGGER_SYST_UP_uniform_binning
+HISTOGRAM_RULES = [
+        lambda hname: hname.lower(),
+        lambda hname: hname.replace('_uniform_binning', ''),
+        lambda hname: hname.replace('hh_category_cuts_vbfa_', ''),
+        lambda hname: hname.replace('hh_category_cuts_boosted_', ''),
+        lambda hname: hname.replace('loose_', ''),
+        lambda hname: hname.replace('tight_', ''),
+        lambda hname: hname.replace('others_', ''),
+        lambda hname: hname.replace('fakes_125_nos_isol_', ''),
+        lambda hname: hname.replace('ztautau_', ''),
+        lambda hname: hname.replace('_data', ''),
+        lambda hname: hname.replace('signal_', ''),
+        lambda hname: hname.replace('vbfa_', ''),
+        lambda hname: hname.replace('gg_', ''),
+        lambda hname: hname.replace('_125_ditau_mmc_mlm_m', ''),
+        lambda hname: hname.replace('taus_truehadtau_sme_tes', 'tau_tes'),
+        lambda hname: hname.replace('_1', ''),
+        lambda hname: hname.replace('lowdr_', ''),
+        lambda hname: hname.replace('highdr_', ''),
+        lambda hname: hname.replace('lowdr', ''),
+        lambda hname: hname.replace('highdr', ''),
+        lambda hname: hname.replace('_down', '_low'),
+        lambda hname: hname.replace('_up', '_high'),
+        lambda hname: hname.replace('125_ditau_mmc_mlm_m_', ''),
+        lambda hname: hname.replace('ditau_mmc_mlm_m', ''),
+        lambda hname: hname.replace('reflected', 'hh_reflected'),
+        lambda hname: hname.replace('fakes', 'hh_fakes'),
+        lambda hname: hname.replace('_hh', 'hh'),
+        lambda hname: 'nominal' if not hname or hname == 'data' else hname,
+
+
+        lambda hname: hname.replace('vbf25_', ''),
+        lambda hname: hname.replace('vbf25', 'nominal'),
+
+        lambda hname: hname.replace('hh_categoryhh_rest25_ditau_deta_', ''),
+        lambda hname: hname.replace('hh_categoryhh_rest25_ditau_deta', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_boost_uniform', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_boost_', ''),
+        lambda hname: hname.replace('hh_categoryhh_boosthh_fakes_uniform', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_boosthh_fakes_', ''),
+        lambda hname: hname.replace('_uniform', ''),
+        lambda hname: hname.replace('hh_categoryhh_boost25_', ''),
+        lambda hname: hname.replace('hh_categoryhh_boost25', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_resthh_fakes25_ditau_deta', 'qcd_iso_up'),
+        lambda hname: hname.replace('hh_categoryhh_rest_ditau_deta', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_rest_ditau_detahh_', 'qcd_iso_up'),
+
+
+        lambda hname: hname.replace('hh_categoryhh_vbf_uniform', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_vbf_', ''),
+        lambda hname: hname.replace('hh_categoryhh_vbfhh_fakes_uniform', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_vbfhh_fakes_', ''),
+        lambda hname: hname.replace('hh_categoryhh_vbf25_', ''),
+        lambda hname: hname.replace('hh_categoryhh_vbf25', 'nominal'),
+
+        lambda hname: hname.replace('hh_categoryhh_vbfhh_fakes', 'nominal'),
+        lambda hname: hname.replace('hh_categoryhh_vbf', 'nominal'),
+
+
+        lambda hname: hname.replace('nominalhh_reflected', 'qcd_iso_down'),
+        lambda hname: hname.replace('nos_isolhh_reflected', 'qcd_iso_down'),
+        lambda hname: hname.replace('nos_isol', 'qcd_iso_up'),
+
+
+        lambda hname: hname.replace('hh_categoryhh_', ''),
+
+        lambda hname: hname.replace('hh_categoryhh', 'nominal'),
+        ]
+
+for path in args.paths:
+    if not os.path.exists( path ):
+        print "ERROR: Path does not exist"
+        sys.exit(2)
+    if not os.path.isdir(path):
+        print "ERROR: Must provide a directory as input"
+        sys.exit(2)
+
+    path = os.path.normpath( path )
+    location, folder = os.path.split( path )
+    out_folder = folder + '_WSBuilder/'
+    out_dir = os.path.join(location, out_folder)
+    if not os.path.exists(out_dir):
+        os.mkdir(out_dir)
+
+    infile = os.path.join(path, 'hh_15_combination_125.root')
+    outfile = os.path.join(out_dir, 'hh_15_combination_125.root')
+
+    if os.path.exists(outfile) and args.reset:
+        os.remove(outfile)
+    elif os.path.exists(outfile):
+        print "ERROR: File already exists. To overwrite, use --reset"
+        sys.exit(2)
+
+    with root_open(infile, 'READ') as root_in:
+
+        # Structure of root_in
+        # /
+        # . /channel_name
+        # ..    /channel_name/background
+        # ...       /channel_name/background/histograms
+        channels = [ch.title for ch in root_in.objects(cls=(ROOT.TDirectory,))]
+        backgrounds = [ bkg.title for bkg in root_in.GetDirectory(channels[0]).objects() ]
+        print "Channels: ", [c for c in channels]
+        print "Backgrounds: ", [b for b in backgrounds]
+        # Get all histograms
+        processes = product( channels, backgrounds )
+
+        histograms = []
+        for c, b in processes:
+            root_in.cd()
+            histogram_in = [hist for hist in root_in.GetDirectory(os.path.join(c,b)).objects((ROOT.TH1,ROOT.TH1D,ROOT.TH1F,ROOT.TH1I))]
+            for h in histogram_in:
+                ROOT.gROOT.cd()
+                if 'signal' in b:
+                    if 'gg_' in h:
+                        b = 'ggh'
+                    else:
+                        b = 'vbfh'
+                histograms.append((h.Clone(h.GetName()), (c,b)))
+        print histograms
+
+    with root_open(outfile, 'UPDATE') as root_out:
+        for chan in channels:
+            for f in CHANNEL_RULES:
+                chan = f(chan)
+            root_out.cd()
+            if 'signal' in chan:
+                root_out.mkdir('vbfh')
+                root_out.mkdir('ggh')
+            else:
+                root_out.mkdir(chan)
+                root_out.GetDirectory(chan).cd()
+                for bkg in backgrounds:
+                    for f in BACKGROUND_RULES:
+                        bkg = f(bkg)
+                    root_out.mkdir(os.path.join(chan, bkg))
+        for h, (c,b) in histograms:
+
+            for f in CHANNEL_RULES:
+                c = f(c)
+
+            for f in BACKGROUND_RULES:
+                b = f(b)
+
+            hname = h.GetName()
+            print hname
+            for f in HISTOGRAM_RULES:
+                hname = f(hname)
+            print hname
+            print
+            h.SetTitle( hname )
+
+            root_out.GetDirectory(os.path.join(c,b)).cd()
+            h.Write( h.GetTitle(), ROOT.TObject.kOverwrite)
+
+print "FINISHED!"

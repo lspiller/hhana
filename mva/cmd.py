@@ -133,8 +133,8 @@ def plotting_parser(parser=None):
                         help='number of bins to plot expr in')
     parser.add_argument('--no-weight', action='store_true', default=False,
                         help='do not apply correction weights')
-    parser.add_argument('--output-formats', default=['png'], nargs='+',
-                        choices=('png', 'eps', 'pdf'),
+    parser.add_argument('--output-formats', default=['png','.eps','.C'], nargs='+',
+                        choices=('png', 'eps', 'pdf', '.C'),
                         help='output formats')
     parser.add_argument('--no-data', action='store_true', default=False,
                         help='do not display data on the plot')
