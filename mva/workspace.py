@@ -198,7 +198,8 @@ def cuts_workspace(analysis, categories, masses,
                    unblind=False,
                    systematics=False,
                    cuts=None,
-                   sideband=False):
+                   sideband=False,
+                   uniform_bins=True):
     hybrid_data = None if unblind else {MMC_MASS:(100., 150.)}
     channels = {}
     for category in analysis.iter_categories(categories):
@@ -232,12 +233,13 @@ def cuts_workspace(analysis, categories, masses,
                         histosys.low = apply_remove_window(
                             histosys.low, remove_window)
             # convert to uniform binning
-            channel.data.hist = to_uniform_binning(channel.data.hist)
-            for s in channel.samples:
-                s.hist = to_uniform_binning(s.hist)
-                for histosys in s.histo_sys:
-                    histosys.high = to_uniform_binning(histosys.high)
-                    histosys.low = to_uniform_binning(histosys.low)
+            if uniform_bins:
+                channel.data.hist = to_uniform_binning(channel.data.hist)
+                for s in channel.samples:
+                    s.hist = to_uniform_binning(s.hist)
+                    for histosys in s.histo_sys:
+                        histosys.high = to_uniform_binning(histosys.high)
+                        histosys.low = to_uniform_binning(histosys.low)
             if mass not in channels:
                 channels[mass] = {}
             channels[mass][category.name] = channel

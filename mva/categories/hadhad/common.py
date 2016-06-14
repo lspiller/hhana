@@ -5,10 +5,11 @@ from ..base import Category
 from ... import MMC_MASS
 # All basic cut definitions are here
 
-TAUID = (Cut('ditau_tau0_jet_bdt_medium == 1') & \
+TAUID = (
+        (Cut('ditau_tau0_jet_bdt_medium == 1') & \
          Cut('ditau_tau1_jet_bdt_tight == 1')) | \
         (Cut('ditau_tau0_jet_bdt_tight == 1') & \
-         Cut('ditau_tau1_jet_bdt_medium == 1')) & \
+         Cut('ditau_tau1_jet_bdt_medium == 1'))) & \
          Cut('n_taus_medium == 2')
 
 #TAUID = (Cut('n_taus_medium == 2')

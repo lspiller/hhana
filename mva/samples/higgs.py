@@ -32,12 +32,14 @@ class Higgs(MC, Signal):
         'VBF': ('vbf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'Z': ('zh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
         'W': ('wh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
+        'tth': ('tth', '', '', 'aMCNloHerwig_'),
     }
     MODES_WORKSPACE = {
         'gg': 'ggH',
         'VBF': 'VBF',
         'Z': 'ZH',
         'W': 'WH',
+        'tth': 'tth',
     }
 
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HSG4Uncertainties
@@ -206,9 +208,18 @@ class Higgs(MC, Signal):
                     if mode == 'gg' or mode == 'VBF':
                         self.samples.append('%s%sH%d_tautauhh%s' % (
                             generator, mode, mass, suffix))
-                    else:
+                    elif mode == 'Z' or mode == 'W':
                         self.samples.append('%s%sH%d_inc%s' % (
                             generator, mode, mass, suffix))
+                    elif mode == 'tth':
+                        self.samples.append('%s%sH%d_dil%s' % (
+                            generator, mode, mass, suffix))
+                        self.samples.append('%s%sH%d_semilep%s' % (
+                            generator, mode, mass, suffix))
+                        self.samples.append('%s%sH%d_allhad%s' % (
+                            generator, mode, mass, suffix))
+                    else:
+                        log.Error("NO MODE FOUND!")
                     self.masses.append(mass)
                     self.modes.append(mode)
 

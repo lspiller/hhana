@@ -66,6 +66,7 @@ for year, year_categories in zip(years, categories):
                             masses=args.masses,
                             systematics=args.systematics,
                             cuts=cuts,
+                            uniform_bins=False,
                             **params)
     signal_regions[year] = sr
     control_regions[year] = cr
@@ -85,11 +86,11 @@ if args.output_suffix:
     suffix += '_' + args.output_suffix
 
 Channel_Names = {
-    'cuts_vbf_highdr_loose': 'hh_vbf_highdr_loose',
-    'cuts_vbf_highdr_tight': 'hh_vbf_highdr_tight',
-    'cuts_vbf_lowdr': 'hh_vbf_lowdr',
-    'cuts_boosted_loose': 'hh_boost_loose',
-    'cuts_boosted_tight': 'hh_boost_tight',
+    'cuts_vbf_highdr_loose': 'hh15_vbf_highdr_loose',
+    'cuts_vbf_highdr_tight': 'hh15_vbf_highdr_tight',
+    'cuts_vbf_lowdr': 'hh15_vbf_lowdr',
+    'cuts_boosted_loose': 'hh15_boost_loose',
+    'cuts_boosted_tight': 'hh15_boost_tight',
 }
 
 Sample_Names = {
@@ -97,6 +98,7 @@ Sample_Names = {
     'Signal_VBF_125' : 'VBFH',
     'Signal_Z_125'   : 'ZH',
     'Signal_W_125'   : 'WH',
+    'Signal_tth_125'   : 'tth',
 
     'Ztautau' : 'Ztt',
     'Fakes'   : 'Fake',

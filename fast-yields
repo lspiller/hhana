@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+# python imports
+import numpy as np
+
+from rootpy.tree import Cut
+from hhdb import datasets
+import tables
+import os
+from mva.samples.db import get_file
+from collections import OrderedDict
+import yellowhiggs
+from mva.samples import Higgs
+from mva.samples import Data
+from mva.cmd import get_parser
+from mva.categories.hadhad import (TAUID, LEAD_TAU_40, SUBLEAD_TAU_30, MET, DR_TAUS, LEPTON_VETO, TRIGGER)
+
+from mva.defaults import TARGET_REGION
+from mva.regions import REGIONS
+
+from mva.categories.hadhad import (CUTS_2J, DETA_TAUS, RESONANCE_PT, DETA_TAUS )
+from mva.regions import Q, OS, TRACK_ISOLATION, P1P3, ID_MEDIUM, TRACK_ISOLATION
+from mva.analysis import get_analysis, Analysis
+from mva.categories.hadhad import Category_Preselection
+
+fields = ['ditau_mmc_maxw_pt', 'ditau_deta', 'ditau_dr', 'ditau_tau0_pt', 'ditau_tau1_pt', 'dijet_deta', 'dijet_vis_mass']
+
+ana = Analysis( 2015 )
+
+data = ana.data.array(fields=fields, category=Category_Preselection, cuts=REGIONS[TARGET_REGION])
+
+print "Preselection (no Deta cuts): {}".format(np.sum(data[:,-1]))
+
+DEta_taus_mask = (data[:,1] < 1.5)
+print "DEta Taus:    {}".format(np.sum(data[:,-1][DEta_taus_mask]))
+
+resonance_mask = (data[:,0] > 100.)
+boosted_mask = resonance_mask & DEta_taus_mask
+print "Resonance pT: {}".format(np.sum(data[:,-1][boosted_mask]))
+
+print "---------------------"
+print "BOOSTED (MVA) {}".format(np.sum(data[:,-1][boosted_mask]))
+
+highpt_mask = (data[:,0] > 140)
+ditau_dr_mask = (data[:,2] < 1.5)
+Tight = highpt_mask & ditau_dr_mask
+
+loose_mask = ~Tight & boosted_mask
+tight_mask = Tight & boosted_mask
+
+print "BOOSTED (Cuts):"
+print "Boosted Tight: {}".format(np.sum(data[:,-1][tight_mask]))
+print "Boosted Loose: {}".format(np.sum(data[:,-1][loose_mask]))
+print "---------------------"
+print
+print
+
+print "Preselection (no Deta cuts): {}".format(np.sum(data[:,-1]))
+DEta_taus_mask = (data[:,1] < 1.5)
+LEADJET    = data[:,3] > 50
+SUBLEADJET = data[:,4] > 30
+vbf_mask = LEADJET & SUBLEADJET
+print "DEta Taus:    {}".format(np.sum(data[:,-1][DEta_taus_mask]))
+print "2 Jet Pts:    {}".format(np.sum(data[:,-1][vbf_mask]))
+print "---------------------"
+print "VBF (MVA)     {}".format(np.sum(data[:,-1][vbf_mask]))
+print "---------------------"
+
+DEta_jets = data[:,5] > 2.6
+Mass_jets = data[:,6] > 250
+print "Deta Jets:    {}".format(np.sum(data[:,-1][vbf_mask&DEta_jets]))
+print "Mass Jets:    {}".format(np.sum(data[:,-1][vbf_mask&DEta_jets&Mass_jets]))
+
+vbf_cut_mask = vbf_mask&DEta_jets&Mass_jets
+loose_mask = ~Tight & vbf_cut_mask
+tight_mask = Tight & vbf_cut_mask
+
+print "---------------------"
+print "VBF (Cuts)"
+print "VBF LowDR:  {}".format(np.sum(data[:,-1][loose_mask]))
+print "VBF HighDR: {}".format(np.sum(data[:,-1][tight_mask]))
+
+fischer = data[:,6] < -250 * data[:,5] + 1550
+
+print "VBF HighDR Tight: {}".format(np.sum(data[:,-1][tight_mask&fischer]))
+print "VBF HighDR Loose: {}".format(np.sum(data[:,-1][tight_mask&(~fischer)]))
+print "---------------------"
