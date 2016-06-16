@@ -49,6 +49,8 @@ class Ztautau(Background):
         Instead of setting the k factor here
         the normalization is determined by a fit to the data
         """
+
+        kwargs.setdefault('student', 'hhskim_z')
         self.scale_error = 0.
         self.workspace_norm = kwargs.pop('workspace_norm', None)
         self.constrain_norm = kwargs.pop('constrain_norm', False)

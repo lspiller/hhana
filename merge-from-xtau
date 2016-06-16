@@ -12,8 +12,8 @@ from rootpy import asrootpy
 
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v10/hhskim_data/hhskim_data.root')
-parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v10/unmerged_data_fixed/')
+parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v10/hhskim_z_alt/hhskim_z_alt.root')
+parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v10/unmerged_z_alt/')
 parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
 parser.add_argument('--reset', action='store_true', default=False)
 parser.add_argument('--append', action='store_true', default=False)

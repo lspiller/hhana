@@ -25,8 +25,8 @@ TAUTAUHADHADBR = 0.4194 # = (1. - 0.3521) ** 2
 
 class Higgs(MC, Signal):
     MASSES = range(100, 155, 5)
-    MODES = ['gg', 'VBF', 'W', 'Z']#['Z', 'W', 'gg', 'VBF']
-    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W']]#[['Z', 'W'], ['gg'], ['VBF']]
+    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']#['Z', 'W', 'gg', 'VBF']
+    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]#[['Z', 'W'], ['gg'], ['VBF']]
     MODES_DICT = {
         'gg': ('ggf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'VBF': ('vbf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
@@ -212,12 +212,12 @@ class Higgs(MC, Signal):
                         self.samples.append('%s%sH%d_inc%s' % (
                             generator, mode, mass, suffix))
                     elif mode == 'tth':
-                        self.samples.append('%s%sH%d_dil%s' % (
-                            generator, mode, mass, suffix))
-                        self.samples.append('%s%sH%d_semilep%s' % (
-                            generator, mode, mass, suffix))
-                        self.samples.append('%s%sH%d_allhad%s' % (
-                            generator, mode, mass, suffix))
+#                        self.samples.append('%sttH%d_dil%s' % (
+#                            generator, mass, suffix))
+#                        self.samples.append('%sttH%d_semilep%s' % (
+#                            generator, mass, suffix))
+                        self.samples.append('%sttH%d_allhad%s' % (
+                            generator, mass, suffix))
                     else:
                         log.Error("NO MODE FOUND!")
                     self.masses.append(mass)
@@ -418,6 +418,7 @@ class Higgs(MC, Signal):
 
     def xsec_kfact_effic(self, isample):
         # use yellowhiggs for cross sections
+        log.debug("{},{}".format(self.masses, isample))
         xs, _ = yellowhiggs.xsbr(
             self.energy, self.masses[isample],
             Higgs.MODES_DICT[self.modes[isample]][0], 'tautau')

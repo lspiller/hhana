@@ -165,7 +165,7 @@ with root_open(os.path.join(path, 'combination.root'), 'recreate') as outfile:
         print category
         catfile = outfile.mkdir(channel.name)
         catfile.cd()
-        data=catfile.mkdir('data')
+        data=catfile.mkdir('Data')
         data.cd()
         channel.data.hist.name = 'nominal'
         channel.data.hist.Write()
