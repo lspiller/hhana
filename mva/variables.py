@@ -214,20 +214,20 @@ VARIABLES = {
         'binning': (10, -math.sqrt(2), math.sqrt(2)),
         'legend': 'left',
     },
-    'tau1_centrality': {
-        'title': r'$#tau_1$ Centrality',
-        'root': '#font[152]{#tau}_{2} #font[152]{#eta} centrality',
-        'filename': 'tau1_centrality',
-        'binning': (10, -math.sqrt(2), math.sqrt(2)),
-        'legend': 'left',
-    },
-    'tau2_centrality': {
-        'title': r'$#tau_2$ Centrality',
-        'root': '#font[52]{#tau_2} #font[152]{#eta Centrality}',
-        'filename': 'tau2_centrality',
-        'binning': (10, -math.sqrt(2), math.sqrt(2)),
-        'legend': 'left',
-    },
+#    'tau1_centrality': {
+#        'title': r'$#tau_1$ Centrality',
+#        'root': '#font[152]{#tau}_{2} #font[152]{#eta} centrality',
+#        'filename': 'tau1_centrality',
+#        'binning': (10, -math.sqrt(2), math.sqrt(2)),
+#        'legend': 'left',
+#    },
+#    'tau2_centrality': {
+#        'title': r'$#tau_2$ Centrality',
+#        'root': '#font[52]{#tau_2} #font[152]{#eta Centrality}',
+#        'filename': 'tau2_centrality',
+#        'binning': (10, -math.sqrt(2), math.sqrt(2)),
+#        'legend': 'left',
+#    },
 
     'ditau_vis_mass': {
         'title': r'$m^{vis}_{\tau\tau}$',
@@ -277,13 +277,13 @@ VARIABLES = {
        'binning': (12, -1.5, 1.5),
 #       'legend': 'left',
    },
-   'eta_product_jets': {
-       'title': r'$\eta_{jet1} \times \eta_{jet2}$',
-       'root': '#font[152]{#eta}_{j1} #times #font[152]{#eta}_{j2}',
-       'filename': 'eta_product_jets',
-       'binning': (10, -10., 10.),
-       'legend': 'left',
-   },
+#   'eta_product_jets': {
+#       'title': r'$\eta_{jet1} \times \eta_{jet2}$',
+#       'root': '#font[152]{#eta}_{j1} #times #font[152]{#eta}_{j2}',
+#       'filename': 'eta_product_jets',
+#       'binning': (10, -10., 10.),
+#       'legend': 'left',
+#   },
 
    'ditau_tau0_n_tracks': {
        'title': r'$\tau_{1}$ Number of Tracks',
@@ -458,12 +458,12 @@ VARIABLES = {
         'units': 'GeV',
     },
 
-    'ditau_pt_ratio': {
-        'title': r'$\tau_{2} p_{T} / \tau_{1} p_{T}$',
-        'root': '#font[52]{p}_{T}(#font[152]{#tau}_{2}) / #font[52]{p}_{T}(#font[152]{#tau}_{1})',
-        'filename': 'ditau_pt_ratio',
-        'binning': (8, 0., 1.),
-    },
+#    'ditau_pt_ratio': {
+#        'title': r'$\tau_{2} p_{T} / \tau_{1} p_{T}$',
+#        'root': '#font[52]{p}_{T}(#font[152]{#tau}_{2}) / #font[52]{p}_{T}(#font[152]{#tau}_{1})',
+#        'filename': 'ditau_pt_ratio',
+#        'binning': (8, 0., 1.),
+#    },
 
 }
 

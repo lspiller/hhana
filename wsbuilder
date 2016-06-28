@@ -67,6 +67,7 @@ for year, year_categories in zip(years, categories):
                             systematics=args.systematics,
                             cuts=cuts,
                             uniform_bins=False,
+                            force_bins=[10**-100]+range(5,200,5)+[10**100],
                             **params)
     signal_regions[year] = sr
     control_regions[year] = cr
@@ -98,7 +99,7 @@ Sample_Names = {
     'Signal_VBF_125' : 'VBFH',
     'Signal_Z_125'   : 'ZH',
     'Signal_W_125'   : 'WH',
-    'Signal_tth_125'   : 'tth',
+    'Signal_tth_125'   : 'ttH',
 
     'Ztautau' : 'Ztt',
     'Fakes'   : 'Fake',

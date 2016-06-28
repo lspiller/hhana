@@ -108,6 +108,7 @@ def get_table_template():
     latex_lines['Signal_V_125'] = 'VH &'
     latex_lines['Signal_VBF_125'] = 'VBF &'
     latex_lines['Signal_gg_125'] = 'ggF &'
+    latex_lines['Signal_tth_125'] = 'ttH &'
     latex_lines['sep_2']    = '\\hline'
     latex_lines['Higgs']    = 'Total Signal &'
     latex_lines['sep_3']    = '\\hline'

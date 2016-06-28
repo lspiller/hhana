@@ -26,8 +26,12 @@ if args.year == 2011 or args.year == 2015:
 else:
     template = Hist(5, 0, 2)
 
+#qcd_scale, qcd_scale_error, \
+#ztt_scale, ztt_scale_error = analysis.fit_norms(
+#    field, template, category, args.target_region)
+
 qcd_scale, qcd_scale_error, \
-ztt_scale, ztt_scale_error = analysis.fit_norms(
+ztt_scale, ztt_scale_error = analysis.naive_norms(
     field, template, category, args.target_region)
 
 # update the cache

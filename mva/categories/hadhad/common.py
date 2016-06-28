@@ -37,6 +37,10 @@ DETA_TAUS = Cut('ditau_deta < 1.5')
 DETA_TAUS_CR = -DETA_TAUS
 RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
 
+JET_TRIG_PT = Cut('jet_0_pt > 70.')
+JET_TRIG_ETA = Cut('-3.2 < jet_0_eta < 3.2')
+JET_TRIG = JET_TRIG_ETA & JET_TRIG_PT
+
 LEPTON_VETO = Cut('selection_lepton_veto == 1') & Cut('ditau_tau0_ele_bdt_loose==0') & Cut('ditau_tau1_ele_bdt_loose==0')
 TRIGGER = Cut('selection_trigger == 1')
 
@@ -50,6 +54,7 @@ PRESELECTION = (
     & MET
     & METCENT
 #    & Cut('%s > 0' % MMC_MASS)
+    & JET_TRIG
     & DR_TAUS
     & TAUID
     & LEPTON_VETO

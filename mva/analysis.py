@@ -858,3 +858,24 @@ class Analysis(object):
         self.ztautau.scale_error = ztt_scale_error
 
         return qcd_scale, qcd_scale_error, ztt_scale, ztt_scale_error
+
+
+    def naive_norms(self, field, template, category, region=None,
+                  max_iter=10, thresh=1e-7):
+        """
+        Derive the normalizations of QCD using MC fixed to cross-section
+        """
+        if region is None:
+            region = self.target_region
+        # initialize QCD and Ztautau normalizations to 50/50 of data yield
+        data_yield = self.data.events(category, region)[1].value
+        ztt_yield = self.ztautau.events(category, region)[1].value
+        qcd_yield = self.qcd.events(category, region)[1].value
+        others_yield = self.others.events(category, region)[1].value
+
+        ztt_scale = 1.
+        qcd_scale = (data_yield - ztt_yield - others_yield) / qcd_yield
+        qcd_scale_error = 0.
+        ztt_scale_error = 0.
+
+        return qcd_scale, qcd_scale_error, ztt_scale, ztt_scale_error

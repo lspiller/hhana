@@ -58,6 +58,7 @@ class Others(MC, Background):
     NORM_BY_THEORY = True
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('student', 'hhskim_others')
         self.matched = kwargs.pop('matched', True)
         super(Others, self).__init__(*args, **kwargs)
 

@@ -199,6 +199,7 @@ def cuts_workspace(analysis, categories, masses,
                    systematics=False,
                    cuts=None,
                    sideband=False,
+                   force_bins=False,
                    uniform_bins=True):
     hybrid_data = None if unblind else {MMC_MASS:(100., 150.)}
     channels = {}
@@ -206,6 +207,8 @@ def cuts_workspace(analysis, categories, masses,
         binning = category.limitbins
         if isinstance(binning, dict):
             binning = binning[analysis.year]
+        if force_bins:
+            binning = force_bins
         hist_template = Hist(binning, type='D')
         for mass in masses:
             channel = analysis.get_channel_array(

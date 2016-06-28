@@ -34,9 +34,9 @@ SYSTEMATICS_COMMON = {
     'TAU_RECO': (('TAU_RECO_UP',), ('TAU_RECO_DOWN',)),
     'TAU_ELEOLR': (('TAU_ELEOLR_UP',), ('TAU_ELEOLR_DOWN',)),
     'TAU_ID': (('TAU_ID_UP',), ('TAU_ID_DOWN',)),
-    'QCD_FIT': (('QCDFIT_UP',), ('QCDFIT_DOWN',)),
+#    'QCD_FIT': (('QCDFIT_UP',), ('QCDFIT_DOWN',)),
     'Z_FIT': (('ZFIT_UP',), ('ZFIT_DOWN',)),
-    'QCD_SHAPE': (('QCDSHAPE_UP',), ('QCDSHAPE_DOWN',)),
+#    'QCD_SHAPE': (('QCDSHAPE_UP',), ('QCDSHAPE_DOWN',)),
 }
 
 

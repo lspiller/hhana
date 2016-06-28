@@ -5,6 +5,7 @@ from .mva_cb_overlap import *
 #from .cba_train import *
 from .cb_optimised import *
 from .cbruni import *
+import cb_lephad as lephad
 
 CATEGORIES = {
     # Preselection
@@ -20,6 +21,13 @@ CATEGORIES = {
         ],
 
     # CB Categories
+    'lephad': [
+        lephad.Category_lh_VBF_LowDR,
+        lephad.Category_lh_VBF_HighDR_Loose,
+        lephad.Category_lh_VBF_HighDR_Tight,
+        lephad.Category_lh_Boosted_Loose,
+        lephad.Category_lh_Boosted_Tight,
+        ],
     'runi' : [
         hh_VBF_LowDR,
         hh_VBF_HighDR_Tight,

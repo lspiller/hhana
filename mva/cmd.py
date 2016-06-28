@@ -138,7 +138,7 @@ def plotting_parser(parser=None):
                         help='output formats')
     parser.add_argument('--no-data', action='store_true', default=False,
                         help='do not display data on the plot')
-    parser.add_argument('--show-ratio', action='store_true', default=False,
+    parser.add_argument('--show-ratio', action='store_true', default=True,
                         help='Draw plot with a ratio plot below the main plot')
     return parser
 

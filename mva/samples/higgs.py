@@ -237,7 +237,7 @@ class Higgs(MC, Signal):
         self.vbf_weight = False#vbf_weight
         self.vbf_weight_field = 'vbf_weight'
         # use separate signal files by default
-#        kwargs.setdefault('student', 'hhskim_signal')
+        kwargs.setdefault('student', 'hhskim_signal')
         super(Higgs, self).__init__(
             year=year, label=label, name=name, **kwargs)
 

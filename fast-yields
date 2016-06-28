@@ -33,7 +33,8 @@ print TARGET_REGION
 #data = ana.ztautau.array(fields=fields, cuts=Category_Preselection.cuts&REGIONS[TARGET_REGION])
 
 #data = ana.ztautau.array(fields=fields, cuts=Category_Preselection.cuts&REGIONS['nOS_NONISOL'])
-data = ana.ztautau.array(fields=fields, cuts=Category_Preselection.cuts&REGIONS['OS_ISOL'])
+#data = ana.ztautau.array(fields=fields, cuts=Category_Preselection.cuts&REGIONS['OS_ISOL'])
+data = ana.ztautau.array(fields=fields)
 #data = ana.ztautau.array(fields=fields, cuts=Category_Preselection.cuts&REGIONS[TARGET_REGION])
 #data = ana.higgs_125.array(fields=fields, category=Category_Preselection, cuts=REGIONS[TARGET_REGION])
 

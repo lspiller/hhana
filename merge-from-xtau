@@ -12,12 +12,14 @@ from rootpy import asrootpy
 
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v10/hhskim_z_alt/hhskim_z_alt.root')
-parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v10/unmerged_z_alt/')
-parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
+parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v11/hhskim_z/hhskim.root')
+parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v11/unmerged/data/')
+#parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
+parser.add_argument('-cf', '--cutflow', default='h_metadata')
 parser.add_argument('--reset', action='store_true', default=False)
 parser.add_argument('--append', action='store_true', default=False)
 parser.add_argument('-db', '--deactivate-branches', default=['*_CP_*', 'tau_*', 'ditau_CP_*',])# 'ditau_matched_*',])
+parser.add_argument('-dr', '--dry-run', default=False, action='store_true')
 args = parser.parse_args()
 log = logging.getLogger(os.path.basename(__file__))
 
@@ -48,7 +50,8 @@ Sample = namedtuple("sample",
             ]
         )
 
-ls = lambda folder: glob( os.path.join(args.infolder, folder, '*.root*'))
+#ls = lambda folder: glob( os.path.join(args.infolder, folder, '*.root*'))
+ls = lambda folder: glob( os.path.join(args.infolder, folder, '*/*.root*') )
 
 folders = os.listdir(args.infolder)
 for f in folders:
@@ -58,11 +61,10 @@ samples = [ Sample( f, ls(f), *f.split('.') ) for f in folders ]
 isvalid = lambda sample: \
     sample.group=='group' and \
     sample.chan=='phys-higgs' and \
-    sample.subchan=='hhsm_25' and \
+    sample.subchan=='hhsm' and \
     sample.derivation=='D3' and \
-    sample.hist=='v10_hist' and \
+    sample.hist=='v11_hist' and \
     sample.files != None
-#    'mc15' in sample.MCorData and \
 samples = filter( isvalid, samples )
 
 #isdata = lambda sample: \
@@ -85,6 +87,9 @@ for s in samples:
 import pprint
 pp = pprint.PrettyPrinter(depth=6)
 pp.pprint(dict( process_dict ) )
+
+if args.dry_run:
+    sys.exit(0)
 
 with root_open(args.out, 'UPDATE') as outfile:
     for procname, infiles in process_dict.items():
@@ -133,12 +138,13 @@ with root_open(args.out, 'UPDATE') as outfile:
 
             outtrees.append( outtree )
 
-            hists = [ f.Get(args.cutflow) for f in files ]
-            cutflow = reduce( operator.add, hists )
-            cutflow.name = outname + '_daod'
+            if not 'data' in procname:
+                hists = [ f.Get(args.cutflow) for f in files ]
+                cutflow = reduce( operator.add, hists )
+                cutflow.name = outname + '_daod'
 
-            outfile.cd()
-            cutflow.Write(cutflow.GetName(), ROOT.TObject.kOverwrite)
+                outfile.cd()
+                cutflow.Write(cutflow.GetName(), ROOT.TObject.kOverwrite)
 
         for outtree in outtrees:
             outtree.Write(outtree.GetName(), ROOT.TObject.kOverwrite)
