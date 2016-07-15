@@ -5,6 +5,9 @@ BDT_BLIND = {
     2015: {
         'vbf': 3,
         'boosted': 1},
+    2016: {
+        'vbf': 3,
+        'boosted': 1},
     2012: {
         'vbf': 3,
         'boosted': 1},
@@ -95,13 +98,13 @@ YEAR_VARIABLES = {
 
 VARIABLES = {
 
-#    'n_avg_int_cor': {
-#        'title': r'$\langle\mu\rangle|_{LB,BCID}$',
-#        'root': '#font[152]{#LT#mu#GT#cbar}_{LB,BCID}',
-#        'filename': 'n_avg_int_corr',
-#        'binning': (40, 0, 40),
-#        'integer': True,
-#    },
+    'n_avg_int_cor': {
+        'title': r'$\langle\mu\rangle|_{LB,BCID}$',
+        'root': '#font[152]{#LT#mu#GT#cbar}_{LB,BCID}',
+        'filename': 'n_avg_int_corr',
+        'binning': (40, 0, 40),
+        'integer': True,
+    },
     'n_avg_int': {
         'title': r'$\langle\mu\rangle|_{LB,BCID}$',
         'root': '#font[152]{#LT#mu#GT#cbar}_{LB,BCID}',
@@ -405,50 +408,50 @@ VARIABLES = {
        'units': 'GeV',
        'cats': ['2J', 'VBF', 'PRESELECTION']
    },
-    'moment_hcm5': {
-        'title': r'HCM5',
-        'root': '#font[52]{HCM5}',
-        'filename': 'HCM5',
-        'binning': {
-            'BOOSTED': (8, 0.0, 0.01),
-            'VBF': (8, 0.0, 0.01),
-            'REST': (8, 0.0, 0.01),
-            None: (10, 0.0, 0.01)},
-        'scale': 0.01,
-    },
-    'moment_hcm1': {
-        'title': r'HCM1',
-        'root': '#font[52]{HCM1}',
-        'filename': 'HCM1',
-        'binning': {
-            'BOOSTED': (15, 0.0, 1.0),
-            'VBF': (15, 0.0, 1.0),
-            'REST': (15, 0.0, 1.0),
-            None: (20, 0.0, 1.0)},
-        'scale': 1,
-    },
-    'moment_hcm2': {
-        'title': r'HCM2',
-        'root': '#font[52]{HCM2}',
-        'filename': 'HCM2',
-        'binning': {
-            'BOOSTED': (15, 0.0, 1.0),
-            'VBF': (15, 0.0, 1.0),
-            'REST': (15, 0.0, 1.0),
-            None: (20, 0.0, 1.0)},
-        'scale': 1,
-    },
-    'moment_hcm3': {
-        'title': r'HCM3',
-        'root': '#font[52]{HCM3}',
-        'filename': 'HCM3',
-        'binning': {
-            'BOOSTED': (8, 0.0, 0.8),
-            'VBF': (8, 0.0, 0.8),
-            'REST': (8, 0.0, 0.8),
-            None: (10, 0.0, 0.8)},
-        'scale': 1,
-    },
+#    'moment_hcm5': {
+#        'title': r'HCM5',
+#        'root': '#font[52]{HCM5}',
+#        'filename': 'HCM5',
+#        'binning': {
+#            'BOOSTED': (8, 0.0, 0.01),
+#            'VBF': (8, 0.0, 0.01),
+#            'REST': (8, 0.0, 0.01),
+#            None: (10, 0.0, 0.01)},
+#        'scale': 0.01,
+#    },
+#    'moment_hcm1': {
+#        'title': r'HCM1',
+#        'root': '#font[52]{HCM1}',
+#        'filename': 'HCM1',
+#        'binning': {
+#            'BOOSTED': (15, 0.0, 1.0),
+#            'VBF': (15, 0.0, 1.0),
+#            'REST': (15, 0.0, 1.0),
+#            None: (20, 0.0, 1.0)},
+#        'scale': 1,
+#    },
+#    'moment_hcm2': {
+#        'title': r'HCM2',
+#        'root': '#font[52]{HCM2}',
+#        'filename': 'HCM2',
+#        'binning': {
+#            'BOOSTED': (15, 0.0, 1.0),
+#            'VBF': (15, 0.0, 1.0),
+#            'REST': (15, 0.0, 1.0),
+#            None: (20, 0.0, 1.0)},
+#        'scale': 1,
+#    },
+#    'moment_hcm3': {
+#        'title': r'HCM3',
+#        'root': '#font[52]{HCM3}',
+#        'filename': 'HCM3',
+#        'binning': {
+#            'BOOSTED': (8, 0.0, 0.8),
+#            'VBF': (8, 0.0, 0.8),
+#            'REST': (8, 0.0, 0.8),
+#            None: (10, 0.0, 0.8)},
+#        'scale': 1,
+#    },
 
     'dijet_vis_mass': {
         'title': r'$m^{vis}_{jj}$',
@@ -457,7 +460,6 @@ VARIABLES = {
         'binning': (10, 0, 1000),
         'units': 'GeV',
     },
-
 #    'ditau_pt_ratio': {
 #        'title': r'$\tau_{2} p_{T} / \tau_{1} p_{T}$',
 #        'root': '#font[52]{p}_{T}(#font[152]{#tau}_{2}) / #font[52]{p}_{T}(#font[152]{#tau}_{1})',
@@ -474,9 +476,8 @@ VARIABLES[MMC_MASS] = {
     'root': '#font[52]{m}^{MMC}_{#font[152]{#tau}#font[152]{#tau}}',
     'filename': MMC_MASS,
     'binning': {
-        2011: (25, 0, 250),
-        2012: (25, 0, 250),
-        2015: (13, 0, 260)},
+        2015: (24, 40, 160),
+        2016: (24, 40, 160)},
     'units': 'GeV',
     'blind': (100, 150),
 }

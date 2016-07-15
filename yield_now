@@ -14,24 +14,25 @@ from mva.regions import REGIONS
 
 from mva.samples.ztautau import MadGraph_Ztautau
 data = MadGraph_Ztautau(2015)
-
+from mva.samples.others import Others
+data= Others(2016)
 cutlist = [
-            ('Presel', Category_Preselection.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(2015) & REGIONS['OS_ISOL']),
-            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(2015) & REGIONS['OS_ISOL']),
+            ('Presel', Category_Preselection.get_cuts(2015)&REGIONS['OS']),
+            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(2015)&REGIONS['OS']),
+            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(2015)&REGIONS['OS']),
+            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(2015)&REGIONS['OS']),
+            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(2015) & REGIONS['OS']),
+            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(2015) & REGIONS['OS']),
           ]
 
 cutlist = [
             ('',     Cut()),
-            ('Presel', Category_Preselection.get_cuts(2015)&DETA_TAUS&REGIONS['OS_ISOL']),
-            ('VBF_highdr_Tight', hh_VBF_HighDR_Tight.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('VBF_highdr_Loose', hh_VBF_HighDR_Loose.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('VBF_lowdr'       , hh_VBF_LowDR.get_cuts(2015)&REGIONS['OS_ISOL']),
-            ('Boosted_Loose'   , hh_Boosted_Loose.get_cuts(2015) & REGIONS['OS_ISOL']),
-            ('Boosted_Tight'   , hh_Boosted_Tight.get_cuts(2015) & REGIONS['OS_ISOL']),
+            ('Presel', Category_Preselection.get_cuts(2015)&DETA_TAUS&REGIONS['OS']),
+            ('VBF_highdr_Tight', hh_VBF_HighDR_Tight.get_cuts(2015)&REGIONS['OS']),
+            ('VBF_highdr_Loose', hh_VBF_HighDR_Loose.get_cuts(2015)&REGIONS['OS']),
+            ('VBF_lowdr'       , hh_VBF_LowDR.get_cuts(2015)&REGIONS['OS']),
+            ('Boosted_Loose'   , hh_Boosted_Loose.get_cuts(2015) & REGIONS['OS']),
+            ('Boosted_Tight'   , hh_Boosted_Tight.get_cuts(2015) & REGIONS['OS']),
           ]
 #cutlist = [
 #            ('Eta'        , Cut()),
@@ -69,7 +70,7 @@ table = []
 table.append( '{0: <9}\t {1: <9}'.format('Cut', 'Unweighted') )
 #for name, selection in cumucut(cutlist):
 for name, selection in cutlist:
-    events = data.events(cuts=selection, weighted=False)[1].value
+    events = data.events(cuts=selection, weighted=True)[1].value
     table.append( '{0: <9}\t {1}'.format(name, events) )
     print table[-1]
     print selection

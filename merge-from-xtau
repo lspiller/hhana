@@ -12,14 +12,15 @@ from rootpy import asrootpy
 
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v11/hhskim_z/hhskim.root')
-parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v11/unmerged/data/')
+parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v12/test/hhskim_mc15.root')
+parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v12/latest/mc15/')
 #parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
 parser.add_argument('-cf', '--cutflow', default='h_metadata')
 parser.add_argument('--reset', action='store_true', default=False)
 parser.add_argument('--append', action='store_true', default=False)
-parser.add_argument('-db', '--deactivate-branches', default=['*_CP_*', 'tau_*', 'ditau_CP_*',])# 'ditau_matched_*',])
+parser.add_argument('-db', '--deactivate-branches', default=['tau_*', 'ditau_CP_*', '*_CP_*'])# 'ditau_matched_*', '*_CP_*'])
 parser.add_argument('-dr', '--dry-run', default=False, action='store_true')
+parser.add_argument('-n', '--nominal', default=False, action='store_true')
 args = parser.parse_args()
 log = logging.getLogger(os.path.basename(__file__))
 
@@ -63,9 +64,9 @@ isvalid = lambda sample: \
     sample.chan=='phys-higgs' and \
     sample.subchan=='hhsm' and \
     sample.derivation=='D3' and \
-    sample.hist=='v11_hist' and \
+    sample.hist=='v12_hist' and \
     sample.files != None
-samples = filter( isvalid, samples )
+#samples = filter( isvalid, samples )
 
 #isdata = lambda sample: \
 #    sample.group=='group' and \
@@ -103,6 +104,10 @@ with root_open(args.out, 'UPDATE') as outfile:
 
         outtrees = []
         for treename in treenames:
+            if 'EventLoop_FileExecuted' in treename:
+                continue
+            if args.nominal and treename != 'NOMINAL':
+                continue
             intree = ROOT.TChain(treename)
 #            map( intree.Add, infiles )
             for infile in infiles:
@@ -147,4 +152,5 @@ with root_open(args.out, 'UPDATE') as outfile:
                 cutflow.Write(cutflow.GetName(), ROOT.TObject.kOverwrite)
 
         for outtree in outtrees:
-            outtree.Write(outtree.GetName(), ROOT.TObject.kOverwrite)
+            if outtree:
+                outtree.Write(outtree.GetName(), ROOT.TObject.kOverwrite)

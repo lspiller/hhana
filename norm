@@ -10,21 +10,19 @@ analysis = get_analysis(args)
 from rootpy.plotting import Hist
 from rootpy.stats import histfactory
 from mva.plotting import draw_channel
-from mva.categories.hadhad import Category_Preselection
+from mva.categories.hadhad import Category_Preselection, Category_Prefitselection
 from mva import norm_cache as cache
 from mva.variables import VARIABLES
 from mva import CONST_PARAMS
 
 # reference category for initial normalization
 #category = Category_Rest
-category = Category_Preselection
-
+#category = Category_Preselection
+category = Category_Prefitselection
 # distribution to fit
 field = 'ditau_deta'
-if args.year == 2011 or args.year == 2015:
+if args.year == 2015 or args.year == 2016:
     template = Hist(4, 0, 2)
-else:
-    template = Hist(5, 0, 2)
 
 #qcd_scale, qcd_scale_error, \
 #ztt_scale, ztt_scale_error = analysis.fit_norms(

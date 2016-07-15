@@ -50,7 +50,7 @@ class Ztautau(Background):
         the normalization is determined by a fit to the data
         """
 
-        kwargs.setdefault('student', 'hhskim_z')
+        kwargs.setdefault('student', 'hhskim_mc15v2')
         self.scale_error = 0.
         self.workspace_norm = kwargs.pop('workspace_norm', None)
         self.constrain_norm = kwargs.pop('constrain_norm', False)
@@ -211,3 +211,33 @@ class Embedded_Ztautau(Ztautau, SystematicsSample):
 
 class MC_Embedded_Ztautau(Embedded_Ztautau):
     pass
+
+
+
+class MadGraph_Ztautau_Np0(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_Np1(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_Np2(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_Np3(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_Np4(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_LowMll_Np1(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_LowMll_Np2(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_LowMll_Np3(MC_Ztautau):
+    pass
+
+class MadGraph_Ztautau_LowMll_Np4(MC_Ztautau):
+    pass
+

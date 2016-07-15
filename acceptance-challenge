@@ -7,10 +7,10 @@ import os
 from mva.samples.db import get_file
 from collections import OrderedDict
 import yellowhiggs
-from mva.samples import Higgs
+from mva.samples import Higgs, MadGraph_Ztautau
 from mva.samples import Data
 from mva.cmd import get_parser
-from mva.categories.hadhad import (TAUID, LEAD_TAU_40, SUBLEAD_TAU_30, MET, DR_TAUS, LEPTON_VETO, TRIGGER)
+from mva.categories.hadhad import (TAUID, LEAD_TAU_40, SUBLEAD_TAU_30, MET, DR_TAUS, LEPTON_VETO, TRIGGER, GRL, JET_TRIG)
 
 from mva.categories.hadhad import (CUTS_2J, DETA_TAUS, RESONANCE_PT, DETA_TAUS )
 from mva.regions import Q, OS, TRACK_ISOLATION, P1P3, ID_MEDIUM, TRACK_ISOLATION
@@ -19,24 +19,29 @@ from mva.categories.hadhad import Category_Preselection
 
 #OS & P1P3 & ID_MEDIUM & TRACK_ISOLATION & Q
 HiggsMC = Higgs(
-#                sample_pattern='*PoPy8_ggH125_tautauhh*',
-                year=2015,
+                year=2016,
                 modes=['VBF'],
                 mass=125,
                 linecolor='red',
                 linewidth=2,
                 linestyle='dashed',
                 ggf_weight=None)
-for higgs in [Data(2015), HiggsMC]:
+#ZMC = MadGraph_Ztautau( 2015, trigger=True, systematics=False, color='#00A3FF' )
+
+Data = Data( 2016 )
+for higgs in [HiggsMC]:#[Data(2015), HiggsMC]:
     print higgs
 #higgs = Data( 2015 )
     cutlist = OrderedDict([
                 ('Initial'    , Cut()),
+#                ('MCSplit'    , Cut('random_run_number < 284485')),
+#                ('GRL'        , GRL),
                 ('Trigger'    , TRIGGER),
+                ('JETTRIG'    , JET_TRIG),
                 ('Charge'     , Q),
                 ('nTracks'    , P1P3),
                 ('tauID'      , TAUID),
-                ('tauIso'     , TRACK_ISOLATION),
+#                ('tauIso'     , TRACK_ISOLATION),
                 ('Leading'    , LEAD_TAU_40),
                 ('Subleading' , SUBLEAD_TAU_30),
                 ('OS'         , OS),

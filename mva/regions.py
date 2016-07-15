@@ -11,7 +11,7 @@ Q = (
 
 OS     = Cut('selection_opposite_sign==1')
 NOT_OS = -OS
-SS     = Cut('ditau_qxq >  1')
+SS     = Cut('ditau_qxq >=  1')
 
 P1P1 = Cut('ditau_tau0_n_tracks == 1') & Cut('ditau_tau1_n_tracks == 1')
 P3P3 = Cut('ditau_tau0_n_tracks == 3') & Cut('ditau_tau1_n_tracks == 3')

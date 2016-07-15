@@ -37,8 +37,8 @@ else:
     # YEAR_VARIABLES need to be updated
     # VARS.update(YEAR_VARIABLES[args.year])
 
-SYSTEMATICS = get_systematics(args.year)
-args.systematics_components = parse_systematics(args.systematics_components)
+#SYSTEMATICS = get_systematics(args.year)
+#args.systematics_components = parse_systematics(args.systematics_components)
 # categories = CATEGORIES[args.categories]
 category_names = args.category_names
 target_region = args.target_region

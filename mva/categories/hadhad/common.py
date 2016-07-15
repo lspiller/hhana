@@ -35,18 +35,20 @@ DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
 DETA_TAUS = Cut('ditau_deta < 1.5')
 #DETA_TAUS = Cut('selection_delta_eta == 1')
 DETA_TAUS_CR = -DETA_TAUS
-RESONANCE_PT = Cut('ditau_mmc_maxw_pt > 100')
+RESONANCE_PT = Cut('ditau_higgs_pt > 100')
+DETA_TAUS_PRESEL = Cut('ditau_deta < 2.0')
 
 JET_TRIG_PT = Cut('jet_0_pt > 70.')
-JET_TRIG_ETA = Cut('-3.2 < jet_0_eta < 3.2')
+JET_TRIG_ETA = Cut('-3.2 < jet_0_eta') & Cut('jet_0_eta < 3.2')
 JET_TRIG = JET_TRIG_ETA & JET_TRIG_PT
 
-LEPTON_VETO = Cut('selection_lepton_veto == 1') & Cut('ditau_tau0_ele_bdt_loose==0') & Cut('ditau_tau1_ele_bdt_loose==0')
+LEPTON_VETO = Cut('selection_lepton_veto == 1')# & Cut('ditau_tau0_ele_bdt_loose==0') & Cut('ditau_tau1_ele_bdt_loose==0')
 TRIGGER = Cut('selection_trigger == 1')
 
 # use .format() to set centality value
 MET_CENTRALITY = 'ditau_met_bisect==1 || (ditau_met_min_dphi < {0})'
 
+GRL = Cut('grl_pass_run_lb == 1')
 # common preselection cuts
 PRESELECTION = (
     LEAD_TAU_40
@@ -59,6 +61,7 @@ PRESELECTION = (
     & TAUID
     & LEPTON_VETO
     & TRIGGER
+    & DETA_TAUS_PRESEL
     )
 
 # VBF category cuts
@@ -116,9 +119,31 @@ class Category_Preselection(Category):
     label = '#tau_{had}#tau_{had} Preselection'
     common_cuts = (
         PRESELECTION
+        & DETA_TAUS
         # & Cut(MET_CENTRALITY.format(pi / 4))
         )
 
+class Category_Prefitselection(Category):
+    name = 'preselection'
+    label = '#tau_{had}#tau_{had} Preselection'
+    common_cuts = (
+        PRESELECTION
+        # & Cut(MET_CENTRALITY.format(pi / 4))
+        )
+class Category_Loose_Preselection(Category):
+    name = 'preselection'
+    label = '#tau_{had}#tau_{had} Preselection'
+    common_cuts = (
+          Cut('ditau_tau0_jet_bdt_medium == 1')
+          & Cut('ditau_tau1_jet_bdt_medium == 1')
+          & Cut('ditau_met > 20')
+          & Cut()
+          & DR_TAUS
+          & DETA_TAUS
+          & LEAD_TAU_40
+          & SUBLEAD_TAU_30
+        # & Cut(MET_CENTRALITY.format(pi / 4))
+        )
 
 class Category_Preselection_DEta_Control(Category_Preselection):
     is_control = True

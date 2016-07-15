@@ -25,14 +25,14 @@ TAUTAUHADHADBR = 0.4194 # = (1. - 0.3521) ** 2
 
 class Higgs(MC, Signal):
     MASSES = range(100, 155, 5)
-    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']#['Z', 'W', 'gg', 'VBF']
-    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]#[['Z', 'W'], ['gg'], ['VBF']]
+    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']
+    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]
     MODES_DICT = {
         'gg': ('ggf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'VBF': ('vbf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'Z': ('zh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
         'W': ('wh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
-        'tth': ('tth', '', '', 'aMCNloHerwig_'),
+        'tth': ('tth', '', '', 'aMcNloHppEG_'),
     }
     MODES_WORKSPACE = {
         'gg': 'ggH',
@@ -176,15 +176,11 @@ class Higgs(MC, Signal):
             label = '%s#font[52]{H}#rightarrow#tau#tau' % (
                 str_mode,)#, str_mass)
 
-        if year == 2011:
+        if year == 2015:
             if suffix is None:
-                suffix = '.mc11c'
-            generator_index = 1
-        elif year == 2012:
-            if suffix is None:
-                suffix = '.mc12a'
-            generator_index = 2
-        elif year == 2015:
+                suffix = ''
+            generator_index = 3
+        elif year == 2016:
             if suffix is None:
                 suffix = ''
             generator_index = 3
@@ -216,7 +212,7 @@ class Higgs(MC, Signal):
 #                            generator, mass, suffix))
 #                        self.samples.append('%sttH%d_semilep%s' % (
 #                            generator, mass, suffix))
-                        self.samples.append('%sttH%d_allhad%s' % (
+                        self.samples.append('%sttH%d_H2tau_allhad%s' % (
                             generator, mass, suffix))
                     else:
                         log.Error("NO MODE FOUND!")
@@ -237,7 +233,7 @@ class Higgs(MC, Signal):
         self.vbf_weight = False#vbf_weight
         self.vbf_weight_field = 'vbf_weight'
         # use separate signal files by default
-        kwargs.setdefault('student', 'hhskim_signal')
+        kwargs.setdefault('student', 'hhskim_mc15v2')
         super(Higgs, self).__init__(
             year=year, label=label, name=name, **kwargs)
 

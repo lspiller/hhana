@@ -4,6 +4,13 @@ from . import log
 
 from rootpy.tree import Cut
 
+class JetJet(MC, Background):
+    NO_KYLEFIX = True
+    NORM_BY_THEORY = True
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('student', 'hhskim_mc15v2')
+        super(JetJet, self).__init__(*args, **kwargs)
 
 class EWK(MC, Background):
     NO_KYLEFIX = True
@@ -58,7 +65,7 @@ class Others(MC, Background):
     NORM_BY_THEORY = True
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('student', 'hhskim_others')
+        kwargs.setdefault('student', 'hhskim_mc15v2')
         self.matched = kwargs.pop('matched', True)
         super(Others, self).__init__(*args, **kwargs)
 

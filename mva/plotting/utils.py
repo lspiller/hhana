@@ -42,13 +42,15 @@ def category_lumi_atlas(pad, category_label=None,
     # draw the luminosity label
     if data_info is not None:
         plabel = ROOT.TLatex(
-            1. - pad.GetRightMargin() - 0.03,
-            1. - (top + textsize + 15) / height,
+#            1. - pad.GetRightMargin() - 0.03,
+#            1. - (top + textsize + 15) / height,
+            pad.GetLeftMargin() + 0.03,
+            1. - (top + 2*textsize + 2*15) / height,
             str(data_info))
         plabel.SetNDC()
         plabel.SetTextFont(43)
         plabel.SetTextSize(textsize)
-        plabel.SetTextAlign(31)
+#        plabel.SetTextAlign(31)
         with pad:
             plabel.Draw()
         keepalive(pad, plabel)

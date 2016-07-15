@@ -7,8 +7,8 @@ from .truth import CUTS_TRUE_VBF_CUTBASED, CUTS_TRUE_BOOSTED
 # Documentation:
 # https://cds.cern.ch/record/1629891/files/ATL-COM-PHYS-2013-1558.pdf
 
-DETA_JETS = Cut('dijet_deta > 2.6')
-MASS_JETS = Cut('dijet_vis_mass > 250')
+DETA_JETS = Cut('dijet_deta > 3.0')
+MASS_JETS = Cut('dijet_vis_mass > 300')
 TAU1_CENTR = Cut('ditau_tau0_centr==1')
 TAU2_CENTR = Cut('ditau_tau1_centr==1')
 TAUS_CENTR = TAU1_CENTR & TAU2_CENTR

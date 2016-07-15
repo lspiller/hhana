@@ -1,4 +1,7 @@
 # numpy imports
+
+from rootpy.tree import Cut
+
 import numpy as np
 from numpy.lib import recfunctions
 from matplotlib.mlab import rec_append_fields
@@ -61,18 +64,18 @@ class Data(Sample):
             **kwargs)
         h5file = get_file(self.ntuple_path, self.student, hdf=True)
         if year == 2015:
-            if self.channel == 'hadhad':
-                stream_name = 'Main25'
-            else:
-                stream_name = 'Main'
+            dataname = 'data15_13TeV'
+        elif year == 2016:
+            dataname = 'data16_13TeV'
         else:
-            stream_name = 'JetTauEtMiss'
-        dataname = 'data{0:1d}_{1}'.format(
-            int(year % 1E3), stream_name)
-        dataname = 'data15_13TeV'
+            dataname = ['data15_13TeV', 'data16_13TeV']
 
         self.h5data = CachedTable.hook(getattr(h5file.root, dataname))
         self.info = DataInfo(LUMI[self.year] / 1e3, self.energy)
+    def cuts(self, *args, **kwargs):
+        cut = super(Data, self).cuts(*args, **kwargs)
+        cut &= Cut('grl_pass_run_lb == 1')
+        return cut
 
     def draw_array(self, field_hist, category, region,
                    cuts=None,
