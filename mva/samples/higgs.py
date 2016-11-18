@@ -233,7 +233,7 @@ class Higgs(MC, Signal):
         self.vbf_weight = False#vbf_weight
         self.vbf_weight_field = 'vbf_weight'
         # use separate signal files by default
-        kwargs.setdefault('student', 'hhskim_mc15v2')
+        kwargs.setdefault('student', 'hhskim_mc15')
         super(Higgs, self).__init__(
             year=year, label=label, name=name, **kwargs)
 
@@ -281,7 +281,7 @@ class Higgs(MC, Signal):
             energy = 7
         elif self.year == 2012:
             energy = 8
-        elif self.year == 2015:
+        elif self.year == 2015 or self.year == 2016:
             energy = 8
             log.warning("Using 8 TeV for 2015 data until new theory systematics are created.")
         else:

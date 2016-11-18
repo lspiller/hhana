@@ -17,6 +17,11 @@ from .. import DAT_DIR
 class Ztautau(Background):
     NORM_BY_THEORY = False
 
+    def cuts(self, *args, **kwargs):
+        cut = super(Ztautau, self).cuts(*args, **kwargs)
+        cut &= Cut('ditau_tau0_matched != 0') | Cut('ditau_tau1_matched != 0')
+        return cut
+
     def histfactory(self, sample, category, systematics=False, **kwargs):
         # isolation systematic
         sample.AddOverallSys(
@@ -50,7 +55,7 @@ class Ztautau(Background):
         the normalization is determined by a fit to the data
         """
 
-        kwargs.setdefault('student', 'hhskim_mc15v2')
+        kwargs.setdefault('student', 'hhskim_mc15')
         self.scale_error = 0.
         self.workspace_norm = kwargs.pop('workspace_norm', None)
         self.constrain_norm = kwargs.pop('constrain_norm', False)

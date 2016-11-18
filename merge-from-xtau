@@ -12,13 +12,13 @@ from rootpy import asrootpy
 
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v12/test/hhskim_mc15.root')
-parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v12/latest/mc15/')
+parser.add_argument('-o', '--out', default='/tmpfs/v14/hhskim.root')
+parser.add_argument('-i', '--infolder', default='/tmpfs/hh14skim/data/')
 #parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
 parser.add_argument('-cf', '--cutflow', default='h_metadata')
 parser.add_argument('--reset', action='store_true', default=False)
 parser.add_argument('--append', action='store_true', default=False)
-parser.add_argument('-db', '--deactivate-branches', default=['tau_*', 'ditau_CP_*', '*_CP_*'])# 'ditau_matched_*', '*_CP_*'])
+parser.add_argument('-db', '--deactivate-branches', default=[])#'tau_*', 'ditau_CP_*', '*_CP_*'])# 'ditau_matched_*', '*_CP_*'])
 parser.add_argument('-dr', '--dry-run', default=False, action='store_true')
 parser.add_argument('-n', '--nominal', default=False, action='store_true')
 args = parser.parse_args()
@@ -51,8 +51,8 @@ Sample = namedtuple("sample",
             ]
         )
 
-#ls = lambda folder: glob( os.path.join(args.infolder, folder, '*.root*'))
-ls = lambda folder: glob( os.path.join(args.infolder, folder, '*/*.root*') )
+ls = lambda folder: glob( os.path.join(args.infolder, folder, '*.root*'))
+#ls = lambda folder: glob( os.path.join(args.infolder, folder, '*/*.root*') )
 
 folders = os.listdir(args.infolder)
 for f in folders:
@@ -64,7 +64,7 @@ isvalid = lambda sample: \
     sample.chan=='phys-higgs' and \
     sample.subchan=='hhsm' and \
     sample.derivation=='D3' and \
-    sample.hist=='v12_hist' and \
+    sample.hist=='v14_hist' and \
     sample.files != None
 #samples = filter( isvalid, samples )
 
@@ -109,17 +109,14 @@ with root_open(args.out, 'UPDATE') as outfile:
             if args.nominal and treename != 'NOMINAL':
                 continue
             intree = ROOT.TChain(treename)
-#            map( intree.Add, infiles )
+
             for infile in infiles:
                 if root_open(infile).GetListOfKeys().Contains(treename):
                     intree.Add(infile)
                 outfile.cd()
 
             for br in args.deactivate_branches:
-                try:
-                    intree.SetBranchStatus(br, 0)
-                except:
-                    pass
+                intree.SetBranchStatus(br, 0)
             log.debug("****************")
             log.debug("{}, {}, {}".format(intree, intree.GetTitle(), intree.GetName()))
             outtree = intree.CloneTree(-1, "fast SortBasketsByEntry")
@@ -129,16 +126,16 @@ with root_open(args.out, 'UPDATE') as outfile:
                 log.warning("Tree has no entries: {0}".format(treename))
                 dummy_tree = root_open(infiles[0])[treename]
                 for br in args.deactivate_branches:
-                    try:
-                        dummy_tree.SetBranchStatus(br, 0)
-                    except:
-                        pass
+                    dummy_tree.SetBranchStatus(br, 0)
                 outtree = dummy_tree.CloneTree()
+            elif outtree.GetEntries() == 0:
+                log.info( "No entries in {}".format(procname) )
+                continue
 
             log.debug("{}, {}, {}".format(outtree, outtree.GetTitle(), outtree.GetName()))
 
             outtree.OptimizeBaskets()
-            outname = procname if treename == 'NOMINAL' else '{0}_{1}'.format(procname,treename.replace('up', '_up').replace('down', '_down').replace('__','_'))
+            outname = procname if treename == 'NOMINAL' else '{0}_{1}'.format(procname,treename)#.replace('up', '_up').replace('down', '_down').replace('__','_'))
             outtree.SetName( outname )
 
             outtrees.append( outtree )

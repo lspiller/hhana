@@ -32,15 +32,15 @@ styles = ['solid', 'dashed', 'dotted']
 
 bounds = {
     'ditau_mmc_mlm_m': (0, 200),
-    'ditau_mmc_maxw_pt': (50, 300),
+    'higgs_pt': (50, 500),
     'ditau_dr': (0.8, 2.4),
-    'dijet_deta': (2.6, 6),
+    'dijet_deta': (0, 6),
     'dijet_dr': (0, 10),
     'dijet_vis_mass': (20, 1000),
 }
 scales = {
     'ditau_mmc_mlm_m': 1,
-    'ditau_mmc_maxw_pt': 1,
+    'higgs_pt': 1,
     'ditau_dr': 1,
     'dijet_deta': 1,
     'dijet_vis_mass': 1,

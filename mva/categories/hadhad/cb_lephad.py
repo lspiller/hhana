@@ -20,7 +20,7 @@ CUTS_VBF_CUTBASED = (
     & DETA_JETS
     & MASS_JETS
 #    & TAU1_CENTR & TAU2_CENTR
-#    & ETA_PRODUCT
+    & ETA_PRODUCT
     & JETPT
     )
 

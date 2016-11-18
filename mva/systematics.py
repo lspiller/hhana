@@ -62,7 +62,7 @@ SYSTEMATICS_COMMON = {
     'JET_Eta_Stat': (('JET_EtaIntercalibration_TotalStat_1_down',), ('JET_EtaIntercalibration_TotalStat_1_up',)),
     'JET_Flavor_Comp': (('JET_Flavor_Composition_1_down',), ('JET_Flavor_Composition_1_up',)),
     'JET_Flavor_Resp': (('JET_Flavor_Response_1_up',), ('JET_Flavor_Response_1_down',)),
-    'JET_JER_Single': (('JET_JER_SINGLE_NP_1_up',)),
+    'JET_JER_SINGLE_NP_1up': (('JET_JER_SINGLE_NP_1up',)),
     'JET_PU_Mu': (('JET_Pile_up_OffsetMu_1_down',), ('JET_Pile_up_OffsetMu_1_up',)),
     'JET_PU_NPV': (('JET_Pile_up_OffsetNPV_1_down',), ('JET_Pile_up_OffsetNPV_1_up',)),
     'JET_PU_PtTerm': (('JET_Pile_up_PtTerm_1_down',), ('JET_Pile_up_PtTerm_1_up',)),
@@ -74,6 +74,10 @@ SYSTEMATICS_COMMON = {
 SYSTEMATICS_2015 = {
 }
 SYSTEMATICS_2015.update(SYSTEMATICS_COMMON)
+
+SYSTEMATICS_2016 = {
+}
+SYSTEMATICS_2016.update(SYSTEMATICS_COMMON)
 
 SYSTEMATICS_BY_WEIGHT = [
 #    ('TAU_TRIGGER_SYST_UP',),
@@ -103,11 +107,11 @@ def iter_systematics(include_nominal=False, year=2015, components=None):
             yield var
 
 
-def get_systematics(year=2015):
+def get_systematics(year=2016):
     if year == 2015:
         return SYSTEMATICS_2015
     elif year == 2016:
-        return SYSTEMATICS_2015
+        return SYSTEMATICS_2016
     else:
         raise ValueError("No systematics defined for year %d" % year)
 

@@ -9,7 +9,7 @@ class JetJet(MC, Background):
     NORM_BY_THEORY = True
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('student', 'hhskim_mc15v2')
+        kwargs.setdefault('student', 'hhskim_mc15')
         super(JetJet, self).__init__(*args, **kwargs)
 
 class EWK(MC, Background):
@@ -65,7 +65,7 @@ class Others(MC, Background):
     NORM_BY_THEORY = True
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault('student', 'hhskim_mc15v2')
+        kwargs.setdefault('student', 'hhskim_mc15')
         self.matched = kwargs.pop('matched', True)
         super(Others, self).__init__(*args, **kwargs)
 
@@ -102,3 +102,8 @@ class MC_Zee_DY(MC, Background):
 
 class MC_Zmumu_DY(MC, Background):
     pass
+
+class HiggsInc(MC, Background):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('student', 'hhskim_mc15')
+        super(HiggsInc, self).__init__(*args, **kwargs)

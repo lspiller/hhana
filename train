@@ -18,6 +18,8 @@ parser.add_argument('--procs', type=int, default=-1)
 parser.add_argument('--dry-run', default=False, action='store_true')
 parser.add_argument('--qcd', default=TRAIN_FAKES_REGION, type=str, choices=(TRAIN_FAKES_REGION, FAKES_REGION))
 parser.add_argument('--boosting_algorithm', default='ADA', type=str, choices=('ADA','Gradient'))
+parser.add_argument('--year', type=int, default=2016)
+
 parser.add_argument('category', choices=('vbf', 'boosted'))
 args = parser.parse_args()
 
@@ -39,7 +41,7 @@ else:
     category = Category_Boosted
 
 analysis = Analysis(
-    year=2015,
+    year=args.year,
     systematics=False,
     fakes_region=TRAIN_FAKES_REGION,
     suffix=args.suffix)
@@ -63,12 +65,12 @@ analysis.normalize(category)
 backgrounds_train = analysis.backgrounds
 
 signals_train = [
-    Higgs(year=2015,
+    Higgs(year=args.year,
           masses=args.masses,
           modes=category.train_signal_modes),
     ]
 
-clf = analysis.get_clf(category, load=False, mass=masses_label, year=2015)
+clf = analysis.get_clf(category, load=False, mass=masses_label, year=args.year)
 clf.train(signals=signals_train,
           backgrounds=backgrounds_train,
           remove_negative_weights=True,

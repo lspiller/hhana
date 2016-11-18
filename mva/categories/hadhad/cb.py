@@ -18,12 +18,17 @@ TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
 #TAU1_CENTR = Cut('min( jet_1_eta, jet_2_eta ) < ditau_tau0_eta < max( jet_1_eta, jet_2_eta )')
 #TAU2_CENTR = Cut('min( jet_1_eta, jet_2_eta ) < ditau_tau1_eta < max( jet_1_eta, jet_2_eta )')
 #TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
+TAU1_CENTR = Cut('jet_1_eta < ditau_tau0_eta < jet_0_eta') | Cut('jet_0_eta < ditau_tau0_eta < jet_1_eta')
+TAU2_CENTR = Cut('jet_1_eta < ditau_tau1_eta < jet_0_eta') | Cut('jet_0_eta < ditau_tau1_eta < jet_1_eta')
+TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
+ETA_CROSS = Cut('jet_1_eta*jet_0_eta < 0')
 
 CUTS_VBF_CUTBASED = (
     CUTS_VBF
     & DETA_JETS
     & MASS_JETS
-#    & TAUS_CENTR # TEMP CHANGE
+    & TAUS_CENTR # TEMP CHANGE
+    & ETA_CROSS
     )
 
 CUTS_BOOSTED_CUTBASED = (
@@ -59,7 +64,7 @@ class Category_Cuts_VBF_LowDR(Category_Preselection):
     cuts = (
         CUTS_VBF_CUTBASED
         & Cut('ditau_dr < 1.5')
-        & Cut('ditau_mmc_maxw_pt > 140'))
+        & Cut('ditau_higgs_pt > 140'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
         & Cut('true_ditau_mmc_maxw_pt>140'))
@@ -67,8 +72,9 @@ class Category_Cuts_VBF_LowDR(Category_Preselection):
     limitbins[2011] = [0, 64, 80, 92, 104, 116, 132, INF]
     # limitbins[2012] = [0, 64, 80, 92, 104, 116, 132, 176, INF]
     limitbins[2012] = [0, 60, 80, 100, 120, 150, INF] # - new binning
-    limitbins[2015] = [0, 90, 110, 135, 150, INF] # - new binning
+    limitbins[2015] = [0, 90, 110, 130, 150, INF] # - new binning
 
+    limitbins[2016] = [0, 90, 110, 130, 150, INF] # - new binning
     #limitbins[2012] = [0, 60, 80, 100, 120, 180, INF] # - new binning
     norm_category = Category_Preselection
 
@@ -82,7 +88,7 @@ class Category_Cuts_VBF_HighDR_Tight(Category_Preselection):
     linestyle = 'verylongdash'
     cuts = (
         CUTS_VBF_CUTBASED
-        & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt < 140'))
+        & (Cut('ditau_dr > 1.5') | Cut('ditau_higgs_pt < 140'))
         & Cut('dijet_vis_mass > (-250 * dijet_deta + 1550)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
@@ -105,7 +111,7 @@ class Category_Cuts_VBF_HighDR_Loose(Category_Preselection):
     jk_number = 8
     cuts = (
         CUTS_VBF_CUTBASED
-        & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt < 140'))
+        & (Cut('ditau_dr > 1.5') | Cut('ditau_higgs_pt < 140'))
         & Cut('dijet_vis_mass < (-250 * dijet_deta + 1550)'))
     cuts_truth = (
         CUTS_TRUE_VBF_CUTBASED
@@ -113,7 +119,7 @@ class Category_Cuts_VBF_HighDR_Loose(Category_Preselection):
         & Cut('true_mass_jet1_jet2_no_overlap < (-250 * true_dEta_jet1_jet2_no_overlap + 1550)'))
     # limitbins = [0, 64, 80, 92, 104, 116, 132, 152, 176, INF] - old binning
     # limitbins = [0, 64, 80, 92, 104, 116, 152, INF] - new binning (merging of old)
-    limitbins = [0, 70, 85, 110, 135, 150, INF] # - new binning
+    limitbins = [0, 90, 110, 135, 150, INF] # - new binning
     norm_category = Category_Preselection
 
 
@@ -137,8 +143,9 @@ class Category_Cuts_Boosted_Tight(Category_Preselection):
     color = 'blue'
     linestyle = 'verylongdashdot'
     jk_number = 6
-    cuts = ((- CUTS_VBF_CUTBASED) & CUTS_BOOSTED_CUTBASED
-            & (Cut('ditau_dr < 1.5') & Cut('ditau_mmc_maxw_pt>140')))
+    cuts = (CUTS_BOOSTED_CUTBASED
+            & ((- CUTS_VBF_CUTBASED) & Cut('ditau_dr < 1.5') & Cut('ditau_higgs_pt>140')))
+
     cuts_truth = (
         CUTS_TRUE_BOOSTED
         & Cut('true_ditau_mmc_maxw_pt>140'))
@@ -149,6 +156,7 @@ class Category_Cuts_Boosted_Tight(Category_Preselection):
     # limitbins[2012] = [0, 64, 72, 80, 88, 96, 104, 112, 120, 128, 140, 156, 176, INF] - new binning (merging of old)
     limitbins[2012] = [0, 60, 68, 76, 84, 92, 100, 110, 120, 130, 140, 150, 175, INF] # - new binning
     limitbins[2015] = [0, 68, 76, 84, 92, 110, 135, 150, INF] # - new binning
+    limitbins[2016] = [0, 68, 76, 84, 92, 110, 135, 150, INF] # - new binning
 
     norm_category = Category_Preselection
 
@@ -161,7 +169,7 @@ class Category_Cuts_Boosted_Loose(Category_Preselection):
     linestyle = 'dotted'
     jk_number = 5
     cuts = ((- CUTS_VBF_CUTBASED) & CUTS_BOOSTED_CUTBASED
-            & (Cut('ditau_dr > 1.5') | Cut('ditau_mmc_maxw_pt<140')))
+            & (Cut('ditau_dr > 1.5') | Cut('ditau_higgs_pt<140')))
     cuts_truth = (
         CUTS_TRUE_BOOSTED
         & Cut('true_ditau_mmc_maxw_pt<140'))
@@ -174,7 +182,7 @@ class Category_Cuts_Boosted_Loose(Category_Preselection):
     limitbins[2012] = [0, 70, 100, 110, 125, 150, 200, INF] # - new binning
     # limitbins[2012] = [0, 70, 100, 110, 123, 136, 150, 200, INF] # - new binning (test obs pval)
     limitbins[2015] = [0, 90, 110, 135, 150, INF] # - new binning
-
+    limitbins[2016] = [0, 90, 110, 135, 150, INF] # - new binning
     norm_category = Category_Preselection
 
 
@@ -194,13 +202,14 @@ class Category_Cuts_Boosted(Category_Preselection):
 
     limitbins = {}
     limitbins[2015] = [0, 80, 100, 110, 135, 150, INF] # - new binning
+    limitbins[2016] = [0, 80, 100, 110, 135, 150, INF] # - new binning
 
 
 class Category_Cuts_Boosted_Tight_NoDRCut(Category_Preselection):
     name = 'cuts_boosted_tight_nodrcut'
     label = '#tau_{had}#tau_{had} CB Boosted Tight No dR Cut'
     cuts = ((- CUTS_VBF_CUTBASED) & CUTS_BOOSTED_CUTBASED
-            & Cut('ditau_mmc_maxw_pt>140') )
+            & Cut('ditau_higgs_pt>140') )
     norm_category = Category_Preselection
 
 
@@ -211,6 +220,7 @@ class Category_Cuts_VBF(Category_Preselection):
     norm_category = Category_Preselection
     limitbins = {}
     limitbins[2015] = [0, 60, 80, 110, 135, 150, INF] # - new binning
+    limitbins[2016] = [0, 60, 80, 110, 135, 150, INF] # - new binning
 
 
 class Category_Cuts(Category_Preselection):

@@ -15,7 +15,7 @@ class Category_VBF_NO_DETAJJ_CUT(Category_Preselection):
     name = 'vbf'
     label = '#tau_{had}#tau_{had} VBF'
     common_cuts = Category_Preselection.common_cuts
-    cuts = CUTS_VBF
+    cuts = CUTS_VBF_CR
 
 
 class Category_VBF_DEta_Control(Category_Preselection):

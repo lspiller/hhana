@@ -38,7 +38,7 @@ features_vbf = [
 #    'HCM2jj',
 #    'HCM2',
 #    'HCM1',
-    'moment_hcm3'
+    'ditau_hcm3'
 ]
 
 features_boosted = [
@@ -58,5 +58,5 @@ features_boosted = [
     'ditau_pt_ratio',
 #    'HCM2',
 #    'HCM1',
-    'moment_hcm5',
+    'ditau_hcm5',
 ]

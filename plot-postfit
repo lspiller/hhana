@@ -79,7 +79,7 @@ def fit_workspace(file_name, ws_name,
 def plot_from_frame(
     file, name, fit_var, category, year,
     binning=None, unblind=False, path=None, mu=None, density_hist=False):
-    ana = Analysis(2015) # HACK - need to add --year option
+    ana = Analysis(args.year) # HACK - need to add --year option
     frame = file[name]
     hbkg = file.Get('h_sum_bkg_{0}'.format(frame.GetName()))
     curve_uncert_bkg = frame.getCurve('FitError_AfterFit_sum_bkg_{0}'.format(frame.GetName()))
@@ -180,13 +180,13 @@ def plot_from_frame(
         categories = CATEGORIES['mva_all']
     else:
         xtitle = get_label(MMC_MASS)
-        categories = CATEGORIES['cuts'] + CATEGORIES['runi']
+        categories = CATEGORIES['cuts']# + CATEGORIES['runi']
 
     if year == 2011:
         sqrts = 7
     elif year == 2012:
         sqrts = 8
-    elif year == 2015:
+    elif year == 2015 or year == 2016:
         sqrts = 13
 
     plottables = [
@@ -289,12 +289,13 @@ if __name__ == '__main__':
     parser.add_argument('--density', action='store_true', default=False)
     parser.add_argument('--jobs', default=-1)
     parser.add_argument('--suffix', type=str, default='')
+    parser.add_argument('--year', type=int, default=0)
     args = parser.parse_args()
 
     if args.fit_var == 'bdt':
         categories = CATEGORIES['mva_all']
     else:
-        categories = CATEGORIES['cuts'] + CATEGORIES['runi']
+        categories = CATEGORIES['cuts']# + CATEGORIES['runi']
 
     input = os.path.splitext(args.file)[0]
     output = input + '_postfit'
@@ -313,6 +314,7 @@ if __name__ == '__main__':
         for name in names:
             log.info('Channel: {0}'.format(name))
             year, category_name, mass = parse_name(name)
+            year = year if args.year==0 else args.year
             log.info('Year: {0}; Mass: {1}; Category: {2}'.format(
                 year, mass, category_name))
             category = get_category(category_name, categories)

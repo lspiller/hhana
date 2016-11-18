@@ -4,36 +4,31 @@
 from mva.analysis import get_analysis, Analysis
 from rootpy.tree import Cut
 from mva.samples import Data
-from mva.categories.hadhad import Category_Preselection, Category_Cuts_VBF_LowDR, Category_Cuts_VBF_HighDR_Tight, Category_Cuts_VBF_HighDR_Loose, Category_Cuts_Boosted_Loose, Category_Cuts_Boosted_Tight, Category_Preselection
-from mva.categories.hadhad.cbruni import hh_VBF_LowDR, hh_VBF_HighDR_Tight, hh_VBF_HighDR_Loose, hh_Boosted_Loose, hh_Boosted_Tight
-from mva.categories.hadhad.common import DETA_TAUS
+from mva.categories.hadhad.common import Category_Preselection
+from mva.categories.hadhad.cb import Category_Cuts_VBF_LowDR, Category_Cuts_VBF_HighDR_Tight, Category_Cuts_VBF_HighDR_Loose, Category_Cuts_Boosted_Loose, Category_Cuts_Boosted_Tight
 from mva.regions import REGIONS
-#ana = Analysis( 2015, trigger=False )
-#data = Data( 2015 )
+ana = Analysis( 2016, trigger=False )
+data = Data( 2016 )
 #data = ana.ztautau
 
 from mva.samples.ztautau import MadGraph_Ztautau
-data = MadGraph_Ztautau(2015)
-from mva.samples.others import Others
-data= Others(2016)
+#data = MadGraph_Ztautau(2016)
+from mva.samples.others import Others, HiggsInc
+#data = Others(2016)
+data = HiggsInc(2016)
+#from mva.samples.qcd import QCD
+#data = ana.qcd
+#from mva.samples.higgs import Higgs
+#data= Higgs(2016)
 cutlist = [
-            ('Presel', Category_Preselection.get_cuts(2015)&REGIONS['OS']),
-            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(2015)&REGIONS['OS']),
-            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(2015)&REGIONS['OS']),
-            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(2015)&REGIONS['OS']),
-            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(2015) & REGIONS['OS']),
-            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(2015) & REGIONS['OS']),
+            ('Presel', Category_Preselection.get_cuts(2016)&REGIONS['OS']),
+            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(2016)&REGIONS['OS']),
+            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(2016)&REGIONS['OS']),
+            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(2016)&REGIONS['OS']),
+            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(2016) & REGIONS['OS']),
+            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(2016) & REGIONS['OS']),
           ]
 
-cutlist = [
-            ('',     Cut()),
-            ('Presel', Category_Preselection.get_cuts(2015)&DETA_TAUS&REGIONS['OS']),
-            ('VBF_highdr_Tight', hh_VBF_HighDR_Tight.get_cuts(2015)&REGIONS['OS']),
-            ('VBF_highdr_Loose', hh_VBF_HighDR_Loose.get_cuts(2015)&REGIONS['OS']),
-            ('VBF_lowdr'       , hh_VBF_LowDR.get_cuts(2015)&REGIONS['OS']),
-            ('Boosted_Loose'   , hh_Boosted_Loose.get_cuts(2015) & REGIONS['OS']),
-            ('Boosted_Tight'   , hh_Boosted_Tight.get_cuts(2015) & REGIONS['OS']),
-          ]
 #cutlist = [
 #            ('Eta'        , Cut()),
 #            ('Charge'     , (Cut('ditau_tau0_q == 1') | Cut('ditau_tau0_q == -1'))

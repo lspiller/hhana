@@ -41,7 +41,7 @@ DETA_TAUS_PRESEL = Cut('ditau_deta < 2.0')
 JET_TRIG_PT = Cut('jet_0_pt > 70.')
 JET_TRIG_ETA = Cut('-3.2 < jet_0_eta') & Cut('jet_0_eta < 3.2')
 JET_TRIG = JET_TRIG_ETA & JET_TRIG_PT
-
+HIGGS_PT = Cut('ditau_higgs_pt > 100')
 LEPTON_VETO = Cut('selection_lepton_veto == 1')# & Cut('ditau_tau0_ele_bdt_loose==0') & Cut('ditau_tau1_ele_bdt_loose==0')
 TRIGGER = Cut('selection_trigger == 1')
 
@@ -58,7 +58,7 @@ PRESELECTION = (
 #    & Cut('%s > 0' % MMC_MASS)
     & JET_TRIG
     & DR_TAUS
-    & TAUID
+#    & TAUID
     & LEPTON_VETO
     & TRIGGER
     & DETA_TAUS_PRESEL
@@ -67,23 +67,23 @@ PRESELECTION = (
 # VBF category cuts
 CUTS_VBF = (
     CUTS_2J
-    & DETA_TAUS
+#    & DETA_TAUS
     )
 
 CUTS_VBF_CR = (
     CUTS_2J
-    & DETA_TAUS_CR
+#    & DETA_TAUS_CR
     )
 
 # Boosted category cuts
 CUTS_BOOSTED = (
     RESONANCE_PT
-    & DETA_TAUS
+#    & DETA_TAUS
     )
 
 CUTS_BOOSTED_CR = (
     RESONANCE_PT
-    & DETA_TAUS_CR
+#    & DETA_TAUS_CR
     )
 
 
@@ -139,7 +139,7 @@ class Category_Loose_Preselection(Category):
           & Cut('ditau_met > 20')
           & Cut()
           & DR_TAUS
-          & DETA_TAUS
+#          & DETA_TAUS
           & LEAD_TAU_40
           & SUBLEAD_TAU_30
         # & Cut(MET_CENTRALITY.format(pi / 4))

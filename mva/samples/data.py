@@ -74,7 +74,7 @@ class Data(Sample):
         self.info = DataInfo(LUMI[self.year] / 1e3, self.energy)
     def cuts(self, *args, **kwargs):
         cut = super(Data, self).cuts(*args, **kwargs)
-        cut &= Cut('grl_pass_run_lb == 1')
+#        cut &= Cut('grl_pass_run_lb == 1')
         return cut
 
     def draw_array(self, field_hist, category, region,
