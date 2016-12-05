@@ -69,9 +69,9 @@ for category in analysis.iter_categories(*cat_defs, names=args.category_names):
         mode='combined',
         signal_scale=(
             50 if is_control or 'preselection' in category.name else 20),
-        plot_label=(
-            'Signal Region' if not is_control and
-            not ('preselection' in category.name) else None),
+#        plot_label=(
+#            'Signal Region' if not is_control and
+#            not ('preselection' in category.name) else None),
         category=category,
         region=target_region,
         #systematics_components=args.systematics_components,

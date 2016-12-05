@@ -59,6 +59,6 @@ REGIONS = {
 REGION_SYSTEMATICS = {
     'nOS_NONISOL': 'nOS_ISOL',
     'nOS_ISOL': 'nOS_NONISOL',
-    #'nOS': ('nOS_ISOL', 'nOS_NONISOL'),
-    'nOS': 'antiIDnOS',
+    'nOS': ('nOS_ISOL', 'nOS_NONISOL'),
+    # 'nOS': 'antiIDnOS',
 }

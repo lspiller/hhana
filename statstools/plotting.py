@@ -21,6 +21,13 @@ from . import log; log = log[__name__]
 gaussian_cdf_c = ROOT.Math.gaussian_cdf_c
 
 UNBLIND = {
+    2016: {
+        'vbf': 2,
+        'boosted': 2,
+        'rest': 0,
+        'hh_vbf': 2,
+        'hh_boost': 2,
+        'hh_rest': 0,},
     2015: {
         'vbf': 2,
         'boosted': 2,

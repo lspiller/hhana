@@ -25,21 +25,24 @@ TAUTAUHADHADBR = 0.4194 # = (1. - 0.3521) ** 2
 
 class Higgs(MC, Signal):
     MASSES = range(100, 155, 5)
-    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']
-    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]
+
+    MODES = ['gg', 'VBF', 'W', 'Z']
+    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W']]
+#    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']
+#    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]
     MODES_DICT = {
         'gg': ('ggf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'VBF': ('vbf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'Z': ('zh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
         'W': ('wh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
-        'tth': ('tth', '', '', 'aMcNloHppEG_'),
+#        'tth': ('tth', '', '', 'aMcNloHppEG_'),
     }
     MODES_WORKSPACE = {
         'gg': 'ggH',
         'VBF': 'VBF',
         'Z': 'ZH',
         'W': 'WH',
-        'tth': 'tth',
+#        'tth': 'tth',
     }
 
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HSG4Uncertainties
@@ -439,7 +442,7 @@ class InclusiveHiggs(MC, Signal):
         'vbf': 'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
         'zh': 'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
         'wh': 'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
-        'tth': 'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
+#        'tth': 'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
     }
 
     def __init__(self, mode=None, **kwargs):
@@ -450,13 +453,20 @@ class InclusiveHiggs(MC, Signal):
             self.samples = [self.SAMPLES[mode]]
         else:
             self.masses = [125] * 5
-            self.modes = ['ggf', 'vbf', 'zh', 'wh', 'tth']
+#            self.modes = ['ggf', 'vbf', 'zh', 'wh', 'tth']
+#            self.samples = [
+#                'PowPyth8_AU2CT10_ggH125p5_inclusive.mc12b',
+#                'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
+#                'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
+#                'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
+#                'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
+#            ]
+            self.modes = ['ggf', 'vbf', 'zh', 'wh']
             self.samples = [
                 'PowPyth8_AU2CT10_ggH125p5_inclusive.mc12b',
                 'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
                 'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
                 'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
-                'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
             ]
         super(InclusiveHiggs, self).__init__(
             year=2015, name='Signal', label='Signal',

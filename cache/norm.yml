@@ -6,7 +6,7 @@
           OS:
             qcd_data_scale: 1.0
             qcd_others_scale: 1.0
-            qcd_scale: 0.8582462941896141
+            qcd_scale: 0.8233929916827286
             qcd_scale_error: 0.0
             qcd_z_scale: 1.0
             z_scale: 1.0
@@ -19,10 +19,10 @@
           OS:
             qcd_data_scale: 1.0
             qcd_others_scale: 1.0
-            qcd_scale: 0.7498016967963351
-            qcd_scale_error: 0.0
+            qcd_scale: 0.7682927106109187
+            qcd_scale_error: 0.03158576405389366
             qcd_z_scale: 1.0
-            z_scale: 1.0
-            z_scale_error: 0.0
+            z_scale: 0.9746212180656517
+            z_scale_error: 0.07307726683611672
 2015: null
 2016: null

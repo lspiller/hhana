@@ -113,7 +113,7 @@ CATEGORIES = {
     'mva_all': [
         Category_VBF,
         Category_Boosted,
-        Category_Rest,
+#        Category_Rest,
         ],
     'mva_deta_controls': [
         Category_VBF_DEta_Control,

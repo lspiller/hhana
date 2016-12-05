@@ -24,13 +24,13 @@ field = 'ditau_deta'
 if args.year == 2015 or args.year == 2016:
     template = Hist(4, 0, 2)
 
-#qcd_scale, qcd_scale_error, \
-#ztt_scale, ztt_scale_error = analysis.fit_norms(
-#    field, template, category, args.target_region)
-
 qcd_scale, qcd_scale_error, \
-ztt_scale, ztt_scale_error = analysis.naive_norms(
+ztt_scale, ztt_scale_error = analysis.fit_norms(
     field, template, category, args.target_region)
+
+#qcd_scale, qcd_scale_error, \
+#ztt_scale, ztt_scale_error = analysis.naive_norms(
+#    field, template, category, args.target_region)
 
 # update the cache
 cache.set_scales(
@@ -64,7 +64,7 @@ draw_channel(
     output_dir='plots/normalization',
     show_pvalue=True,
     #top_label="Fakes Model: {0}".format(analysis.fakes_region),
-    plot_label='After {0} fit'.format(VARIABLES[field]['root']),
+#    plot_label='After {0} fit'.format(VARIABLES[field]['root']),
     data_info=analysis.data.info,
     logy=False,
     output_formats=('eps', 'png'))

@@ -63,6 +63,7 @@ def plot_ranking(name, file, outdir,
     for np, info in data.items():
         if not matched(np, patterns):
             continue
+        if 'bin' in np: continue
         prefit_low, prefit_nom, prefit_high = info['poi_prefit']
         if prefit_low > prefit_high:
             prefit_low, prefit_high = prefit_high, prefit_low

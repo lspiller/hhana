@@ -30,48 +30,64 @@ class Systematic(object):
 
 
 SYSTEMATICS_COMMON = {
-#TEMP    'TAU_TRIGGER': (('TAU_TRIGGER_SYST_UP',), ('TAU_TRIGGER_SYST_DOWN',)),
+    # FIT PARAMETERS
+    'QCD_FIT': (('QCDFIT_UP',), ('QCDFIT_DOWN',)),
+    'Z_FIT': (('ZFIT_UP',), ('ZFIT_DOWN',)),
+    'QCD_SHAPE': (('QCDSHAPE_UP',), ('QCDSHAPE_DOWN',)),
+
+    # TAU SYS
     'TAU_RECO': (('TAU_RECO_UP',), ('TAU_RECO_DOWN',)),
-    'TAU_ELEOLR': (('TAU_ELEOLR_UP',), ('TAU_ELEOLR_DOWN',)),
+
+    # TAU ID
     'TAU_ID': (('TAU_ID_UP',), ('TAU_ID_DOWN',)),
-#    'QCD_FIT': (('QCDFIT_UP',), ('QCDFIT_DOWN',)),
-#    'Z_FIT': (('ZFIT_UP',), ('ZFIT_DOWN',)),
-#    'QCD_SHAPE': (('QCDSHAPE_UP',), ('QCDSHAPE_DOWN',)),
-# TAU SYSTEMATICS
+    'TAU_ID_HIGHPT': (('TAU_ID_HIGHPT_UP',), ('TAU_ID_HIGHPT_DOWN',)),
+
+    # TAU TRIGGER
     'TAU_TRIGGER': (('TAU_TRIGGER_DOWN',), ('TAU_TRIGGER_UP',)),
-#TEMP    'TAU_TRIGGER_STATDATA': (('TAU_TRIGGER_STATDATA_UP',), ('TAU_TRIGGER_STATDATA_DOWN',)),
-#    'TAU_TRIGGER_SYST': (('TAU_TRIGGER_SYST_UP',), ('TAU_TRIGGER_SYST_DOWN',)),
-#TEMP    'TAU_TRIGGER_STATMC': (('TAU_TRIGGER_STATMC_UP',), ('TAU_TRIGGER_STATMC_DOWN',)),
-    'TAU_TES_DETECTOR': (('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1_up',), ('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1_down',)),
-    'TAU_TES_MODEL': (('TAUS_TRUEHADTAU_SME_TES_MODEL_1_up',), ('TAUS_TRUEHADTAU_SME_TES_MODEL_1_down',)),
-    'TAU_TES_INSITU': (('TAUS_TRUEHADTAU_SME_TES_INSITU_1_up',), ('TAUS_TRUEHADTAU_SME_TES_INSITU_1_down',)),
-# MET SYSTEMATICS
+
+    # TES
+    'TAU_TES_DETECTOR': (('TAUS_TRUEHADTAU_SME_TES_DETECTOR__up',), ('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1down',)),
+    'TAU_TES_MODEL': (('TAUS_TRUEHADTAU_SME_TES_MODEL_1up',), ('TAUS_TRUEHADTAU_SME_TES_MODEL_1down',)),
+    'TAU_TES_INSITU': (('TAUS_TRUEHADTAU_SME_TES_INSITU_1up',), ('TAUS_TRUEHADTAU_SME_TES_INSITU_1down',)),
+
+    # MET SYSTEMATICS
     'MET_SoftTrk_ResoPara': (('MET_SoftTrk_ResoPara',),),
     'MET_SoftTrk_ResoPerp': (('MET_SoftTrk_ResoPerp',),),
     'MET_SoftTrk_Scale': (('MET_SoftTrk_ScaleUp',), ('MET_SoftTrk_ScaleDown',)),
-# JET SYSTEMATICS
-    'JET_BJES_Response': (('JET_BJES_Response_1_down',), ('JET_BJES_Response_1_up',)),
-    'JET_Effective1': (('JET_EffectiveNP_1_1_down',), ('JET_EffectiveNP_1_1_up',)),
-    'JET_Effective2': (('JET_EffectiveNP_2_1_down',), ('JET_EffectiveNP_2_1_up',)),
-    'JET_Effective3': (('JET_EffectiveNP_3_1_down',), ('JET_EffectiveNP_3_1_up',)),
-    'JET_Effective4': (('JET_EffectiveNP_4_1_down',), ('JET_EffectiveNP_4_1_up',)),
-    'JET_Effective5': (('JET_EffectiveNP_5_1_down',), ('JET_EffectiveNP_5_1_up',)),
-    'JET_Effective6': (('JET_EffectiveNP_6restTerm_1_down',), ('JET_EffectiveNP_6restTerm_1_up',)),
-    'JET_Eta_Modelling': (('JET_EtaIntercalibration_Modelling_1_down',), ('JET_EtaIntercalibration_Modelling_1_up',)),
-    'JET_Eta_NonClosure': (('JET_EtaIntercalibration_NonClosure_1_down',), ('JET_EtaIntercalibration_NonClosure_1_up',)),
-    'JET_Eta_Stat': (('JET_EtaIntercalibration_TotalStat_1_down',), ('JET_EtaIntercalibration_TotalStat_1_up',)),
-    'JET_Flavor_Comp': (('JET_Flavor_Composition_1_down',), ('JET_Flavor_Composition_1_up',)),
-    'JET_Flavor_Resp': (('JET_Flavor_Response_1_up',), ('JET_Flavor_Response_1_down',)),
-    'JET_JER_SINGLE_NP_1up': (('JET_JER_SINGLE_NP_1up',)),
-    'JET_PU_Mu': (('JET_Pile_up_OffsetMu_1_down',), ('JET_Pile_up_OffsetMu_1_up',)),
-    'JET_PU_NPV': (('JET_Pile_up_OffsetNPV_1_down',), ('JET_Pile_up_OffsetNPV_1_up',)),
-    'JET_PU_PtTerm': (('JET_Pile_up_PtTerm_1_down',), ('JET_Pile_up_PtTerm_1_up',)),
-    'JET_PU_Rho': (('JET_Pile_up_RhoTopology_1_down',), ('JET_Pile_up_RhoTopology_1_up',)),
-    'JET_Punch': (('JET_PunchThrough_MC15_1_down',), ('JET_PunchThrough_MC15_1_up')),
-    'JET_SP_HighPt': (('JET_SingleParticle_HighPt_1_down',), ('JET_SingleParticle_HighPt_1_up',)),
+
+    # JET SYSTEMATICS
+    'JET_BJES_Response': (('JET_BJES_Response_1down',), ('JET_BJES_Response_1up',)),
+
+    'JET_Effective1': (('JET_EffectiveNP_1_1down',), ('JET_EffectiveNP_1_1up',)),
+    'JET_Effective2': (('JET_EffectiveNP_2_1down',), ('JET_EffectiveNP_2_1up',)),
+    'JET_Effective3': (('JET_EffectiveNP_3_1down',), ('JET_EffectiveNP_3_1up',)),
+    'JET_Effective4': (('JET_EffectiveNP_4_1down',), ('JET_EffectiveNP_4_1up',)),
+    'JET_Effective5': (('JET_EffectiveNP_5_1down',), ('JET_EffectiveNP_5_1up',)),
+    'JET_Effective6': (('JET_EffectiveNP_6restTerm_1down',), ('JET_EffectiveNP_6restTerm_1up',)),
+
+    'JET_Eta_Modelling': (('JET_EtaIntercalibration_Modelling_1down',), ('JET_EtaIntercalibration_Modelling_1up',)),
+    'JET_Eta_NonClosure': (('JET_EtaIntercalibration_NonClosure_1down',), ('JET_EtaIntercalibration_NonClosure_1up',)),
+    'JET_Eta_Stat': (('JET_EtaIntercalibration_TotalStat_1down',), ('JET_EtaIntercalibration_TotalStat_1up',)),
+
+    'JET_Flavor_Comp': (('JET_Flavor_Composition_1down',), ('JET_Flavor_Composition_1up',)),
+    'JET_Flavor_Resp': (('JET_Flavor_Response_1up',), ('JET_Flavor_Response_1down',)),
+
+    'JET_JER': (('JET_JER_SINGLE_NP_1up',)),
+
+    'JET_PU_NPV': (('JET_Pile_up_OffsetNPV_1down',), ('JET_Pile_up_OffsetNPV_1up',)),
+    'JET_PU_PtTerm': (('JET_Pile_up_PtTerm_1down',), ('JET_Pile_up_PtTerm_1up',)),
+    'JET_PU_Rho': (('JET_Pile_up_RhoTopology_1down',), ('JET_Pile_up_RhoTopology_1up',)),
+    'JET_Punch': (('JET_PunchThrough_MC15_1down',), ('JET_PunchThrough_MC15_1up')),
+
+    'JET_SP_HighPt': (('JET_SingleParticle_HighPt_1down',), ('JET_SingleParticle_HighPt_1up',)),
+
+    # ELECTRON OVERLAP
+    'TAU_ELEOLR': (('TAU_ELEOLR_UP',), ('TAU_ELEOLR_DOWN',)),
 }
 
 SYSTEMATICS_2015 = {
+    'TAU_TRIGGER_STATDATA': (('TAU_TRIGGER_STATDATA_UP',), ('TAU_TRIGGER_STATDATA_DOWN',)),
+    'TAU_TRIGGER_STATMC': (('TAU_TRIGGER_STATMC_UP',), ('TAU_TRIGGER_STATMC_DOWN',)),
 }
 SYSTEMATICS_2015.update(SYSTEMATICS_COMMON)
 
@@ -80,16 +96,18 @@ SYSTEMATICS_2016 = {
 SYSTEMATICS_2016.update(SYSTEMATICS_COMMON)
 
 SYSTEMATICS_BY_WEIGHT = [
-#    ('TAU_TRIGGER_SYST_UP',),
-#    ('TAU_TRIGGER_SYST_DOWN',),
-#    ('TAU_TRIGGER_STATDATA_UP',),
-#    ('TAU_TRIGGER_STATDATA_DOWN',),
-#    ('TAU_TRIGGER_STATMC_UP',),
-#    ('TAU_TRIGGER_STATMC_DOWN',),
-#    ('TAU_TRIGGER_UP',)
-#    ('TAU_TRIGGER_DOWN',)
+    ('TAU_RECO_UP',),
+    ('TAU_RECO_DOWN',),
+    ('TAU_TRIGGER_STATDATA_UP',),
+    ('TAU_TRIGGER_STATDATA_DOWN',),
+    ('TAU_TRIGGER_STATMC_UP',),
+    ('TAU_TRIGGER_STATMC_DOWN',),
+    ('TAU_TRIGGER_UP',),
+    ('TAU_TRIGGER_DOWN',),
     ('TAU_ID_UP',),
     ('TAU_ID_DOWN',),
+    ('TAU_ID_HIGHPT_UP',),
+    ('TAU_ID_HIGHPT_DOWN',),
 ]
 
 

@@ -41,7 +41,11 @@ from ..variables import get_binning, get_scale
 from mva.categories import get_trigger
 
 #BCH_UNCERT = pickle.load(open(os.path.join(CACHE_DIR, 'bch_cleaning.cache')))
-
+TAU0 = 'ditau_tau0_sf_'
+TAU1 = 'ditau_tau1_sf_'
+NOM = 'NOMINAL_TauEffSF_'
+TAUSYS = 'TAUS_TRUEHADTAU_EFF_'
+ELESYS = 'TAUS_TRUEELECTRON_EFF_ELEOLR_'
 
 class Dataset(namedtuple('Dataset',
                          ('ds', 'tables', 'events',
@@ -57,46 +61,8 @@ def get_workspace_np_name(sample, syst, year):
     """
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HiggsPropertiesNuisanceParameterNames
     npname = 'ATLAS_{0}_{1:d}'.format(syst, year)
-    # special cases
-    npname = npname.replace('TAUS_TRUEHADTAU_SME_TES', 'TAU_TES')
-    npname = npname.replace('_1_', '')
 #    npname = npname.replace('JES_Detector_{0}'.format(year),
 #                            'JES_{0}_Detector1'.format(year))
-#    npname = npname.replace('JES_EtaMethod_{0}'.format(year),
-#                            'JES_{0}_Eta_StatMethod'.format(year))
-#    npname = npname.replace('JES_EtaModelling_{0}'.format(year),
-#                            'JES_Eta_Modelling')
-#    npname = npname.replace('JES_FlavComp_TAU_G_{0}'.format(year),
-#                            'JES_FlavComp_TAU_G')
-#    npname = npname.replace('JES_FlavComp_TAU_Q_{0}'.format(year),
-#                            'JES_FlavComp_TAU_Q')
-#    npname = npname.replace('JES_FlavResp_{0}'.format(year),
-#                            'JES_FlavResp')
-#    npname = npname.replace('JES_Modelling_{0}'.format(year),
-#                            'JES_{0}_Modelling1'.format(year))
-#    npname = npname.replace('JES_PURho_TAU_GG_{0}'.format(year),
-#                            'JES_{0}_PileRho_TAU_GG'.format(year))
-#    npname = npname.replace('JES_PURho_TAU_QG_{0}'.format(year),
-#                            'JES_{0}_PileRho_TAU_QG'.format(year))
-#    npname = npname.replace('JES_PURho_TAU_QQ_{0}'.format(year),
-#                            'JES_{0}_PileRho_TAU_QQ'.format(year))
-#    npname = npname.replace('FAKERATE', 'TAU_JFAKE')
-#    npname = npname.replace('MET_RESOSOFTTERMS',
-#                            'MET_RESOSOFT')
-#    npname = npname.replace('MET_SCALESOFTTERMS',
-#                            'MET_SCALESOFT')
-    from .ztautau import Embedded_Ztautau
-    if isinstance(sample, Embedded_Ztautau):
-        npname = npname.replace('TRIGGER', 'TRIGGER_EMB_HH')
-    else:
-#        npname = npname.replace('TRIGGER', 'TRIGGER_HH')
-#        npname = npname.replace('TRIGGER', 'TAU_TRIGGER_')
-        log.info( "TRIGGER_HH" )
-    # Decorrelate embedding NPs
-    # * Decorrelate the NP between 2011 and 2012 for MFS because the cell
-    #   subtraction yield was changed from 30% in 2011 to 20% in 2012.
-#    npname = npname.replace('ISOL', 'ANA_EMB_ISOL')
-#    npname = npname.replace('MFS', 'ANA_EMB_MFS')
 #    # correlate across years:
 #    npname = npname.replace('JER_{0}'.format(year), 'JER')
     return npname
@@ -854,36 +820,25 @@ class SystematicsSample(Sample):
 
     def systematics_components(self):
         common = [
-#            'MET_RESOSOFTTERMS',
-#            'MET_SCALESOFTTERMS',
             'TAU_ID',
+            'TAU_ID_HIGHPT',
             'TAU_TRIGGER',
             'TAU_RECO',
             'TAU_ELEOLR',
+            'MET_SoftTrk_ResoPara',
+            'MET_SoftTrk_ResoPerp',
+            'MET_SoftTrk_Scale',
+            'TAU_TES_DETECTOR',
+            'TAU_TES_MODEL',
+            'TAU_TES_INSITU',
         ]
-        # No FAKERATE for embedding since fakes are data
-        # so don't include FAKERATE here
         if self.year == 2015:
             return common + [
-                'MET_SoftTrk_ResoPara', # Not varied up or down
-                'MET_SoftTrk_ResoPerp', # Not varied up or down
-                'MET_SoftTrk_Scale', # different convention from above: Down/Up instead of _DOWN/_UP
-                'TAU_TES_DETECTOR',
-                'TAU_TES_MODEL',
-                'TAU_TES_INSITU',
-#                'TAU_TRIGGER_STATDATA',
-#                'TAU_TRIGGER_STATMC',
-#                'TAU_TRIGGER_SYST',
+                'TAU_TRIGGER_STATDATA',
+                'TAU_TRIGGER_STATMC',
                 ]
         elif self.year == 2016:
             return common + [
-                'MET_SoftTrk_ResoPara', # Not varied up or down
-                'MET_SoftTrk_ResoPerp', # Not varied up or down
-                'MET_SoftTrk_Scale', # different convention from above: Down/Up instead of _DOWN/_UP
-                'TAU_TES_DETECTOR',
-                'TAU_TES_MODEL',
-                'TAU_TES_INSITU',
-#                'TAU_TRIGGER_SYST',
                 ]
         else:
             log.warning('Incomplete list of SF !')
@@ -893,31 +848,25 @@ class SystematicsSample(Sample):
     def weight_systematics(self):
         systematics = {}
         if self.tau_id_sf:
-            if self.year == 2015 or self.year == 2016:
-                tauid = {
-                    'TAU_ID': {
-                        'UP': [
-                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TauEffSF_JetBDTmedium',
-                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TauEffSF_JetBDTmedium'],
-                        'DOWN': [
-                            'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TauEffSF_JetBDTmedium',
-                            'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TauEffSF_JetBDTmedium'],
-                        'NOMINAL': [
-                            'ditau_tau0_sf_NOMINAL_TauEffSF_JetBDTmedium',
-                            'ditau_tau1_sf_NOMINAL_TauEffSF_JetBDTtight',]},
-                    }
-            else:
-                tauid = {
-                    'TAU_ID': {
-                        'STAT_UP': [],
-                        'STAT_DOWN': [],
-                        'UP': [],
-                        'DOWN': [],
-                        'NOMINAL': []},
-                    }
-                log.warning('No scale factors defined for this year: {}'.format(self.year))
+            tauid = {
+                'TAU_ID': {
+                    'HIGHPT_UP': [
+                        TAU0+TAUSYS+'JETID_HIGHPT_1up_TauEffSF_JetBDTtight',
+                        TAU1+TAUSYS+'JETID_HIGHPT_1up_TauEffSF_JetBDTmedium'],
+                    'HIGHPT_DOWN': [
+                        TAU0+TAUSYS+'JETID_HIGHPT_1down_TauEffSF_JetBDTtight',
+                        TAU1+TAUSYS+'JETID_HIGHPT_1down_TauEffSF_JetBDTmedium'],
+                    'UP': [
+                        TAU0+TAUSYS+'JETID_TOTAL_1up_TauEffSF_JetBDTtight',
+                        TAU1+TAUSYS+'JETID_TOTAL_1up_TauEffSF_JetBDTmedium'],
+                    'DOWN': [
+                        TAU0+TAUSYS+'JETID_TOTAL_1down_TauEffSF_JetBDTtight',
+                        TAU1+TAUSYS+'JETID_TOTAL_1down_TauEffSF_JetBDTmedium'],
+                    'NOMINAL': [
+                        TAU0+NOM+'JetBDTtight',
+                        TAU1+NOM+'JetBDTmedium',]},
+                }
             systematics.update(tauid)
-
         return systematics
 
     def cut_systematics(self):
@@ -1245,62 +1194,6 @@ class SystematicsSample(Sample):
                 if rec['weight'].shape[0] > 1 and rec['weight'].sum() == 0:
                     log.warning("{0}: weights sum to zero!".format(table.name))
 
-#            taupt_br = rec[['ditau_tau0_pt', 'ditau_tau1_pt']]
-#            taupt_br = rec2array( taupt_br ).reshape((taupt_br.shape[0],2))
-#            taupt_ratio = taupt_br[:,1]/taupt_br[:,0]
-#            rec = rec_append_fields(rec,
-#                    names='ditau_pt_ratio',
-#                    arrs=taupt_ratio,
-#                    dtypes=np.dtype('f8'))
-#
-#
-#            mom_branches = [
-#                'ditau_tau0_pt', 'ditau_tau0_eta', 'ditau_tau0_phi', 'ditau_tau0_m',
-#                'ditau_tau1_pt', 'ditau_tau1_eta', 'ditau_tau1_phi', 'ditau_tau1_m',
-#                'jet_0_pt', 'jet_0_eta', 'jet_0_phi', 'jet_0_m',
-#                'jet_1_pt', 'jet_1_eta', 'jet_1_phi', 'jet_1_m',
-#            ]
-#
-#            mom_arr = rec[mom_branches]
-#            mom_arr = rec2array( mom_arr ).reshape((mom_arr.shape[0], 4, 4))
-#            # convert array of pT, eta, phi, m
-#            # to array of p, px, py, pz, pT, eta, phi, m
-#            kin_arr = np.empty(shape=(mom_arr.shape[0], 4, 8))
-#            # |p| = pT cosh eta
-#            kin_arr[:,:,0] = mom_arr[:,:,0] * np.cosh(mom_arr[:,:,1])
-#            # px, py, pz
-#            kin_arr[:,:,1] = mom_arr[:,:,0] * np.cos(mom_arr[:,:,2])
-#            kin_arr[:,:,2] = mom_arr[:,:,0] * np.sin(mom_arr[:,:,2])
-#            kin_arr[:,:,3] = mom_arr[:,:,0] * np.sinh(mom_arr[:,:,1])
-#            # pT, eta, phi, m
-#            kin_arr[:,:,4] = mom_arr[:,:,0]
-#            kin_arr[:,:,5] = mom_arr[:,:,1]
-#            kin_arr[:,:,6] = mom_arr[:,:,2]
-#            kin_arr[:,:,7] = mom_arr[:,:,3]
-#
-#            rec = rec_append_fields(rec,
-#                names='eta_product_jets',
-#                arrs=(kin_arr[:,2,5]*kin_arr[:,3,5]),
-#                dtypes=np.dtype('f8'))
-#            # centrality: exp( -4/(eta1-eta2)^2 (eta- eta1+eta2.2)^2)
-#            tau1_centrality = np.exp( \
-#                    -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
-#                    * (kin_arr[:,0,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
-#                    )
-#            tau2_centrality = np.exp( \
-#                    -4 / (kin_arr[:,2,5]-kin_arr[:,3,5])**2 \
-#                    * (kin_arr[:,1,5]-(kin_arr[:,2,5]+kin_arr[:,3,5])/2)**2 \
-#                    )
-#
-#            rec = rec_append_fields(rec,
-#                names='tau1_centrality',
-#                arrs=tau1_centrality,
-#                dtypes=np.dtype('f8'))
-#            rec = rec_append_fields(rec,
-#                names='tau2_centrality',
-#                arrs=tau2_centrality,
-#                dtypes=np.dtype('f8'))
-
             if fields is not None:
                 try:
                     rec = rec[fields]
@@ -1345,8 +1238,7 @@ class MC(SystematicsSample):
             'JET_Eta_Stat',
             'JET_Flavor_Comp',
             'JET_Flavor_Resp',
-            'JET_JER_SINGLE_NP_1up',
-            'JET_PU_Mu',
+            'JET_JER',
             'JET_PU_NPV',
             'JET_PU_PtTerm',
             'JET_PU_Rho',
@@ -1372,105 +1264,62 @@ class MC(SystematicsSample):
                     'DOWN': [],
                     'NOMINAL': []},
                 })
-        if self.year == 2015 or self.year == 2016:
-            systematics.update({
-                    'TAU_RECO': {
-                        'NOMINAL': ['ditau_tau0_sf_NOMINAL_TauEffSF_reco', 'ditau_tau1_sf_NOMINAL_TauEffSF_reco'],
-                        'UP': ['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_RECO_TOTAL_1up_TauEffSF_reco',
-                               'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_RECO_TOTAL_1up_TauEffSF_reco',],
-                        'DOWN': ['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_RECO_TOTAL_1down_TauEffSF_reco',
-                               'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_RECO_TOTAL_1down_TauEffSF_reco',],
-                        },
-                    'TAU_ELEOLR': {
-                        'UP': ['ditau_tau0_sf_TAUS_TRUEELECTRON_EFF_ELEOLR_TOTAL_1up_TauEffSF_VeryLooseLlhEleOLR_electron',
-                            'ditau_tau1_sf_TAUS_TRUEELECTRON_EFF_ELEOLR_TOTAL_1up_TauEffSF_VeryLooseLlhEleOLR_electron',],
-                        'DOWN': ['ditau_tau0_sf_TAUS_TRUEELECTRON_EFF_ELEOLR_TOTAL_1down_TauEffSF_VeryLooseLlhEleOLR_electron',
-                            'ditau_tau1_sf_TAUS_TRUEELECTRON_EFF_ELEOLR_TOTAL_1down_TauEffSF_VeryLooseLlhEleOLR_electron',],
-                        'NOMINAL': ['ditau_tau0_sf_NOMINAL_TauEffSF_VeryLooseLlhEleOLR_electron', 'ditau_tau1_sf_NOMINAL_TauEffSF_VeryLooseLlhEleOLR_electron'],
+        systematics.update({
+                'TAU_RECO': {
+                    'NOMINAL': [TAU0+NOM+'reco', TAU1+NOM+'reco'],
+                    'UP':      [TAU0+TAUSYS+'RECO_TOTAL_1up_TauEffSF_reco',
+                                TAU1+TAUSYS+'RECO_TOTAL_1up_TauEffSF_reco',],
+                    'DOWN':    [TAU0+TAUSYS+'RECO_TOTAL_1down_TauEffSF_reco',
+                                TAU1+TAUSYS+'RECO_TOTAL_1down_TauEffSF_reco',],
                     },
-                    })
+                'TAU_ELEOLR': {
+                    'UP':      [TAU0+ELESYS+'TOTAL_1up_TauEffSF_VeryLooseLlhEleOLR_electron',
+                                TAU1+ELESYS+'TOTAL_1up_TauEffSF_VeryLooseLlhEleOLR_electron',],
+                    'DOWN':    [TAU0+ELESYS+'TOTAL_1down_TauEffSF_VeryLooseLlhEleOLR_electron',
+                                TAU1+ELESYS+'TOTAL_1down_TauEffSF_VeryLooseLlhEleOLR_electron',],
+                    'NOMINAL': [TAU0+NOM+'VeryLooseLlhEleOLR_electron', TAU1+NOM+'VeryLooseLlhEleOLR_electron'],
+                },
+                })
         if self.year == 2015:
             systematics.update({
-#                    'TAU_TRIGGER': {
-#                        'STATDATA_UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'STATDATA_DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'STATMC_UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'STATMC_DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'SYST_UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'SYST_DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'NOMINAL': [
-#                            'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#                            'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
-#                    })
-
                     'TAU_TRIGGER': {
-#                        'STATDATA_UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'STATDATA_DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'STATMC_UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'STATMC_DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'SYST_UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'SYST_DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-
-                        'DOWN': [
-                            'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                            'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATDATA_UP': [
+                            TAU0+TAUSYS+'TRIGGER_STATDATA2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATDATA2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATDATA_DOWN': [
+                            TAU0+TAUSYS+'TRIGGER_STATDATA2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATDATA2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATMC_UP': [
+                            TAU0+TAUSYS+'TRIGGER_STATMC2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATMC2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'STATMC_DOWN': [
+                            TAU0+TAUSYS+'TRIGGER_STATMC2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATMC2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
                         'UP': [
-                            'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                            'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            TAU0+TAUSYS+'TRIGGER_SYST2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_SYST2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                        'DOWN': [
+                            TAU0+TAUSYS+'TRIGGER_SYST2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_SYST2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+
                         'NOMINAL': [
-                            'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
-                            'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
+                            TAU0+NOM+'HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+NOM+'HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
                     })
 
         if self.year == 2016:
-#            systematics.update({
-#                    'TAU_TRIGGER': {
-#                        'UP': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_TOTAL2016_1up_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_TOTAL2016_1up_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'DOWN': [
-#'ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_TOTAL2016_1down_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#'ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_TOTAL2016_1down_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
-#                        'NOMINAL': [
-#                            'ditau_tau0_sf_NOMINAL_effSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-#                            'ditau_tau1_sf_NOMINAL_effSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
-#                    })
 
             systematics.update({
                     'TAU_TRIGGER': {
                         'UP': [
-'ditau_tau0_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-'ditau_tau1_sf_NOMINAL_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            TAU0+TAUSYS+'TRIGGER_TOTAL2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_TOTAL2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
                         'DOWN': [
-'ditau_tau0_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-'ditau_tau1_sf_NOMINAL_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+                            TAU0+TAUSYS+'TRIGGER_TOTAL2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_TOTAL2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
                         'NOMINAL': [
-                            'ditau_tau0_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM',
-                            'ditau_tau1_sf_NOMINAL_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
+                            TAU0+NOM+'HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+NOM+'HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
                     })
         return systematics
 

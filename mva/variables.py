@@ -467,6 +467,12 @@ VARIABLES = {
         'binning': (8, 0., 1.),
     },
 
+    'ditau_pt_ratio_correct': {
+        'title': r'$\tau_{2} p_{T} / \tau_{1} p_{T}$',
+        'root': '#font[52]{p}_{T}(#font[152]{#tau}_{2}) / #font[52]{p}_{T}(#font[152]{#tau}_{1})',
+        'filename': 'ditau_pt_ratio_c',
+        'binning': (8, 0., 1.),
+    },
 }
 
 from . import MMC_MASS

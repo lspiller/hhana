@@ -1,5 +1,5 @@
 # This script will work in either bash or zsh.
-source ~/jet
+#source ~/jet
 # deterine path to this script
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 SOURCE_HIGGSTAUTAU_MVA_SETUP="${BASH_SOURCE[0]:-$0}"
