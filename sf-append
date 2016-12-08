@@ -1,0 +1,215 @@
+#!/usr/bin/env python
+"Add a column to an existing table"
+import ROOT
+from rootpy.io import root_open
+from root_numpy import rec2array
+import numpy as np
+from matplotlib.mlab import rec_append_fields
+import tables
+from rootpy.extern.argparse import ArgumentParser
+import logging
+import sys
+from moments import HCM
+
+log = logging.getLogger('h5-append')
+
+parser = ArgumentParser()
+parser.add_argument('-i', '--infile', required=True)
+parser.add_argument('-d', '--dry-run', default=False, action='store_true')
+args = parser.parse_args()
+
+with root_open(args.infile[:-3]+'.root', 'READ') as files:
+    table_list = set([o.GetName() for o in files.objects(cls=(ROOT.TTree,))])
+
+    sys_l = []
+    for tree in table_list:
+        for possible_nom_tree in table_list:
+            if tree == possible_nom_tree:
+                continue
+            elif tree in possible_nom_tree:
+                break
+        else:
+            sys_l.append(tree)
+    nominal_list = table_list - set(sys_l)
+
+fileh = tables.open_file(args.infile, "a")
+#log.info("Contents of {0}: \n{1}".format(args.infile, fileh))
+
+for table in fileh.root:
+    log.info("appending fields to {0}: {1}".format(table.name, table))
+    outname=table.name
+    outtitle=table.title
+
+    rec = table.read()
+#    arr = rec[branches]
+#    arr = rec2array( arr ).reshape((arr.shape[0], 29))
+    isTight_0 = rec['ditau_tau0_jet_bdt_tight'] == 1
+    is2015_0 = rec['run_number'] < 284484
+    isHighPt_0 = rec['ditau_tau0_pt'] > 35.
+    isPtAmbiguous_0 = rec['ditau_tau1_pt'] > 35.
+    is2015Tight_0 = is2015_0 & isTight_0
+
+    isTight_1 = rec['ditau_tau1_jet_bdt_tight'] == 1
+    is2015_1 = rec['run_number'] < 284484
+    isHighPt_1 = rec['ditau_tau1_pt'] > 35.
+    isPtAmbiguous_1 = rec['ditau_tau1_pt'] > 35.
+    is2015Tight_1 = is2015_1 & isTight_1
+
+    # ID SFs
+    tau0_id_nom = np.empty(shape=(rec.shape[0],))
+    tau0_id_nom[:]  = rec['ditau_tau0_sf_NOMINAL_TauEffSF_JetBDTmedium']
+    tau0_id_nom[isTight_0] = rec['ditau_tau0_sf_NOMINAL_TauEffSF_JetBDTtight'][isTight_0]
+
+    tau1_id_nom = np.empty(shape=(rec.shape[0],))
+    tau1_id_nom[:]  = rec['ditau_tau1_sf_NOMINAL_TauEffSF_JetBDTmedium']
+    tau1_id_nom[isTight_1] = rec['ditau_tau1_sf_NOMINAL_TauEffSF_JetBDTtight'][isTight_1]
+
+    rec = rec_append_fields(rec,
+        names=['tau0_sf_id', 'tau1_sf_id',],
+        arrs=[tau0_id_nom, tau1_id_nom,],
+        dtypes=np.dtype('f8'))
+
+    # Only nominal table contains the weight systematics
+    if table.name in nominal_list:
+        tau0_id_up = np.empty(shape=(rec.shape[0],))
+        tau0_id_up[:]  = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TauEffSF_JetBDTmedium']
+        tau0_id_up[isTight_0] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TauEffSF_JetBDTtight'][isTight_0]
+
+        tau1_id_up = np.empty(shape=(rec.shape[0],))
+        tau1_id_up[:]  = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TauEffSF_JetBDTmedium']
+        tau1_id_up[isTight_1] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1up_TauEffSF_JetBDTtight'][isTight_1]
+
+        tau0_id_down = np.empty(shape=(rec.shape[0],))
+        tau0_id_down[:]  = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TauEffSF_JetBDTmedium']
+        tau0_id_down[isTight_0] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TauEffSF_JetBDTtight'][isTight_0]
+
+        tau1_id_down = np.empty(shape=(rec.shape[0],))
+        tau1_id_down[:]  = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TauEffSF_JetBDTmedium']
+        tau1_id_down[isTight_1] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_JETID_TOTAL_1down_TauEffSF_JetBDTtight'][isTight_1]
+
+        rec = rec_append_fields(rec,
+            names=['tau0_sf_id_up', 'tau0_sf_id_down',],
+            arrs=[tau0_id_up, tau0_id_down],
+            dtypes=np.dtype('f8'))
+        rec = rec_append_fields(rec,
+            names=['tau1_sf_id_up', 'tau1_sf_id_down',],
+            arrs=[tau1_id_up, tau1_id_down],
+            dtypes=np.dtype('f8'))
+
+    # TRIGGER SFs
+
+    tau0_trig_nom = np.empty(shape=(rec.shape[0],))
+    tau0_trig_nom = rec['ditau_tau0_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+    tau0_trig_nom[isTight_0] = rec['ditau_tau0_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+
+    tau1_trig_nom = np.empty(shape=(rec.shape[0],))
+    tau1_trig_nom = rec['ditau_tau1_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+    tau1_trig_nom[isTight_1] = rec['ditau_tau1_sf_NOMINAL_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+
+    rec = rec_append_fields(rec,
+        names=['tau0_sf_trig', 'tau1_sf_trig',],
+        arrs=[tau0_trig_nom, tau1_trig_nom,],
+        dtypes=np.dtype('f8'))
+
+    # Only nominal table contains the weight systematics
+    if table.name in nominal_list:
+        tau0_trig_syst_up = np.empty(shape=(rec.shape[0],))
+        tau0_trig_syst_up[:] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau0_trig_syst_up[ isTight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+        tau0_trig_syst_up[ is2015_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_0]
+        tau0_trig_syst_up[ is2015Tight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_0]
+        tau0_trig_syst_down = np.empty(shape=(rec.shape[0],))
+        tau0_trig_syst_down[:] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau0_trig_syst_down[ isTight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+        tau0_trig_syst_down[ is2015_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_0]
+        tau0_trig_syst_down[ is2015Tight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_0]
+        tau0_trig_statmc_up = np.empty(shape=(rec.shape[0],))
+        tau0_trig_statmc_up[:] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau0_trig_statmc_up[ isTight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+        tau0_trig_statmc_up[ is2015_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_0]
+        tau0_trig_statmc_up[ is2015Tight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_0]
+        tau0_trig_statmc_down = np.empty(shape=(rec.shape[0],))
+        tau0_trig_statmc_down[:] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau0_trig_statmc_down[ isTight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+        tau0_trig_statmc_down[ is2015_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_0]
+        tau0_trig_statmc_down[ is2015Tight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_0]
+        tau0_trig_statdata_up = np.empty(shape=(rec.shape[0],))
+        tau0_trig_statdata_up[:] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau0_trig_statdata_up[ isTight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+        tau0_trig_statdata_up[ is2015_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_0]
+        tau0_trig_statdata_up[ is2015Tight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_0]
+        tau0_trig_statdata_down = np.empty(shape=(rec.shape[0],))
+        tau0_trig_statdata_down[:] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau0_trig_statdata_down[ isTight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][isTight_0]
+        tau0_trig_statdata_down[ is2015_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_0]
+        tau0_trig_statdata_down[ is2015Tight_0 ] = rec['ditau_tau0_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_0]
+
+
+        tau1_trig_syst_up = np.empty(shape=(rec.shape[0],))
+        tau1_trig_syst_up[:] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau1_trig_syst_up[ isTight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+        tau1_trig_syst_up[ is2015_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_1]
+        tau1_trig_syst_up[ is2015Tight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_1]
+        tau1_trig_syst_down = np.empty(shape=(rec.shape[0],))
+        tau1_trig_syst_down[:] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau1_trig_syst_down[ isTight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+        tau1_trig_syst_down[ is2015_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_1]
+        tau1_trig_syst_down[ is2015Tight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_SYST2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_1]
+        tau1_trig_statmc_up = np.empty(shape=(rec.shape[0],))
+        tau1_trig_statmc_up[:] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau1_trig_statmc_up[ isTight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+        tau1_trig_statmc_up[ is2015_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_1]
+        tau1_trig_statmc_up[ is2015Tight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_1]
+        tau1_trig_statmc_down = np.empty(shape=(rec.shape[0],))
+        tau1_trig_statmc_down[:] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau1_trig_statmc_down[ isTight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+        tau1_trig_statmc_down[ is2015_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_1]
+        tau1_trig_statmc_down[ is2015Tight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATMC2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_1]
+        tau1_trig_statdata_up = np.empty(shape=(rec.shape[0],))
+        tau1_trig_statdata_up[:] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau1_trig_statdata_up[ isTight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+        tau1_trig_statdata_up[ is2015_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_1]
+        tau1_trig_statdata_up[ is2015Tight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_1]
+        tau1_trig_statdata_down = np.empty(shape=(rec.shape[0],))
+        tau1_trig_statdata_down[:] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']
+        tau1_trig_statdata_down[ isTight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][isTight_1]
+        tau1_trig_statdata_down[ is2015_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'][is2015_1]
+        tau1_trig_statdata_down[ is2015Tight_1 ] = rec['ditau_tau1_sf_TAUS_TRUEHADTAU_EFF_TRIGGER_STATDATA2015_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTTIGHT'][is2015Tight_1]
+
+        rec = rec_append_fields(rec,
+            names=['tau0_sf_trig_syst_up',     'tau0_sf_trig_syst_down',
+                   'tau0_sf_trig_statdata_up', 'tau0_sf_trig_statdata_down',
+                   'tau0_sf_trig_statmc_up',   'tau0_sf_trig_statmc_down',],
+            arrs=[tau0_trig_syst_up,     tau0_trig_syst_down,
+                  tau0_trig_statdata_up, tau0_trig_statdata_down,
+                  tau0_trig_statmc_up,   tau0_trig_statmc_down,],
+            dtypes=np.dtype('f8'))
+
+
+        rec = rec_append_fields(rec,
+            names=['tau1_sf_trig_syst_up',     'tau1_sf_trig_syst_down',
+                   'tau1_sf_trig_statdata_up', 'tau1_sf_trig_statdata_down',
+                   'tau1_sf_trig_statmc_up',   'tau1_sf_trig_statmc_down',],
+            arrs=[tau1_trig_syst_up,     tau1_trig_syst_down,
+                  tau1_trig_statdata_up, tau1_trig_statdata_down,
+                  tau1_trig_statmc_up,   tau1_trig_statmc_down,],
+            dtypes=np.dtype('f8'))
+
+
+# Create a new table with the new description
+    if not args.dry_run:
+        new_table = fileh.create_table(
+            '/', outname+'_tmp',
+            rec, outtitle)
+
+        new_table.flush()
+
+        table.remove()
+
+# Move table2 to table
+        new_table.move('/', outname)
+
+
+log.info("Finished...")
+fileh.close()
+
