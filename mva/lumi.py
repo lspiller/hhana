@@ -10,19 +10,16 @@ LUMI_UNCERT = {
     2012: 0.028,
     2015: 0.021,
     2016: 0.04,
+    1516: 0.04
 }
 LUMI = {
     2011: 4523.35,
     2012: 20274.2,
-    2015: 3193.68,
-    2016: 9994.3,
+    2015: 3212.96,
+    2016: 33256.8,
+    1516: (3212.96+33256.8),
 }
 
-# HACK for random run number splitting
-LUMI_TOTAL = {
-    2015: (3193.68+9994.3),
-    2016: (3193.68+9994.3),
-}
 # lumi_files = glob(os.path.join(NTUPLE_PATH, DEFAULT_STUDENT, 'lumi_*'))
 
 # for filename in lumi_files:

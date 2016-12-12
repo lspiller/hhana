@@ -179,11 +179,7 @@ class Higgs(MC, Signal):
             label = '%s#font[52]{H}#rightarrow#tau#tau' % (
                 str_mode,)#, str_mass)
 
-        if year == 2015:
-            if suffix is None:
-                suffix = ''
-            generator_index = 3
-        elif year == 2016:
+        if year in (2015, 2016, 1516):
             if suffix is None:
                 suffix = ''
             generator_index = 3
@@ -284,8 +280,8 @@ class Higgs(MC, Signal):
             energy = 7
         elif self.year == 2012:
             energy = 8
-        elif self.year == 2015 or self.year == 2016:
-            energy = 8
+        elif self.year in (2015, 2016, 1516):
+            energy = 13
             log.warning("Using 8 TeV for 2015 data until new theory systematics are created.")
         else:
             raise ValueError(

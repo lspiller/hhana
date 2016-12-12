@@ -21,7 +21,7 @@ from mva import CONST_PARAMS
 category = Category_Prefitselection
 # distribution to fit
 field = 'ditau_deta'
-if args.year == 2015 or args.year == 2016:
+if args.year in (2015, 2016, 1516):
     template = Hist(4, 0, 2)
 
 qcd_scale, qcd_scale_error, \

@@ -186,7 +186,7 @@ def plot_from_frame(
         sqrts = 7
     elif year == 2012:
         sqrts = 8
-    elif year == 2015 or year == 2016:
+    elif year in (2015, 2016, 1516):
         sqrts = 13
 
     plottables = [

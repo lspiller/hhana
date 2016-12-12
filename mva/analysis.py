@@ -665,10 +665,7 @@ class Analysis(object):
                 mass=125, transform=True, year=None, **kwargs):
         output_suffix = self.get_suffix()
         clf_output_suffix = self.get_suffix(clf=True)
-        if year == 2015 or year == 2016:
-            kwargs['partition_key'] = 'ditau_tau0_phi*100'#'event_number'
-        else:
-            kwargs['partition_key'] = 'ditau_tau0_phi*100'#'EventNumber'
+        kwargs['partition_key'] = 'ditau_tau0_phi*100'#'event_number'
         clf = Classifier(
             fields=category.features,
             category=category,
@@ -687,10 +684,7 @@ class Analysis(object):
                 mass=125, transform=True, year=None, **kwargs):
         output_suffix = self.get_suffix()
         clf_output_suffix = self.get_suffix(clf=True)
-        if year == 2015 or year == 2016:
-            kwargs['partition_key'] = 'ditau_tau0_phi*100'#'event_number'
-        else:
-            kwargs['partition_key'] = 'ditau_tau0_phi*100'#'EventNumber'
+        kwargs['partition_key'] = 'ditau_tau0_phi*100'#'event_number'
         clf = CBA(
             cut_fields=category.cut_features,
             fischer_fields=category.fischer_features,

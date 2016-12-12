@@ -120,7 +120,7 @@ for table in fileh.root:
 
 # Tau PT ratio for boosted
     rec = rec_append_fields(rec,
-        names='ditau_pt_ratio_correct',
+        names='ditau_pt_ratio',
         arrs=(kin_arr[:,1,4]/kin_arr[:,0,4]),
         dtypes=np.dtype('f8'))
 # Create a new table with the new description

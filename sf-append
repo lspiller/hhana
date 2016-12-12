@@ -198,6 +198,7 @@ for table in fileh.root:
 
 # Create a new table with the new description
     if not args.dry_run:
+        log.info("Writing new table...")
         new_table = fileh.create_table(
             '/', outname+'_tmp',
             rec, outtitle)

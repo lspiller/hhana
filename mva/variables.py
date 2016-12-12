@@ -8,6 +8,9 @@ BDT_BLIND = {
     2016: {
         'vbf': 3,
         'boosted': 1},
+    1516: {
+        'vbf': 3,
+        'boosted': 1},
     2012: {
         'vbf': 3,
         'boosted': 1},
@@ -483,7 +486,8 @@ VARIABLES[MMC_MASS] = {
     'filename': MMC_MASS,
     'binning': {
         2015: (24, 40, 160),
-        2016: (24, 40, 160)},
+        2016: (24, 40, 160),
+        1516: (24, 40, 160)},
     'units': 'GeV',
     'blind': (100, 150),
 }

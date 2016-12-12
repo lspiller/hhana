@@ -20,7 +20,7 @@ from ROOT import TLatex, TLine
 
 set_style('ATLAS', shape='rect')
 
-analysis = Analysis(2015)
+analysis = Analysis(1516)
 analysis.normalize(Category_Preselection)
 qcd = analysis.qcd
 ztt = analysis.ztautau

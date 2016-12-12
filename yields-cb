@@ -88,14 +88,14 @@ vbf_cuts['$M_{jj}$'] = CUTS_VBF & DETA_JETS & MASS_JETS
 vbf_cuts['$\\eta_{min,j}<\\tau_1,\\tau_2<\\eta_{max,j}$'] = CUTS_VBF & DETA_JETS & MASS_JETS & TAUS_CENTR
 
 vbf_cats = []
-if args.year==2012 or args.year == 2015:
+
+if args.year==2011:
+    vbf_cats = [Category_Cuts_VBF_LowDR,
+                Category_Cuts_VBF_HighDR,]
+else:
     vbf_cats = [Category_Cuts_VBF_LowDR,
                 Category_Cuts_VBF_HighDR_Tight,
                 Category_Cuts_VBF_HighDR_Loose,]
-
-elif args.year==2011:
-    vbf_cats = [Category_Cuts_VBF_LowDR,
-                Category_Cuts_VBF_HighDR,]
 
 f_latex = open('cutbased_yields'+output_suffix+'.txt','w')
 f_latex.write('Data \t H(125) \t VH \t ggH \t VBF \t Ztautau \t QCD \t Others \n')

@@ -8,19 +8,20 @@ from rootpy.tree import Tree
 import ROOT
 import logging
 from rootpy import asrootpy
-
+from mva.categories.hadhad.common import PRESELECTION
 
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--out', default='/tmpfs/v14/hhskim.root')
-parser.add_argument('-i', '--infolder', default='/tmpfs/hh14skim/data/')
+parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v15skim/hhskim_mc.root')
+parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v15skim/mc15')
 #parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
 parser.add_argument('-cf', '--cutflow', default='h_metadata')
 parser.add_argument('--reset', action='store_true', default=False)
 parser.add_argument('--append', action='store_true', default=False)
-parser.add_argument('-db', '--deactivate-branches', default=[])#'tau_*', 'ditau_CP_*', '*_CP_*'])# 'ditau_matched_*', '*_CP_*'])
+parser.add_argument('-db', '--deactivate-branches', default=['*_CP_*', 'primary_vertex_*', '*JETIDBDTLOOSE', 'ditau_tauRec*', 'ditau_matched_*'])
 parser.add_argument('-dr', '--dry-run', default=False, action='store_true')
 parser.add_argument('-n', '--nominal', default=False, action='store_true')
+parser.add_argument('-s', '--no-skim', default=False, action='store_true')
 args = parser.parse_args()
 log = logging.getLogger(os.path.basename(__file__))
 
@@ -64,7 +65,7 @@ isvalid = lambda sample: \
     sample.chan=='phys-higgs' and \
     sample.subchan=='hhsm' and \
     sample.derivation=='D3' and \
-    sample.hist=='v14_hist' and \
+    sample.hist=='v15_hist' and \
     sample.files != None
 #samples = filter( isvalid, samples )
 
@@ -80,7 +81,7 @@ isvalid = lambda sample: \
 
 process_dict = defaultdict(list)
 for s in samples:
-    procname = s.process if 'mc15' in s.MCorData else s.MCorData
+    procname = s.process if 'mc15' in s.MCorData else s.MCorData.replace('15','').replace('16','')
     procname = procname.replace('-', '_')
     process_dict[procname] += s.files
 
@@ -119,6 +120,12 @@ with root_open(args.out, 'UPDATE') as outfile:
                 intree.SetBranchStatus(br, 0)
             log.debug("****************")
             log.debug("{}, {}, {}".format(intree, intree.GetTitle(), intree.GetName()))
+
+            if not args.no_skim:
+                selection = PRESELECTION
+                orig_intree = intree
+                intree = orig_intree.CopyTree(PRESELECTION)
+
             outtree = intree.CloneTree(-1, "fast SortBasketsByEntry")
 
             # Stupid hack because Cloning empty tchain returns a null pointer.
