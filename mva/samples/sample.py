@@ -34,7 +34,7 @@ from ..regions import REGIONS
 from ..systematics import (
     get_systematics, SYSTEMATICS_BY_WEIGHT,
     iter_systematics, systematic_name)
-from ..lumi import LUMI, get_lumi_uncert, LUMI_TOTAL
+from ..lumi import LUMI, get_lumi_uncert
 from .db import DB, TEMPFILE, get_file
 from ..cachedtable import CachedTable
 from ..variables import get_binning, get_scale
@@ -781,7 +781,7 @@ class Sample(object):
             treename = treename.replace('.', '_')
             tree = rfile[treename]
             events = ds.events['NOMINAL']
-            weight = LUMI_TOTAL[self.year] * scale * ds.xs * ds.kfact * ds.effic / events # HACK for random_run_number
+            weight = LUMI[self.year] * scale * ds.xs * ds.kfact * ds.effic / events # HACK for random_run_number
             selection =  (self.cuts(category, region) & cuts)
             if weighted:
                 weight_branches = self.weights()
@@ -1140,7 +1140,7 @@ class SystematicsSample(Sample):
                     actual_scale -= self.scale_error
             weight = (
                 scale * actual_scale *
-                LUMI_TOTAL[self.year] * # HACK for random_run_number
+                LUMI[self.year] * # HACK for random_run_number
                 ds.xs * ds.kfact * ds.effic / events)
             if systematic in self.norms:
                 weight *= self.norms[systematic]
