@@ -59,7 +59,7 @@ def plots_dir(script):
 import numpy as np
 # for reproducibilty
 # especially for test/train set selection
-np.random.seed(1987)
+np.random.seed(1984)
 
 MMC_VERSION = 'mlm'
 MMC_MASS = 'ditau_mmc_%s_m' % MMC_VERSION
@@ -86,6 +86,14 @@ CONST_PARAMS = [
     'mu_XS7_WH',
     'mu_XS8_ZH',
     'mu_XS7_ZH',
+    'mu_XS7_ttH',
+    'mu_XS8_ttH',
+    'mu_XS13_ggH',
+    'mu_XS13_VBF',
+    'mu_XS13_VBFH',
+    'mu_XS13_ZH',
+    'mu_XS13_WH',
+    'mu_XS13_ttH',
     'mu_BR_tautau',
 ]
 

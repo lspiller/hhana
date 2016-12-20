@@ -24,5 +24,27 @@
             qcd_z_scale: 1.0
             z_scale: 0.9746212180656517
             z_scale_error: 0.07307726683611672
+1516:
+  PRESELECTION:
+    false:
+      DITAU_DETA:
+        nOS:
+          OS:
+            qcd_data_scale: 1.0
+            qcd_others_scale: 1.0
+            qcd_scale: 0.747184356554045
+            qcd_scale_error: 0.017544033391835412
+            qcd_z_scale: 1.0
+            z_scale: 0.9891514342318986
+            z_scale_error: 0.020679330163022182
+        nOS_NONISOL:
+          OS:
+            qcd_data_scale: 1.0
+            qcd_others_scale: 1.0
+            qcd_scale: 2.377448875641592
+            qcd_scale_error: 0.05526042613257018
+            qcd_z_scale: 1.0
+            z_scale: 1.0145188949689
+            z_scale_error: 0.021159930871032493
 2015: null
 2016: null

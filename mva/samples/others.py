@@ -83,6 +83,7 @@ class Others(MC, Background):
         if self.matched:
             # require that at least one tau matches truth
             cut &= Cut('ditau_tau0_matched != 0') | Cut('ditau_tau1_matched != 0')
+#            cut &= (Cut('ditau_tau0_matched_isEle == 1') | Cut('ditau_tau1_matched_isEle == 1') | Cut('ditau_tau0_matched_isHadTau == 1') | Cut('ditau_tau1_matched_isHadTau == 1'))
         return cut
 
 

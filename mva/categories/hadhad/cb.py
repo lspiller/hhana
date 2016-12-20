@@ -8,10 +8,10 @@ from .truth import CUTS_TRUE_VBF_CUTBASED, CUTS_TRUE_BOOSTED
 # https://cds.cern.ch/record/1629891/files/ATL-COM-PHYS-2013-1558.pdf
 
 DETA_JETS = Cut('dijet_deta > 3.0')
-MASS_JETS = Cut('dijet_vis_mass > 300')
-TAU1_CENTR = Cut('ditau_tau0_centr==1')
-TAU2_CENTR = Cut('ditau_tau1_centr==1')
-TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
+MASS_JETS = Cut('dijet_vis_mass > 300.')
+#TAU1_CENTR = Cut('ditau_tau0_centr==1')
+#TAU2_CENTR = Cut('ditau_tau1_centr==1')
+#TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
 #TAU1_CENTR = Cut('tau1_centrality > %f' % (1. / math.e))
 #TAU2_CENTR = Cut('tau2_centrality > %f' % (1. / math.e))
 #TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
@@ -22,17 +22,20 @@ TAU1_CENTR = Cut('jet_1_eta < ditau_tau0_eta < jet_0_eta') | Cut('jet_0_eta < di
 TAU2_CENTR = Cut('jet_1_eta < ditau_tau1_eta < jet_0_eta') | Cut('jet_0_eta < ditau_tau1_eta < jet_1_eta')
 TAUS_CENTR = TAU1_CENTR & TAU2_CENTR
 ETA_CROSS = Cut('jet_1_eta*jet_0_eta < 0')
+DETA_TAUS = Cut('ditau_deta < 1.5')
 
 CUTS_VBF_CUTBASED = (
     CUTS_VBF
     & DETA_JETS
     & MASS_JETS
-    & TAUS_CENTR # TEMP CHANGE
+    & TAUS_CENTR
     & ETA_CROSS
+    & DETA_TAUS
     )
 
 CUTS_BOOSTED_CUTBASED = (
     CUTS_BOOSTED
+    & DETA_TAUS
     )
 
 INF = 1E100
@@ -74,7 +77,8 @@ class Category_Cuts_VBF_LowDR(Category_Preselection):
     limitbins[2012] = [0, 60, 80, 100, 120, 150, INF] # - new binning
     limitbins[2015] = [0, 90, 110, 130, 150, INF] # - new binning
 
-    limitbins[1516] = limitbins[2016] = [0, 90, 110, 130, 150, INF] # - new binning
+    limitbins[2016] = [0, 90, 110, 130, 150, INF] # - new binning
+    limitbins[1516] = [70, 90, 105, 115, 130, 150, INF]
     #limitbins[2012] = [0, 60, 80, 100, 120, 180, INF] # - new binning
     norm_category = Category_Preselection
 
@@ -97,7 +101,8 @@ class Category_Cuts_VBF_HighDR_Tight(Category_Preselection):
 
     # limitbins = [0, 80, 92, 104, 116, 132, 152, INF] - old binning
     # limitbins = [0, 80, 104, 132, INF] - new bining (merging of old)
-    limitbins = [0, 90, 110, 135, 150, INF] # - new binning
+    limitbins = [70, 90, 100, 130, 150, INF]
+    # limitbins = [0, 90, 110, 135, 150, INF] # - new binning
     # limitbins = [0, 70, 100, 115, 135, 150, INF] # - new binning (test postfit pval)
     norm_category = Category_Preselection
 
@@ -119,7 +124,7 @@ class Category_Cuts_VBF_HighDR_Loose(Category_Preselection):
         & Cut('true_mass_jet1_jet2_no_overlap < (-250 * true_dEta_jet1_jet2_no_overlap + 1550)'))
     # limitbins = [0, 64, 80, 92, 104, 116, 132, 152, 176, INF] - old binning
     # limitbins = [0, 64, 80, 92, 104, 116, 152, INF] - new binning (merging of old)
-    limitbins = [0, 90, 110, 135, 150, INF] # - new binning
+    limitbins = [70, 90, 110, 135, 150, INF] # - new binning
     norm_category = Category_Preselection
 
 
@@ -132,7 +137,7 @@ class Category_Cuts_VBF_HighDR(Category_Preselection):
     cuts = Category_Cuts_VBF_HighDR_Loose.cuts | Category_Cuts_VBF_HighDR_Tight.cuts
     # limitbins = [0, 64, 80, 92, 104, 116, 132, 152, INF] - old binning
     # limitbins = [0, 80, 92, 104, 116, 132, 152, INF] - new binning (merging of old)
-    limitbins = [0, 80, 110, 135, 150, INF]
+    limitbins = [70, 80, 95, 110, 125, 140, 150, INF]
     norm_category = Category_Preselection
 
 
@@ -156,7 +161,8 @@ class Category_Cuts_Boosted_Tight(Category_Preselection):
     # limitbins[2012] = [0, 64, 72, 80, 88, 96, 104, 112, 120, 128, 140, 156, 176, INF] - new binning (merging of old)
     limitbins[2012] = [0, 60, 68, 76, 84, 92, 100, 110, 120, 130, 140, 150, 175, INF] # - new binning
     limitbins[2015] = [0, 68, 76, 84, 92, 110, 135, 150, INF] # - new binning
-    limitbins[1516] = limitbins[2016] = [0, 68, 76, 84, 92, 110, 135, 150, INF] # - new binning
+    limitbins[2016] = [0, 68, 76, 84, 92, 110, 135, 150, INF] # - new binning
+    limitbins[1516] = [70, 76, 84, 92, 100, 110, 120, 130, 150, 175, INF]
 
     norm_category = Category_Preselection
 
@@ -183,6 +189,7 @@ class Category_Cuts_Boosted_Loose(Category_Preselection):
     # limitbins[2012] = [0, 70, 100, 110, 123, 136, 150, 200, INF] # - new binning (test obs pval)
     limitbins[2015] = [0, 90, 110, 135, 150, INF] # - new binning
     limitbins[2016] = [0, 90, 110, 135, 150, INF] # - new binning
+    limitbins[1516] = [70, 100, 110, 130, 150, 200, INF]
     norm_category = Category_Preselection
 
 

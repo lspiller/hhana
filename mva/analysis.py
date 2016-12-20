@@ -44,8 +44,13 @@ def get_analysis(args, **kwargs):
             setattr(args, name, value)
         else:
             raise ValueError("invalid Analysis kwarg {0}".format(name))
+#    if args.use_sherpa:
+#        use_sherpa = True
+#    else:
+#        use_sherpa = False
     analysis = Analysis(
         year=year,
+#        use_sherpa=use_sherpa,
         systematics=args.systematics,
         use_embedding=args.embedding,
         target_region=args.target_region,
@@ -65,6 +70,7 @@ class Analysis(object):
     def __init__(self, year,
                  systematics=False,
                  use_embedding=False,
+                 use_sherpa=False,
                  trigger=True,
                  target_region=TARGET_REGION,
                  fakes_region=FAKES_REGION,
@@ -92,6 +98,15 @@ class Analysis(object):
             log.info("Using embedded Ztautau")
             self.ztautau = samples.Embedded_Ztautau(
                 year=year,
+                systematics=systematics,
+                workspace_norm=ztt_workspace_norm,
+                constrain_norm=constrain_norms,
+                color='#00A3FF')
+        elif use_sherpa:
+            log.info("Using sherpa Ztautau")
+            self.ztautau = samples.Sh_Ztautau(
+                year=year,
+                trigger=self.trigger,
                 systematics=systematics,
                 workspace_norm=ztt_workspace_norm,
                 constrain_norm=constrain_norms,

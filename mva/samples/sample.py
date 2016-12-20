@@ -821,7 +821,7 @@ class SystematicsSample(Sample):
     def systematics_components(self):
         common = [
             'TAU_ID',
-            'TAU_ID_HIGHPT',
+#            'TAU_ID_HIGHPT',
             'TAU_TRIGGER',
             'TAU_RECO',
             'TAU_ELEOLR',
@@ -842,14 +842,20 @@ class SystematicsSample(Sample):
             tauid = {
                 'TAU_ID': {
                     'UP': [
-                        'tau0_sf_id_up',
-                        'tau1_sf_id_up'],
+                        TAU0+TAUSYS+'JETID_TOTAL_1up_TauEffSF_JetBDTtight',
+                        TAU1+TAUSYS+'JETID_TOTAL_1up_TauEffSF_JetBDTmedium'],
+#                        'tau0_sf_id_up',
+#                        'tau1_sf_id_up'],
                     'DOWN': [
-                        'tau0_sf_id_down',
-                        'tau1_sf_id_down'],
+                        TAU0+TAUSYS+'JETID_TOTAL_1down_TauEffSF_JetBDTtight',
+                        TAU1+TAUSYS+'JETID_TOTAL_1down_TauEffSF_JetBDTmedium'],
+#                    'tau0_sf_id_down',
+#                    'tau1_sf_id_down'],
                     'NOMINAL': [
-                        'tau0_sf_id',
-                        'tau1_sf_id',]},
+                        TAU0+NOM+'JetBDTtight',
+                        TAU1+NOM+'JetBDTmedium',]},
+#                    'tau0_sf_id',
+#                    'tau1_sf_id',]},
                 }
             systematics.update(tauid)
         return systematics
@@ -1140,7 +1146,7 @@ class SystematicsSample(Sample):
                     actual_scale -= self.scale_error
             weight = (
                 scale * actual_scale *
-                LUMI[self.year] * # HACK for random_run_number
+                LUMI[self.year] *
                 ds.xs * ds.kfact * ds.effic / events)
             if systematic in self.norms:
                 weight *= self.norms[systematic]
@@ -1225,6 +1231,7 @@ class MC(SystematicsSample):
             'JET_Flavor_Resp',
             'JET_JER',
             'JET_PU_NPV',
+            'JET_PU_MU',
             'JET_PU_PtTerm',
             'JET_PU_Rho',
             'JET_Punch',
@@ -1234,21 +1241,18 @@ class MC(SystematicsSample):
 
     def weight_fields(self):
         return super(MC, self).weight_fields() + [
-            'weight_total', #Needs to be investigated
-            # uncertainty on these are small and are ignored:
-            # 'tau1_fakerate_sf_reco',
-            # 'tau2_fakerate_sf_reco',
+            'weight_mc',
         ]
 
     def weight_systematics(self):
         systematics = super(MC, self).weight_systematics()
-        if self.pileup_weight:
-            systematics.update({
-                'PU_RESCALE': {
-                    'UP': [],
-                    'DOWN': [],
-                    'NOMINAL': []},
-                })
+#        if self.pileup_weight:
+        systematics.update({
+            'PU_RESCALE': {
+                'UP': ['PRW_DATASF_1up_pileup_combined_weight'],
+                'DOWN': ['PRW_DATASF_1down_pileup_combined_weight'],
+                'NOMINAL': ['NOMINAL_pileup_combined_weight']},
+            })
         systematics.update({
                 'TAU_RECO': {
                     'NOMINAL': [TAU0+NOM+'reco', TAU1+NOM+'reco'],
@@ -1268,28 +1272,43 @@ class MC(SystematicsSample):
         if self.year in (2015, 2016, 1516):
             systematics.update({
                     'TAU_TRIGGER': {
+
                         'STATDATA_UP': [
-                            'tau0_sf_trig_statdata_up',
-                            'tau1_sf_trig_statdata_up'],
+                            TAU0+TAUSYS+'TRIGGER_STATDATA2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATDATA2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+#                            'tau0_sf_trig_statdata_up',
+#                            'tau1_sf_trig_statdata_up'],
                         'STATDATA_DOWN': [
-                            'tau0_sf_trig_statdata_down',
-                            'tau1_sf_trig_statdata_down'],
+                            TAU0+TAUSYS+'TRIGGER_STATDATA2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATDATA2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+#                            'tau0_sf_trig_statdata_down',
+#                            'tau1_sf_trig_statdata_down'],
                         'STATMC_UP': [
-                            'tau0_sf_trig_statmc_up',
-                            'tau1_sf_trig_statmc_up'],
+                            TAU0+TAUSYS+'TRIGGER_STATMC2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATMC2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+#                            'tau0_sf_trig_statmc_up',
+#                            'tau1_sf_trig_statmc_up'],
                         'STATMC_DOWN': [
-                            'tau0_sf_trig_statmc_down',
-                            'tau1_sf_trig_statmc_down'],
+                            TAU0+TAUSYS+'TRIGGER_STATMC2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_STATMC2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+#                            'tau0_sf_trig_statmc_down',
+#                            'tau1_sf_trig_statmc_down'],
                         'UP': [
-                            'tau0_sf_trig_syst_up',
-                            'tau1_sf_trig_syst_up'],
+                            TAU0+TAUSYS+'TRIGGER_SYST2016_1up_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_SYST2016_1up_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+#                            'tau0_sf_trig_syst_up',
+#                            'tau1_sf_trig_syst_up'],
                         'DOWN': [
-                            'tau0_sf_trig_syst_down',
-                            'tau1_sf_trig_syst_down'],
+                            TAU0+TAUSYS+'TRIGGER_SYST2016_1down_TauEffSF_HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+TAUSYS+'TRIGGER_SYST2016_1down_TauEffSF_HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM'],
+#                            'tau0_sf_trig_syst_down',
+#                            'tau1_sf_trig_syst_down'],
 
                         'NOMINAL': [
-                            'tau0_sf_trig',
-                            'tau1_sf_trig']},
+                            TAU0+NOM+'HLT_tau35_medium1_tracktwo_JETIDBDTTIGHT',
+                            TAU1+NOM+'HLT_tau25_medium1_tracktwo_JETIDBDTMEDIUM']},
+#                            'tau0_sf_trig',
+#                            'tau1_sf_trig']},
                     })
 
         return systematics

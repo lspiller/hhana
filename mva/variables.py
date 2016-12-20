@@ -3,13 +3,13 @@ import math
 
 BDT_BLIND = {
     2015: {
-        'vbf': 3,
+        'vbf': 1,
         'boosted': 1},
     2016: {
-        'vbf': 3,
+        'vbf': 1,
         'boosted': 1},
     1516: {
-        'vbf': 3,
+        'vbf': 1,
         'boosted': 1},
     2012: {
         'vbf': 3,
@@ -119,7 +119,7 @@ VARIABLES = {
        'title': r'$\langle\mu\rangle|_{LB}(BCID)$',
        'root': '#font[152]{#LT#mu#GT#cbar}_{LB}#font[52]{(BCID)}',
        'filename': 'n_actual_int',
-       'binning': (20, 0, 40),
+       'binning': (40, 0, 40),
     },
     'n_jets': {
         'title': r'Number of Selected Jets',
@@ -137,7 +137,7 @@ VARIABLES = {
             'BOOSTED': (10, 0, 1.5),
             'VBF': (10, 0, 1.5),
             'REST': (10, 0, 1.5),
-            None: (10, 0, 2.5)},
+            None: (40, 0, 1.5)},
         'ypadding': (0.5, 0),
     },
 
@@ -145,14 +145,14 @@ VARIABLES = {
         'title': r'$\sum \vec{p}_T$',
         'root': '#font[52]{p}_{T}^{Total}',
         'filename': 'ditau_vect_sum_pt',
-        'binning': (10, 0, 200),
+        'binning': (40, 50, 250),
         'units': 'GeV',
     },
     'ditau_scal_sum_pt': {
         'title': r'$\sum p_T$',
         'root': '#font[152]{#sum} #font[52]{p}_{T}',
         'filename': 'ditau_scal_sum_pt',
-        'binning': (10, 50, 200),
+        'binning': (40, 50., 250.),
         'units': 'GeV',
     },
     'met_et': {
@@ -160,9 +160,9 @@ VARIABLES = {
         'root': '#font[52]{E}^{miss}_{T}',
         'filename': 'met_et',
         'binning': {
-            'PRESELECTION': (10, 20, 80),
+            'PRESELECTION': (40, 20, 80),
             'REST': (10, 20, 80),
-            None: (10, 20, 80)},
+            None: (10, 20, 120)},
         'units': 'GeV',
     },
 
@@ -171,9 +171,9 @@ VARIABLES = {
         'root': '#font[52]{Higgs} #font[52]{p}_{T}',
         'filename': 'higgs_pt',
         'binning': {
-            'PRESELECTION': (10, 0, 180),
-            'REST': (10, 0, 180),
-            None: (10, 0, 180)},
+            'PRESELECTION': (40, 0, 300),
+            'REST': (10, 50, 180),
+            None: (20, 50, 300)},
         'units': 'GeV',
     },
 #    'met_etx': {
@@ -217,7 +217,7 @@ VARIABLES = {
         'title': r'$E^{miss}_{T}$ Centrality',
         'root': '#font[52]{E}^{miss}_{T} #font[152]{#phi} centrality',
         'filename': 'tau_met_centrality',
-        'binning': (10, -math.sqrt(2), math.sqrt(2)),
+        'binning': (30, 0, math.sqrt(2)),
         'legend': 'left',
     },
 #    'tau1_centrality': {
@@ -240,9 +240,9 @@ VARIABLES = {
         'root': '#font[52]{m}^{vis}_{#font[152]{#tau}#font[152]{#tau}}',
         'filename': 'ditau_vis_mass',
         'binning': {
-            'PRESELECTION': (10, 30, 120),
+            'PRESELECTION': (25, 20, 120),
             'REST': (10, 30, 150),
-            None: (10, 30, 150)},
+            None: (25, 20, 120)},
         'units': 'GeV',
         'blind': (70, 110),
     },
@@ -251,7 +251,7 @@ VARIABLES = {
         'title': r'$m^{col}_{\tau\tau}$',
         'root': '#font[52]{m}^{col}_{#font[152]{#tau}#font[152]{#tau}}',
         'filename': 'ditau_coll_approx_m',
-        'binning': (10, 30, 200),
+        'binning': (40, 0, 200),
         'units': 'GeV',
         'blind': (100, 150),
     },
@@ -259,28 +259,43 @@ VARIABLES = {
        'title': r'$\tau_{1} p_{T}$',
        'root': '#font[152]{#tau}_{1} #font[52]{p}_{T}',
        'filename': 'ditau_tau0_pt',
-       'binning': (7, 30, 100),
+       'binning': (30, 30, 150),
        'units': 'GeV',
    },
    'ditau_tau1_pt': {
        'title': r'$\tau_{2} p_{T}$',
        'root': '#font[152]{#tau}_{2} #font[52]{p}_{T}',
        'filename': 'ditau_tau1_pt',
-       'binning': (7, 30, 100),
+       'binning': (30, 30, 90),
        'units': 'GeV',
+   },
+
+   'ditau_tau0_phi': {
+       'title': r'$\tau_{1} \phi$',
+       'root': '#font[152]{#tau}_{1} #font[152]{#phi}',
+       'filename': 'ditau_tau0_phi',
+       'binning': (25, -math.pi, math.pi),
+       'legend': 'left',
+   },
+   'ditau_tau1_phi': {
+       'title': r'$\tau_{2} \phi$',
+       'root': '#font[152]{#tau}_{2} #font[152]{#phi}',
+       'filename': 'ditau_tau1_phi',
+       'binning': (25, -math.pi, math.pi),
+#       'legend': 'left',
    },
    'ditau_tau0_eta': {
        'title': r'$\tau_{1} \eta$',
        'root': '#font[152]{#tau}_{1} #font[152]{#eta}',
        'filename': 'ditau_tau0_eta',
-       'binning': (10, -1.5, 1.5),
+       'binning': (25, -2.5, 2.5),
        'legend': 'left',
    },
    'ditau_tau1_eta': {
        'title': r'$\tau_{2} \eta$',
        'root': '#font[152]{#tau}_{2} #font[152]{#eta}',
        'filename': 'ditau_tau1_eta',
-       'binning': (12, -1.5, 1.5),
+       'binning': (25, -2.5, 2.5),
 #       'legend': 'left',
    },
 #   'eta_product_jets': {
@@ -310,20 +325,20 @@ VARIABLES = {
       'title': r'$\tau_{1}$ BDT Score',
       'root': '#font[152]{#tau}_{1} #font[52]{BDT Score}',
       'filename': 'ditau_tau0_jet_bdt_score',
-      'binning': (5, 0.5, 1.0001),
+      'binning': (20, 0.6, 1.),
    },
    'ditau_tau1_jet_bdt_score': {
       'title': r'$\tau_{2}$ BDT Score',
       'root': '#font[152]{#tau}_{2} #font[52]{BDT Score}',
       'filename': 'ditau_tau1_jet_bdt_score',
-      'binning': (5, 0.5, 1.0001),
+      'binning': (20, 0.6, 1.),
    },
 
    'ditau_cosalpha': {
        'title': r'$\cos[\alpha(\tau,\tau)]$',
        'root': '#font[52]{cos}(#font[152]{#alpha}_{#font[152]{#tau}#font[152]{#tau}})',
        'filename': 'ditau_cosalpha',
-       'binning': (12, -1.2, 1.2),
+       'binning': (40, -1., 1.),
        'legend': 'left'
    },
    'ditau_dr': {
@@ -331,25 +346,25 @@ VARIABLES = {
        'root': '#font[152]{#Delta}#font[52]{R}(#font[152]{#tau},#font[152]{#tau})',
        'filename': 'ditau_dr',
        'binning': {
-           None: (10, 0.5, 2.5),
-           'PRESELECTION': (10, 0.5, 2.5),
+           None: (25, 0.6, 2.1),
+           'PRESELECTION': (20, 0.6, 2.6),
            },
        'ypadding': (0.5, 0),
    },
    'dijet_dr': {
        'title': r'$\Delta R(j,j)$',
-       'root': '#font[152]{#Delta}#font[52]{R}(#font[152]{j},#font[152]{j})',
+       'root': '#font[152]{#Delta}#font[52]{R}(#font[52]{j},#font[52]{j})',
        'filename': 'dijet_dr',
        'binning': {
-           None: (10, 0.0, 10.),
-           'PRESELECTION': (10, 0., 10.)},
+           None: (20, 0.0, 6.),
+           'PRESELECTION': (30, 0., 6.)},
        'ypadding': (0.5, 0),
    },
    'ditau_dphi': {
        'title': r'$\Delta \phi(\tau,\tau)$',
        'root': '#font[152]{#Delta#phi}(#font[152]{#tau},#font[152]{#tau})',
        'filename': 'ditau_dphi',
-       'binning': (6, 0., 2.4),
+       'binning': (20, 0., 2.0),
        'legend': 'left',
    },
    'dijet_deta': {
@@ -357,10 +372,10 @@ VARIABLES = {
        'root': '#font[152]{#Delta#eta}(#font[52]{j},#font[52]{j})',
        'filename': 'dEta_jets',
        'binning': {
-           'BOOSTED': (7, 0, 7),
-           'VBF': (7, 0, 7),
-           'REST': (7, 0, 7),
-           None: (7, 0, 7)},
+           'BOOSTED': (20, 0, 1),
+           'VBF': (20, 0, 5),
+           'REST': (20, 0, 7),
+           None: (20, 0, 5)},
        'ypadding': (0.5, 0),
    },
    'ditau_tau0_q': {
@@ -395,18 +410,18 @@ VARIABLES = {
    },
    'jet_1_pt': {
        'title': r'jet$_{2}$ $p_{T}$',
-       'root': '#font[52]{p}_{T}(#font[52]{j}2)',
+       'root': '#font[52]{p}_{T}(#font[52]{j}_2)',
        'filename': 'jet_1_pt',
-       'binning': (10, 15, 80),
+       'binning': (25, 25, 100),
        'scale': 1,
        'units': 'GeV',
        'cats': ['2J', 'VBF', '1J', '1J_NONBOOSTED', 'PRESELECTION']
    },
    'jet_0_pt': {
        'title': r'jet$_{0}$ $p_{T}$',
-       'root': '#font[52]{p}_{T}(#font[52]{j}1)',
+       'root': '#font[52]{p}_{T}(#font[52]{j}_1)',
        'filename': 'jet_0_pt',
-       'binning': (10, 15, 150),
+       'binning': (30, 50, 200),
        'scale': 1,
        'units': 'GeV',
        'cats': ['2J', 'VBF', 'PRESELECTION']
@@ -416,10 +431,10 @@ VARIABLES = {
         'root': '#font[52]{HCM5}',
         'filename': 'HCM5',
         'binning': {
-            'BOOSTED': (8, 0.0, 0.01),
-            'VBF': (8, 0.0, 0.01),
+            'BOOSTED': (20, 0.0, 0.01),
+            'VBF': (20, 0.0, 0.01),
             'REST': (8, 0.0, 0.01),
-            None: (10, 0.0, 0.01)},
+            None: (30, 0.0, 0.01)},
         'scale': 0.01,
     },
 #    'moment_hcm1': {
@@ -449,10 +464,10 @@ VARIABLES = {
         'root': '#font[52]{HCM3}',
         'filename': 'HCM3',
         'binning': {
-            'BOOSTED': (8, 0.0, 0.8),
-            'VBF': (8, 0.0, 0.8),
-            'REST': (8, 0.0, 0.8),
-            None: (10, 0.0, 0.8)},
+            'BOOSTED': (20, 0.0, 0.8),
+            'VBF': (20, 0.0, 0.8),
+            'REST': (20, 0.0, 0.8),
+            None: (30, 0.0, 0.8)},
         'scale': 1,
     },
 
@@ -460,21 +475,14 @@ VARIABLES = {
         'title': r'$m^{vis}_{jj}$',
         'root': '#font[52]{m}_{#font[52]{j}#font[52]{j}}',
         'filename': 'mass_jet1_jet2',
-        'binning': (10, 0, 1000),
+        'binning': (25, 0, 500),
         'units': 'GeV',
     },
     'ditau_pt_ratio': {
         'title': r'$\tau_{2} p_{T} / \tau_{1} p_{T}$',
         'root': '#font[52]{p}_{T}(#font[152]{#tau}_{2}) / #font[52]{p}_{T}(#font[152]{#tau}_{1})',
         'filename': 'ditau_pt_ratio',
-        'binning': (8, 0., 1.),
-    },
-
-    'ditau_pt_ratio_correct': {
-        'title': r'$\tau_{2} p_{T} / \tau_{1} p_{T}$',
-        'root': '#font[52]{p}_{T}(#font[152]{#tau}_{2}) / #font[52]{p}_{T}(#font[152]{#tau}_{1})',
-        'filename': 'ditau_pt_ratio_c',
-        'binning': (8, 0., 1.),
+        'binning': (20, 0.2, 1.),
     },
 }
 
@@ -487,7 +495,7 @@ VARIABLES[MMC_MASS] = {
     'binning': {
         2015: (24, 40, 160),
         2016: (24, 40, 160),
-        1516: (24, 40, 160)},
+        1516: (40, 0, 200)},
     'units': 'GeV',
     'blind': (100, 150),
 }

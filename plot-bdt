@@ -67,7 +67,10 @@ UNBLIND = {
         'boosted': 2},
     2015: {
         'vbf': 2,
-        'boosted': 2}
+        'boosted': 2},
+    1516: {
+        'hh_vbf': 1,
+        'hh_boost': 1,}
 }
 
 
@@ -88,7 +91,7 @@ def plot_bdt(category, workspace_binning=True):
 
     signal_scale=20.
     region = TARGET_REGION
-    
+
     """
     # plot data with BDTs swapped and in normal order
     clf_normal = analysis.get_clf(category, load=True, swap=False)

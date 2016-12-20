@@ -7,26 +7,27 @@ from mva.samples import Data
 from mva.categories.hadhad.common import Category_Preselection
 from mva.categories.hadhad.cb import Category_Cuts_VBF_LowDR, Category_Cuts_VBF_HighDR_Tight, Category_Cuts_VBF_HighDR_Loose, Category_Cuts_Boosted_Loose, Category_Cuts_Boosted_Tight
 from mva.regions import REGIONS
-ana = Analysis( 2016, trigger=False )
-data = Data( 2016 )
+ana = Analysis( 1516, trigger=False )
 #data = ana.ztautau
 
 from mva.samples.ztautau import MadGraph_Ztautau
-#data = MadGraph_Ztautau(2016)
+data = MadGraph_Ztautau(1516)
 from mva.samples.others import Others, HiggsInc
-#data = Others(2016)
-data = HiggsInc(2016)
+from mva.samples.higgs import Higgs
+data = Others(1516)
+#data = Higgs(1516, mode='VBF')
+#data=Data(1516)
 #from mva.samples.qcd import QCD
 #data = ana.qcd
 #from mva.samples.higgs import Higgs
 #data= Higgs(2016)
 cutlist = [
-            ('Presel', Category_Preselection.get_cuts(2016)&REGIONS['OS']),
-            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(2016)&REGIONS['OS']),
-            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(2016)&REGIONS['OS']),
-            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(2016)&REGIONS['OS']),
-            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(2016) & REGIONS['OS']),
-            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(2016) & REGIONS['OS']),
+            ('Presel', Category_Preselection.get_cuts(1516)&REGIONS['OS']),
+            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(1516)&REGIONS['OS']),
+            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(1516)&REGIONS['OS']),
+            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(1516)&REGIONS['OS']),
+            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(1516) & REGIONS['OS']),
+            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(1516) & REGIONS['OS']),
           ]
 
 #cutlist = [

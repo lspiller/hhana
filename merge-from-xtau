@@ -12,16 +12,16 @@ from mva.categories.hadhad.common import PRESELECTION
 
 from argparse import ArgumentParser
 parser = ArgumentParser()
-parser.add_argument('-o', '--out', default='/coepp/cephfs/mel/lspiller/v15skim/hhskim_mc.root')
-parser.add_argument('-i', '--infolder', default='/coepp/cephfs/mel/lspiller/v15skim/mc15')
+parser.add_argument('-o', '--out', default='/home/lspiller/v14_ICHEP/hhskim.root')
+parser.add_argument('-i', '--infolder', default='/home/lspiller/v14_ICHEP/all')
 #parser.add_argument('-cf', '--cutflow', default='h_mc_derivation')
 parser.add_argument('-cf', '--cutflow', default='h_metadata')
 parser.add_argument('--reset', action='store_true', default=False)
 parser.add_argument('--append', action='store_true', default=False)
-parser.add_argument('-db', '--deactivate-branches', default=['*_CP_*', 'primary_vertex_*', '*JETIDBDTLOOSE', 'ditau_tauRec*', 'ditau_matched_*'])
+parser.add_argument('-db', '--deactivate-branches', default=[])#'*_CP_*', 'primary_vertex_*', '*JETIDBDTLOOSE', 'ditau_tauRec*', 'ditau_matched_*'])
 parser.add_argument('-dr', '--dry-run', default=False, action='store_true')
 parser.add_argument('-n', '--nominal', default=False, action='store_true')
-parser.add_argument('-s', '--no-skim', default=False, action='store_true')
+parser.add_argument('-s', '--skim', default=False, action='store_true')
 args = parser.parse_args()
 log = logging.getLogger(os.path.basename(__file__))
 
@@ -121,7 +121,7 @@ with root_open(args.out, 'UPDATE') as outfile:
             log.debug("****************")
             log.debug("{}, {}, {}".format(intree, intree.GetTitle(), intree.GetName()))
 
-            if not args.no_skim:
+            if args.skim:
                 selection = PRESELECTION
                 orig_intree = intree
                 intree = orig_intree.CopyTree(PRESELECTION)

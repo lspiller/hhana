@@ -47,7 +47,7 @@ SYSTEMATICS_COMMON = {
     'TAU_TRIGGER_STATMC': (('TAU_TRIGGER_STATMC_UP',), ('TAU_TRIGGER_STATMC_DOWN',)),
 
     # TES
-    'TAU_TES_DETECTOR': (('TAUS_TRUEHADTAU_SME_TES_DETECTOR__up',), ('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1down',)),
+    'TAU_TES_DETECTOR': (('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1up',), ('TAUS_TRUEHADTAU_SME_TES_DETECTOR_1down',)),
     'TAU_TES_MODEL': (('TAUS_TRUEHADTAU_SME_TES_MODEL_1up',), ('TAUS_TRUEHADTAU_SME_TES_MODEL_1down',)),
     'TAU_TES_INSITU': (('TAUS_TRUEHADTAU_SME_TES_INSITU_1up',), ('TAUS_TRUEHADTAU_SME_TES_INSITU_1down',)),
 
@@ -73,12 +73,13 @@ SYSTEMATICS_COMMON = {
     'JET_Flavor_Comp': (('JET_Flavor_Composition_1down',), ('JET_Flavor_Composition_1up',)),
     'JET_Flavor_Resp': (('JET_Flavor_Response_1up',), ('JET_Flavor_Response_1down',)),
 
-    'JET_JER': (('JET_JER_SINGLE_NP_1up',)),
+    'JET_JER': (('JET_JER_SINGLE_NP_1up',),),
 
-    'JET_PU_NPV': (('JET_Pile_up_OffsetNPV_1down',), ('JET_Pile_up_OffsetNPV_1up',)),
-    'JET_PU_PtTerm': (('JET_Pile_up_PtTerm_1down',), ('JET_Pile_up_PtTerm_1up',)),
-    'JET_PU_Rho': (('JET_Pile_up_RhoTopology_1down',), ('JET_Pile_up_RhoTopology_1up',)),
-    'JET_Punch': (('JET_PunchThrough_MC15_1down',), ('JET_PunchThrough_MC15_1up')),
+    'JET_PU_NPV': (('JET_Pileup_OffsetNPV_1down',), ('JET_Pileup_OffsetNPV_1up',)),
+    'JET_PU_MU': (('JET_Pileup_OffsetMu_1down',), ('JET_Pileup_OffsetMu_1up',)),
+    'JET_PU_PtTerm': (('JET_Pileup_PtTerm_1down',), ('JET_Pileup_PtTerm_1up',)),
+    'JET_PU_Rho': (('JET_Pileup_RhoTopology_1down',), ('JET_Pileup_RhoTopology_1up',)),
+    'JET_Punch': (('JET_PunchThrough_MC15_1down',), ('JET_PunchThrough_MC15_1up',)),
 
     'JET_SP_HighPt': (('JET_SingleParticle_HighPt_1down',), ('JET_SingleParticle_HighPt_1up',)),
 
@@ -106,8 +107,10 @@ SYSTEMATICS_BY_WEIGHT = [
     ('TAU_TRIGGER_DOWN',),
     ('TAU_ID_UP',),
     ('TAU_ID_DOWN',),
-    ('TAU_ID_HIGHPT_UP',),
-    ('TAU_ID_HIGHPT_DOWN',),
+    ('TAU_ELEOLR_UP',),
+    ('TAU_ELEOLR_DOWN',),
+#    ('TAU_ID_HIGHPT_UP',),
+#    ('TAU_ID_HIGHPT_DOWN',),
 ]
 
 

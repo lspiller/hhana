@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+"Add a column to an existing table"
+import ROOT
+from rootpy.io import root_open
+from root_numpy import rec2array
+import numpy as np
+from matplotlib.mlab import rec_append_fields
+import tables
+from rootpy.extern.argparse import ArgumentParser
+import logging
+import sys
+from moments import HCM
+
+log = logging.getLogger('h5-append')
+
+parser = ArgumentParser()
+parser.add_argument('-i', '--infile', required=True)
+parser.add_argument('-d', '--dry-run', default=False, action='store_true')
+args = parser.parse_args()
+
+with root_open(args.infile[:-3]+'.root', 'READ') as files:
+    table_list = set([o.GetName() for o in files.objects(cls=(ROOT.TTree,))])
+
+    sys_l = []
+    for tree in table_list:
+        for possible_nom_tree in table_list:
+            if tree == possible_nom_tree:
+                continue
+            elif tree in possible_nom_tree:
+                break
+        else:
+            sys_l.append(tree)
+    nominal_list = table_list - set(sys_l)
+
+unique_sys_list = set([])
+for tr_nom in set(nominal_list):
+    for tr_sys in set(sys_l):
+        if tr_sys.startswith(tr_nom):
+            stripped_tr = tr_sys.replace(tr_nom+'_', '').replace('CPodd_','').replace('unpol_','')
+            unique_sys_list.add(stripped_tr)
+
+print 'List of systematics: \n{}'.format('\n'.join(set(unique_sys_list)))

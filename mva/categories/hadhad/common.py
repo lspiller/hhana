@@ -24,31 +24,35 @@ LEAD_JET_50 = Cut('jet_0_pt > 50')
 SUBLEAD_JET_30 = Cut('jet_1_pt > 30')
 AT_LEAST_1JET = Cut('jet_0_pt > 30')
 
-METCENT = Cut('selection_met_centrality==1')
-CUTS_2J = LEAD_JET_50 & SUBLEAD_JET_30
+#METCENT = Cut('selection_met_centrality==1')
+METCENT = Cut('ditau_met_min_dphi<{}'.format(pi/4)) | Cut('ditau_met_bisect>=1')
+CUTS_2J = SUBLEAD_JET_30
 CUTS_1J = LEAD_JET_50 & (- SUBLEAD_JET_30)
 CUTS_0J = (- LEAD_JET_50)
-MET = Cut('met_et > 20')
+MET = Cut('met_et > 20.')
 #MET = Cut('selection_met == 1')
 DR_TAUS = Cut('0.8 < ditau_dr < 2.4')
 #DR_TAUS = Cut('selection_delta_r == 1')
 DETA_TAUS = Cut('ditau_deta < 1.5')
 #DETA_TAUS = Cut('selection_delta_eta == 1')
 DETA_TAUS_CR = -DETA_TAUS
-RESONANCE_PT = Cut('ditau_higgs_pt > 100')
+RESONANCE_PT = Cut('ditau_higgs_pt > 100.')
 DETA_TAUS_PRESEL = Cut('ditau_deta < 2.0')
 
 JET_TRIG_PT = Cut('jet_0_pt > 70.')
 JET_TRIG_ETA = Cut('-3.2 < jet_0_eta') & Cut('jet_0_eta < 3.2')
-JET_TRIG = JET_TRIG_ETA & JET_TRIG_PT
-HIGGS_PT = Cut('ditau_higgs_pt > 100')
-LEPTON_VETO = Cut('selection_lepton_veto == 1')# & Cut('ditau_tau0_ele_bdt_loose==0') & Cut('ditau_tau1_ele_bdt_loose==0')
-TRIGGER = Cut('selection_trigger == 1')
+JET_TRIG = JET_TRIG_PT & JET_TRIG_ETA
+HIGGS_PT = Cut('ditau_higgs_pt > 100.')
+#LEPTON_VETO = Cut('selection_lepton_veto == 1')
+#LEPTON_VETO = Cut('ditau_tau0_ele_bdt_loose!=1') & Cut('ditau_tau1_ele_bdt_loose!=1')
+LEPTON_VETO = Cut('(n_muons+n_electrons)==0')
+#TRIGGER = Cut('selection_trigger == 1')
+TRIGGER = Cut('HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo==1')
 
 # use .format() to set centality value
-MET_CENTRALITY = 'ditau_met_bisect==1 || (ditau_met_min_dphi < {0})'
+#MET_CENTRALITY = Cut('ditau_met_bisect==1') | Cut('ditau_met_min_dphi < {0}'.format(pi / 4))
 
-GRL = Cut('grl_pass_run_lb == 1')
+MMC = Cut('%s > 70.'%MMC_MASS)
 # common preselection cuts
 PRESELECTION = (
     LEAD_TAU_40
@@ -56,29 +60,31 @@ PRESELECTION = (
     & MET
     & METCENT
 #    & Cut('%s > 0' % MMC_MASS)
-    & JET_TRIG
+#    & JET_TRIG
     & DR_TAUS
-#    & TAUID
+    & TAUID
     & LEPTON_VETO
-    & TRIGGER
     & DETA_TAUS_PRESEL
+#    & MMC
     )
 
 # VBF category cuts
 CUTS_VBF = (
     CUTS_2J
-#    & DETA_TAUS
+#    & MMC
+    & DETA_TAUS
     )
 
 CUTS_VBF_CR = (
     CUTS_2J
+#    & MMC
 #    & DETA_TAUS_CR
     )
 
 # Boosted category cuts
 CUTS_BOOSTED = (
     RESONANCE_PT
-#    & DETA_TAUS
+    & DETA_TAUS
     )
 
 CUTS_BOOSTED_CR = (

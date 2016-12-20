@@ -22,8 +22,8 @@ gaussian_cdf_c = ROOT.Math.gaussian_cdf_c
 
 UNBLIND = {
     1516: {
-        'vbf': 2,
-        'boosted': 2,
+        'vbf': 1,
+        'boosted': 1,
         'rest': 0,
         'hh_vbf': 2,
         'hh_boost': 2,

@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+
+from mva.categories.hadhad import CATEGORIES
+from mva.regions import REGIONS
+from mva.samples.higgs import Higgs
+
+from rootpy.tree import Cut
+
+from itertools import product
+from collections import defaultdict
+
+higgs = Higgs(1516, trigger=False)
+mva = CATEGORIES['mva']
+cuts = CATEGORIES['cuts']
+
+#cutlist = [
+#            ('Presel', Category_Preselection.get_cuts(1516)&REGIONS['OS']),
+#            ('VBF_highdr_Tight', Category_Cuts_VBF_HighDR_Tight.get_cuts(1516)&REGIONS['OS']),
+#            ('VBF_highdr_Loose', Category_Cuts_VBF_HighDR_Loose.get_cuts(1516)&REGIONS['OS']),
+#            ('VBF_lowdr'       , Category_Cuts_VBF_LowDR.get_cuts(1516)&REGIONS['OS']),
+#            ('Boosted_Loose'   , Category_Cuts_Boosted_Loose.get_cuts(1516) & REGIONS['OS']),
+#            ('Boosted_Tight'   , Category_Cuts_Boosted_Tight.get_cuts(1516) & REGIONS['OS']),
+#          ]
+
+triggerlist = [
+                'L1TAU20IM_2TAU12IM',
+                'L1_TAU20IM_2TAU12IM_J25_2J20_3J12',
+                'L1DR_TAU20ITAU12I',
+                'L1DR_TAU20ITAU12I_J25',
+          ]
+
+trigcut = {
+            'L1TAU20IM_2TAU12IM':                   Cut('HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo_L1TAU20IM_2TAU12IM==1'),
+            'L1_TAU20IM_2TAU12IM_J25_2J20_3J12':    Cut('HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo==1')&Cut('jet_0_pt>70.'),
+            'L1DR_TAU20ITAU12I':                    Cut('HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo_L1DR_TAU20ITAU12I==1'),
+            'L1DR_TAU20ITAU12I_J25':                Cut('HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo_L1DR_TAU20ITAU12I_J25==1')&Cut('jet_0_pt>70.'),
+          }
+
+table = defaultdict(dict)
+for trigger, cat in product(triggerlist, mva+cuts):
+    events = higgs.events(cuts=cat.get_cuts(1516)&trigcut[trigger]&REGIONS['OS'], weighted=True)[1].value
+    table[cat.name][trigger] = events / 36.5
+
+# Print Table
+rows = [cat.name for cat in mva+cuts]
+columns = [trig for trig in triggerlist]
+print ('{:^35}'*(len(columns)+1)).format('Events / fb-1', *columns)
+for rname in rows:
+    row = [rname] + ['{:.4f}'.format(table[rname][col]) for col in columns]
+    print ('{:^35}'*len(row)).format(*row)
+
+

@@ -24,10 +24,10 @@ class Ztautau(Background):
 
     def histfactory(self, sample, category, systematics=False, **kwargs):
         # isolation systematic
-        sample.AddOverallSys(
-            'ATLAS_ANA_HH_{0:d}_Isolation'.format(self.year),
-            1. - 0.06,
-            1. + 0.06)
+#        sample.AddOverallSys(
+#            'ATLAS_ANA_HH_{0:d}_Isolation'.format(self.year),
+#            1. - 0.06,
+#            1. + 0.06)
         if self.workspace_norm is False:
             return
         if self.workspace_norm is not None:
@@ -69,6 +69,8 @@ class MC_Ztautau(Ztautau, MC):
 class MC_Ztautau_DY(MC_Ztautau):
     pass
 
+class Sh_Ztautau(MC_Ztautau):
+    pass
 
 class Pythia_Ztautau(MC_Ztautau):
     pass

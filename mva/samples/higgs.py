@@ -26,23 +26,21 @@ TAUTAUHADHADBR = 0.4194 # = (1. - 0.3521) ** 2
 class Higgs(MC, Signal):
     MASSES = range(100, 155, 5)
 
-    MODES = ['gg', 'VBF', 'W', 'Z']
-    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W']]
-#    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']
-#    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]
+    MODES = ['gg', 'VBF', 'W', 'Z', 'tth']
+    MODES_COMBINED = [['gg'], ['VBF'], ['Z', 'W'], ['tth']]
     MODES_DICT = {
         'gg': ('ggf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'VBF': ('vbf', 'PowPyth_', 'PowPyth8_AU2CT10_', 'PoPy8_'),
         'Z': ('zh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
         'W': ('wh', '', 'Pythia8_AU2CTEQ6L1_', 'Pythia8EvtGen_'),
-#        'tth': ('tth', '', '', 'aMcNloHppEG_'),
+        'tth': ('tth', '', '', 'aMcNloHppEG_'),
     }
     MODES_WORKSPACE = {
         'gg': 'ggH',
         'VBF': 'VBF',
         'Z': 'ZH',
         'W': 'WH',
-#        'tth': 'tth',
+        'tth': 'ttH',
     }
 
     # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HSG4Uncertainties
@@ -264,10 +262,10 @@ class Higgs(MC, Signal):
                 'histfactory sample only valid for single mass point')
 
         # isolation systematic
-        sample.AddOverallSys(
-            'ATLAS_ANA_HH_{0:d}_Isolation'.format(self.year),
-            1. - 0.06,
-            1. + 0.06)
+#        sample.AddOverallSys(
+#            'ATLAS_ANA_HH_{0:d}_Isolation'.format(self.year),
+#            1. - 0.06,
+#            1. + 0.06)
 
         mode = self.modes[0]
 
@@ -347,11 +345,15 @@ class Higgs(MC, Signal):
         # https://twiki.cern.ch/twiki/bin/viewauth/AtlasProtected/HSG4Uncertainties
         # pdf uncertainty
         if mode == 'gg':
+            if energy == 13:
+                sample.AddOverallSys('pdf_Higgs_gg', 0.950, 1.050)
             if energy == 8:
                 sample.AddOverallSys('pdf_Higgs_gg', 0.93, 1.08)
             else: # 7 TeV
                 sample.AddOverallSys('pdf_Higgs_gg', 0.92, 1.08)
         else:
+            if energy == 13:
+                sample.AddOverallSys('pdf_Higgs_qq', 0.990, 1.010)
             if energy == 8:
                 sample.AddOverallSys('pdf_Higgs_qq', 0.97, 1.03)
             else: # 7 TeV
@@ -438,7 +440,7 @@ class InclusiveHiggs(MC, Signal):
         'vbf': 'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
         'zh': 'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
         'wh': 'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
-#        'tth': 'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
+        'tth': 'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
     }
 
     def __init__(self, mode=None, **kwargs):
@@ -449,21 +451,21 @@ class InclusiveHiggs(MC, Signal):
             self.samples = [self.SAMPLES[mode]]
         else:
             self.masses = [125] * 5
-#            self.modes = ['ggf', 'vbf', 'zh', 'wh', 'tth']
-#            self.samples = [
-#                'PowPyth8_AU2CT10_ggH125p5_inclusive.mc12b',
-#                'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
-#                'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
-#                'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
-#                'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
-#            ]
-            self.modes = ['ggf', 'vbf', 'zh', 'wh']
+            self.modes = ['ggf', 'vbf', 'zh', 'wh', 'tth']
             self.samples = [
                 'PowPyth8_AU2CT10_ggH125p5_inclusive.mc12b',
                 'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
                 'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
                 'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
+                'Pyth8_AU2CTEQ6L1_ttH125p5_inclusive.mc12b',
             ]
+#            self.modes = ['ggf', 'vbf', 'zh', 'wh']
+#            self.samples = [
+#                'PowPyth8_AU2CT10_ggH125p5_inclusive.mc12b',
+#                'PowPyth8_AU2CT10_VBFH125p5_inclusive.mc12b',
+#                'Pyth8_AU2CTEQ6L1_ZH125p5_inclusive.mc12b',
+#                'Pyth8_AU2CTEQ6L1_WH125p5_inclusive.mc12b',
+#            ]
         super(InclusiveHiggs, self).__init__(
             year=2015, name='Signal', label='Signal',
             ntuple_path='ntuples/prod_v29',

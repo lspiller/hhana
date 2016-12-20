@@ -24,7 +24,7 @@ def general_parser(parser=None, multi_years=False, multi_categories=False):
             help="enable systematics")
 
     if multi_years:
-        parser.add_argument('--years', type=int, default=[2015], choices=(2015, 2016, 0),
+        parser.add_argument('--years', type=int, default=[1516], choices=(2015, 2016, 1516),
                 nargs='*',
                 help='years')
     else:
@@ -71,6 +71,9 @@ def analysis_parser(parser=None):
     parser.add_argument('--madgraph', action='store_true', default=False,
             dest='madgraph',
             help='use MadPy8 Ztautau samples')
+#    parser.add_argument('--use-sherpa', action='store_true', default=False,
+#            dest='use_sherpa',
+#            help='use Sherpa Ztautau samples')
     parser.add_argument('--fakes-region', choices=REGIONS.keys(),
             default=FAKES_REGION,
             help='fakes shape region')

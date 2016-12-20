@@ -57,7 +57,7 @@ def plot_nuis(name, graphs, outdir):
 
 
 def make_graph(values, nominal, max_value=8, **kwargs):
-    graph = Graph(len(values), **kwargs)    
+    graph = Graph(len(values), **kwargs)
     i = 0
     for x, y in values:
         value = 2 * (y - nominal)
@@ -79,12 +79,12 @@ if __name__ == '__main__':
     parser.add_argument('path')
     parser.add_argument('--mass', default='125')
     parser.add_argument('--ana', default='mva', choices=['mva', 'cba'])
-    parser.add_argument('--reference-workspace', default='hh_15_combination',
+    parser.add_argument('--reference-workspace', default='hh_516_combination',
                         choices=['hh_combination', 'hh_12_combination'])
     args = parser.parse_args()
 
     if args.ana == 'mva':
-        categories = CATEGORIES['mva_all']
+        categories = CATEGORIES['mva']
     else:
         categories = CATEGORIES['cuts']
     # Step1: Retrieve NP scans of the combined WS
@@ -101,7 +101,7 @@ if __name__ == '__main__':
         if nuis == 'NOMINAL':
             continue
         graphs[nuis] = []
-        graphs[nuis].append(make_graph(values, nominal_comb, drawstyle='L', linewidth=3, 
+        graphs[nuis].append(make_graph(values, nominal_comb, drawstyle='L', linewidth=3,
                                        name='hh_combination_{0}'.format(nuis),
                                        title='Combined'))
 
@@ -117,10 +117,12 @@ if __name__ == '__main__':
                     year = 2012
                 elif '_11_' in dir:
                     year = 2011
+                elif '_516_' in dir:
+                    year = 1516
                 else:
                     continue
                 _, cat_name, _ = parse_name('channel_'+dir)
-                
+
                 log.info('{0} - {1} - {2}'.format(dir, year, cat_name))
                 #year = get_year(dir)
                 if year is None:
@@ -136,8 +138,8 @@ if __name__ == '__main__':
                     for nuis, values in data.items():
                         if nuis=='NOMINAL':
                             continue
-                        graph = make_graph(values, nominal, 
-                                           drawstyle='L', 
+                        graph = make_graph(values, nominal,
+                                           drawstyle='L',
                                            linewidth=3,
                                            linecolor=cat.color,
                                            linestyle=cat.linestyle,
@@ -145,7 +147,7 @@ if __name__ == '__main__':
                                            title='{0}: {1}'.format(year, cat.label))
                         if nuis in graphs.keys():
                             graphs[nuis].append(graph)
-                        
+
     # Step 3: Draw the NPS scans
     plots = os.path.join(args.path,
                          'hh_combination_{0}'.format(args.mass),

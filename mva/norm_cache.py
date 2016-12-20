@@ -87,7 +87,7 @@ def qcd_ztautau_norm(ztautau, qcd,
 def get_scales(year, category, embedded, param,
                shape_region, target_region,
                verbose=True):
-    year %= 1000
+#    year %= 1000
     category = category.upper()
     param = param.upper()
     if has_category(year, category, embedded, param, shape_region, target_region):
@@ -113,7 +113,7 @@ def get_scales(year, category, embedded, param,
 
 
 def has_category(year, category, embedded, param, shape_region, target_region):
-    year %= 1000
+#    year %= 1000
     category = category.upper()
     param = param.upper()
     try:
@@ -135,7 +135,7 @@ def set_scales(year, category, embedded, param,
         raise ValueError(
             "fakes shape region cannot equal "
             "the target region: {0}".format(target_region))
-    year %= 1000
+#    year %= 1000
     param = param.upper()
     category = category.upper()
 
